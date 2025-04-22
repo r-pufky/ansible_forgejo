@@ -1,0 +1,21 @@
+---
+###############################################################################
+# Quota [quota]
+###############################################################################
+# More complex quota configuration should be done via the API.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/quota/
+
+# Enable quota? Default: False.
+forgejo_config_quota_enabled: false
+
+# List of groups that apply by default to users. Default: [].
+forgejo_config_quota_default_groups: []
+
+###############################################################################
+# Quota Default [quota.default]
+###############################################################################
+
+# Global quota (-1 disables) (SIZE format). Default: -1 (disabled).
+forgejo_config_quota_default_total: -1

@@ -1,0 +1,21 @@
+---
+###############################################################################
+# SSH Minimum Key Sizes [ssh.minimum_key_sizes]
+###############################################################################
+
+# ED25519 minimum key length (-1 disables). Default: 256.
+forgejo_config_ssh_minimum_key_sizes_ed25519: 256
+
+# ECDSA minimum key length (-1 disables). Default: 256.
+forgejo_config_ssh_minimum_key_sizes_ecdsa: 256
+
+# RSA minimum key length (-1 disables).
+#
+# 3071 allowed by default because an otherwise valid 3072 bit RSA key can be
+# reported as having 3071 bit length.
+#
+# Default: 3071.
+forgejo_config_ssh_minimum_key_sizes_rsa: 3071
+
+# DSA minimum key length (-1 disables). Default: -1.
+forgejo_config_ssh_minimum_key_sizes_dsa: -1

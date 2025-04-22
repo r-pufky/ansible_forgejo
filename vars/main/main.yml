@@ -1,0 +1,66 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Forgejo Role Options
+###############################################################################
+
+# Last time Forgejo options were validated against a default configuration.
+forgejo_role_validate_date: '2025-04-04'
+forgejo_role_validate_release: 'bookworm'
+forgejo_role_validate_version: 'v10.0.3'
+
+forgejo_role_poll_interval: 3
+forgejo_role_poll_timeout: 30
+
+###############################################################################
+# APT Packages
+###############################################################################
+# Forgejo updates GPG keys frequently. They allow hammering the GPG key to
+# check for changes.
+#
+# Reference:
+# * https://forgejo.org/download/
+
+forgejo_role_packages:
+  - 'git'
+  - 'git-lfs'
+  - 'gnupg2'
+  - 'xz-utils'
+
+forgejo_role_redis:  # includes redis-server, redis-tools
+  - 'redis'
+
+###############################################################################
+# Forgejo Codeberg Options
+###############################################################################
+# Reference:
+# * https://codeberg.org/Forgejo/Forgejo/releases/latest
+
+forgejo_role_repo_release_owner: 'forgejo'
+forgejo_role_repo_release_repo: 'forgejo'
+forgejo_role_repo_extract_dir: '/var/lib/forgejo'
+forgejo_role_repo_extract_symlink: '/var/lib/forgejo/forgejo'
+forgejo_role_repo_release_specifier: 'v'
+forgejo_role_repo_release_asset: 'forgejo-{BARE_VERSION}-linux-amd64'
+
+###############################################################################
+# Default Forgejo User/Group
+###############################################################################
+
+forgejo_role_group:
+  name: 'git'
+  gid: 305
+
+forgejo_role_user:
+  name: 'git'
+  group: 'git'
+  uid: 305
+  shell: '/bin/bash'
+  home: '/data/gitea'
+  comment: 'Forgejo Server,,,'
+  create_home: true
+  password: '!'
+  password_lock: true
+  update_password: 'always'
+  expires: -1
+  system: true

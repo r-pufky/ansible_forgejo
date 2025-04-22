@@ -1,0 +1,42 @@
+---
+###############################################################################
+# Admin [admin]
+###############################################################################
+
+# Disable non-admin users from creating organizations? Default: False.
+forgejo_config_admin_disable_regular_org_creation: false
+
+# Default configuration for email notifications for users (user configurable).
+#
+# Values:
+#     enabled: Email all notifications (default).
+#   onmention: Email on mention only.
+#    disabled: Disabled.
+#
+# Default: 'enabled'.
+forgejo_config_admin_default_email_notifications: 'enabled'
+
+# Email all admins on new user signup? Default: False.
+forgejo_config_admin_send_notification_email_on_new_user: false
+
+# List of disabled user features.
+#
+# Values:
+#          deletion: a user cannot delete their own account.
+#   manage_ssh_keys: a user cannot configure ssh keys.
+#   manage_gpg_keys: a user cannot configure gpg keys.
+#
+# Default: [] (no disabled features).
+forgejo_config_admin_user_disabled_features: []
+
+# List of disabled user features (external logins).
+#
+# Applied in addition to forgejo_config_admin_user_disabled_features.
+#
+# Values:
+#          deletion: a user cannot delete their own account.
+#   manage_ssh_keys: a user cannot configure ssh keys.
+#   manage_gpg_keys: a user cannot configure gpg keys.
+#
+# Default: [] (no disabled features).
+forgejo_config_admin_external_user_disable_features: []

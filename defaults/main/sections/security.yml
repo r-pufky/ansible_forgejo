@@ -1,0 +1,182 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Security [security]
+###############################################################################
+
+# Enable install lock (disable initial installer page)?
+#
+# Installer pages manually walks through the creation of an initial user or
+# sets up user registration; if forgejo_local_users is NOT set or there are NO
+# pre-existing users in the database, this should remain disabled until an
+# admin user is added.
+#
+# Default: False.
+forgejo_config_security_install_lock: false
+
+# Global secret key.
+#
+# This key is VERY IMPORTANT. If you lose it, the data encrypted by it (like
+# 2FA secret) can't be decrypted anymore.
+#
+# Manually generate key:
+#
+#   forgejo generate secret SECRET_KEY
+#
+# Special Case:
+#   '!#@FDEWREWR&*(': Hard-coded secret key (used in many old installations).
+#
+# Default: ''.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
+# * https://codeberg.org/forgejo/forgejo/src/commit/2570be93a60c6a413a002ac0b5f2149be336d0fe/modules/setting/security.go#L112
+# * https://github.com/go-gitea/gitea/issues/16832
+forgejo_config_security_secret_key: ''
+
+# Internal token secret used to validate communication within binary.
+#
+# Manually generate key:
+#
+#   forgejo generate secret INTERNAL_TOKEN
+#
+# Values:
+#   '': Randomly generate on startup (default).
+#
+# Default: '' (random).
+forgejo_config_security_internal_token: ''
+
+# Require uses to re-login after number of days. Default: 31.
+forgejo_config_security_login_remember_days: 31
+
+# Cookie name to store authentication information. Default: 'gitea_incredible'.
+forgejo_config_security_cookie_remember_name: 'gitea_incredible'
+
+# User reverse proxy authentication header. Default: 'X-WEBAUTH-USER'.
+forgejo_config_security_reverse_proxy_authentication_user: 'X-WEBAUTH-USER'
+
+# Email reverse proxy authentication header. Default: 'X-WEBAUTH-EMAIL'.
+forgejo_config_security_reverse_proxy_authentication_email: 'X-WEBAUTH-EMAIL'
+
+# Full name reverse proxy authentication header. Default: 'X-WEBAUTH-FULLNAME'.
+forgejo_config_security_reverse_proxy_authentication_full_name:
+  'X-WEBAUTH-FULLNAME'
+
+# Proxy forwarding limit for requests.
+#
+# Values:
+#   1: Limit to one proxy forward - use X-Forwarded-For or X-Real-IP as remote
+#      IP for request.
+#
+# Default: 1.
+forgejo_config_security_reverse_proxy_limit: 1
+
+# List of trusted proxy servers.
+#
+# Values:
+#   {CIDR}: CIDR IPv4/IPv6 network address.
+#     {IP}: IPv4/IPv6 address.
+#        *: Trust all (insecure).
+#
+# Default:
+#   - '127.0.0.0/8'
+#   - '::1/128'
+forgejo_config_security_reverse_proxy_trusted_proxies:
+  - '127.0.0.0/8'
+  - '::1/128'
+
+# Minimum user password length. Default: 8.
+forgejo_config_security_min_password_length: 8
+
+# Enable users to import local server paths? Default: False.
+forgejo_config_security_import_local_paths: false
+
+# Disable custom git hook creation for users with git hook privileges?
+#
+# WARNING HERE BE DRAGONS.
+# Users can gain administrator privileges by modifying the database. This maybe
+# harmful to you website or your operating system. Setting this to true does
+# not change existing hooks in git repos; adjust it before if necessary.
+#
+# Custom git hooks can be used to perform arbitrary code execution on host
+# operating system. This enables users to access and modify this config file,
+# database, and interrupt the service.
+#
+# It also enables them to access other resources available to the user on the
+# operating system that is running the instance and perform arbitrary actions
+# in the name of the service OS user.
+#
+# Default: True (disable custom git hooks).
+forgejo_config_security_disable_git_hooks: true
+
+# Disable webhooks feature? Default: False.
+forgejo_config_security_disable_webhooks: false
+
+# Enable pushes to repos only with full environment? Default: True.
+forgejo_config_security_only_allow_push_if_gitea_environment_set: true
+
+# list of character classes required to pass minimum password complexity.
+#
+# Values:
+#     off: No complexity checking.
+#   lower: Require one or more lower latin characters.
+#   upper: Require one or more upper latin characters.
+#   digit: Require one or more digits.
+#    spec: Require one or more special characters
+#          !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~.
+#
+# Default:
+#   - 'off'
+forgejo_config_security_password_complexity:
+  - 'off'
+
+# Password Hash algorithm.
+#
+# Special Case:
+#   argon2: argon2[${TIME}$MEMORY}${THREADS}${KEY-LENGTH}] custom setting.
+#   bcrypt: bcrypt[${COST}] custom setting.
+#   pbkdf2: pbkdf2[${ITERATIONS}${KEY-LENGTH}] custom setting.
+#   scrypt: scrypt[${N}${R}${P}${KEY-LENGTH}] custom setting.
+
+# Values:
+#      {ALGO}: Custom algorithm specification.
+#      argon2: argon2$2$65536$8$50.
+#      pbkdf2: pbkdf2$50000$50.
+#   pbkdf2_v2: pbkdf2$50000$50.
+#   pbkdf2_hi: pbkdf2$320000$50 (default).
+#      scrypt: scrypt$65536$16$2$50.
+#      bcrypt: bcrypt$10.
+#
+# Default: 'pbkdf2_hi'.
+forgejo_config_security_password_hash_algo: 'pbkdf2_hi'
+
+# Enable CSRF http cookie only (prevent javascript access)? Default: True.
+forgejo_config_security_csrf_cookie_http_only: true
+
+# Check passwords hashes against haveibeenpwned.com?
+#
+# Default: False.
+#
+# Reference:
+# * https://haveibeenpwned.com/Passwords
+forgejo_config_security_password_check_pwn: false
+
+# Number of successful token hashes to cache.
+#
+# API tokens are stored in the DB as pbkdf2 hashes however, this means that
+# there is a potentially significant hashing load when there are multiple API
+# operations. This cache will store the successfully hashed tokens in a LRU
+# cache as a balance between performance and security.
+#
+# Default: 20.
+forgejo_config_security_successful_tokens_cache_size: 20
+
+# Enable Header-based API tokens only?
+#
+# Reject API tokens sent in URL query string (Accept Header-based API tokens
+# only). This avoids security vulnerabilities stemming from cached/logged
+# plain-text API tokens. In future releases, this will become the default
+# behavior.
+#
+# Default: True (Disable query and header tokens).
+forgejo_config_security_disable_query_auth_token: true

@@ -1,0 +1,21 @@
+{% for section in _forgejo_config %}
+{% for header, options in section.items() %}
+{% if header != 'general' %}
+[{{ header }}]
+{% endif %}
+{% for key, value in options.items() %}
+{% if value is boolean %}
+{{ key }} = {{ value | lower }}
+{% elif value is number %}
+{{ key }} = {{ value }}
+{% elif value | length > 0 %}
+{% if key == 'PASSWD' or key == 'PASSWORD' %}
+{{ key }} = `{{ value }}`
+{% else %}
+{{ key }} = {{ value }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,41 @@
+---
+# yamllint disable rule:line-length
+- name: 'Database | verify'
+  hosts: 'forgejo-debian-12-database_postgres'
+  gather_facts: false
+  tasks:
+    - name: 'Database | verify | assert Postgres app.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'lineinfile.yml'
+      vars:
+        test_name: 'Database | verify | assert Postgres app.ini | {{ item }}'
+        test_file: '/etc/forgejo/app.ini'
+        test_line: '{{ item }}'
+        test_state: 'present'
+      loop:
+        - 'DB_TYPE = postgres'
+        - 'HOST = 127.0.0.1'
+        - 'NAME = forgejo'
+        - 'USER = root'
+        - 'PASSWD = `test`'
+
+- name: 'Database | verify'
+  hosts: 'forgejo-debian-12-database_mysql'
+  gather_facts: false
+  tasks:
+    - name: 'Database | verify | assert MySQL app.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'lineinfile.yml'
+      vars:
+        test_name: 'Database | verify | assert MySQL app.ini {{ item }}'
+        test_file: '/etc/forgejo/app.ini'
+        test_line: '{{ item }}'
+        test_state: 'present'
+      loop:
+        - 'DB_TYPE = mysql'
+        - 'HOST = 127.0.0.1'
+        - 'NAME = forgejo'
+        - 'USER = root'
+        - 'PASSWD = `test`'

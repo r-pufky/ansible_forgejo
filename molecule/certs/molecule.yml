@@ -1,0 +1,66 @@
+---
+# yamllint disable rule:line-length
+# Confirm:
+# * Ansible sourced files are setup correctly.
+# * Host SSH keys are enumerated and copied correctly.
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        repo_testing_enable: true
+        repo_testing_versions:
+          - comment: 'forgejo'
+            version: 'v10.0.3'
+            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
+            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
+            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+        forgejo_container_enable: true
+        forgejo_service_harden_enable: true
+        forgejo_config_security_install_lock: true
+        forgejo_config_mailer_use_client_cert: true
+        forgejo_local_users:
+          - username: 'admin_user'
+            password: 'admin'
+            email: 'admin@example.com'
+            admin: true
+platforms:
+  - name: 'forgejo-debian-12-certs'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+    published_ports:
+      - '3000/tcp'
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # Files created, extracted, created, deleted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

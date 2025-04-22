@@ -1,0 +1,131 @@
+---
+###############################################################################
+# Manage Local Forgejo Users
+###############################################################################
+# Create or delete local forgejo users. Forgejo CLI must be run as installed
+# user.
+#
+# Forgejo must be running for local user management to occur (either with
+# pre-existing users in the DB or INSTALL_LOCK=True); otherwise attempts will
+# fail with:
+#
+#   [F] Unable to load config file for a installed Forgejo instance, you should
+#   either use "--config" to set your config file (app.ini), or run
+#   "forgejo web" command to install Forgejo.
+#
+# Forgejo will report service is active and running but may not be ready to
+# accept API requests for user modifications. Wait until the webserver is
+# responding before attempting API calls. Wait will eventually timeout and
+# proceed even if enabled.
+#
+# Disabling may lead to errors during role application:
+#
+#   Command error: database is locked
+#
+# Query updated user list before each operation to prevent tool failures due to
+# non-existent or pre-existing users.
+#
+# Args:
+#   _forgejo_uid: int - Forgejo user UID.
+#   _forgejo_gid: int - Forgejo user GID.
+#   _forgejo_home: str - Forgejo user HOME.
+#   _forgejo_config: list of dict - sanitized forgejo_tasks
+#   _forgejo_local_users: list of dict - Local user accounts to manage.
+
+- name: 'Local users | poll service'
+  when: forgejo_service_poll_enable
+  ansible.builtin.debug:
+    msg: >
+      Waiting until port becomes available
+      (max {{ forgejo_role_poll_timeout }}s) ...
+
+- name: 'Local users | poll service'
+  when: forgejo_service_poll_enable
+  ansible.builtin.wait_for:
+    port: '{{ forgejo_config_server_http_port | default(3000) }}'
+    delay: 5
+    sleep: '{{ forgejo_role_poll_interval }}'
+    timeout: '{{ forgejo_role_poll_timeout }}'
+    msg: 'Timed out. May receive "database is locked" errors.'
+
+- name: 'Local users | query'
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - '--config'
+      - '{{ forgejo_config_custom_path }}/app.ini'
+      - 'admin'
+      - 'user'
+      - 'list'
+  changed_when: false
+  become: true
+  become_user: '{{ forgejo_user }}'
+  register: _forgejo_user_list
+
+- name: 'Local users | create users'
+  when: >
+    item.state == 'present' and
+    item.username not in _forgejo_user_list.stdout and
+    item.email not in _forgejo_user_list.stdout
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - '--config'
+      - '{{ forgejo_config_custom_path }}/app.ini'
+      - 'admin'
+      - 'user'
+      - 'create'
+      - '--username'
+      - '{{ item.username }}'
+      - '--password'
+      - '{{ item.password }}'
+      - '--email'
+      - '{{ item.email }}'
+      - '--admin={{ item.admin }}'
+      - '--must-change-password={{ item.must_change_password }}'
+      - '--restricted={{ item.restricted }}'
+  register: _forgejo_status
+  failed_when: '"successfully created" not in _forgejo_status.stdout'
+  changed_when: '"successfully created" in _forgejo_status.stdout'
+  become: true
+  become_user: '{{ forgejo_user }}'
+  loop: '{{ _forgejo_local_users }}'
+  loop_control:
+    label: '{{ item.username }}'
+
+- name: 'Local users | query'
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - '--config'
+      - '{{ forgejo_config_custom_path }}/app.ini'
+      - 'admin'
+      - 'user'
+      - 'list'
+  changed_when: false
+  become: true
+  become_user: '{{ forgejo_user }}'
+  register: _forgejo_user_list
+
+- name: 'Local users | remove users'
+  when: >
+    item.state == 'absent' and
+    item.username in _forgejo_user_list.stdout
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - '--config'
+      - '{{ forgejo_config_custom_path }}/app.ini'
+      - 'admin'
+      - 'user'
+      - 'delete'
+      - '--username'
+      - '{{ item.username }}'
+  register: _forgejo_status
+  failed_when: '"error" in _forgejo_status.stdout'
+  changed_when: 'item.username in _forgejo_status.stdout'
+  become: true
+  become_user: '{{ forgejo_user }}'
+  loop: '{{ _forgejo_local_users }}'
+  loop_control:
+    label: '{{ item.username }}'

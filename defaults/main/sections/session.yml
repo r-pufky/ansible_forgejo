@@ -1,0 +1,70 @@
+---
+###############################################################################
+# Session [session]
+###############################################################################
+
+# Session provider.
+#
+# Values:
+#      memory: Use RAM (default).
+#       redis: Redis server.
+#    memcache: Memcache server.
+#        file: Use file.
+#          db: Use DB configuration.
+#       mysql: MySQL.
+#   couchbase: Couchbase.
+#    postgres: Postgres.
+#
+# Default: 'memory'.
+forgejo_config_session_provider: 'memory'
+
+# Additional session provider config options.
+#
+# Requires forgejo_config_session_provider!=memory.
+#
+# Special Case (forgejo_config_session_provider):
+#       *: Relative paths are anchored to AppWorkPath.
+#    file: Session file path (default).
+#   redis: Redis full connection string (e.g.
+#          redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s or
+#          redis+cluster://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s).
+#   mysql: go-sql-driver/mysql dsn config string (e.g
+#          root:password@/session_table).
+#
+# Default: '{{ forgejo_config_work_path }}/data/sessions'.
+forgejo_config_session_provider_config:
+  '{{ forgejo_config_work_path }}/data/sessions'
+
+# Session cookie name. Default: 'i_like_gitea'.
+forgejo_config_session_cookie_name: 'i_like_gitea'
+
+# Use session cookies in HTTPS connections?
+#
+# Requires forgejo_config_server_root_url to use HTTPS.
+#
+# Default: True.
+forgejo_config_session_cookie_secure: true
+
+# Session GC time interval (seconds). Default: 86400 (1 day).
+forgejo_config_session_gc_interval_time: 86400
+
+# Session lifetime (seconds). Default: 86400 (1 day).
+forgejo_config_session_session_life_time: 86400
+
+# Cookie domain name. Default: '' (disabled).
+forgejo_config_session_domain: ''
+
+# Cookie same site settings.
+#
+# Used as an added prevention against CSRF.
+#
+# Values
+#     none: Alway send cookie regardless regardless of the origin (insecure).
+#      lax: Cookie sent with requests to same origin as site that set cookie,
+#           including requests to navigate to same origin (default).
+#   strict: Cookie only set with requests to same origin. May break external
+#           Oauth2. See reference.
+#
+# Reference:
+# * https://codeberg.org/forgejo/forgejo/issues/1205
+forgejo_config_session_same_site: 'lax'

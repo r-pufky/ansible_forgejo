@@ -1,0 +1,51 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# CORS [cors]
+###############################################################################
+# Reference:
+# * https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers
+
+# Enable cors headers? Default: False.
+forgejo_config_cors_enabled: false
+
+# List of allowed request origins. Default: ['*'] (all origins).
+forgejo_config_cors_allow_domain:
+  - '*'
+
+# List of allowed request methods.
+#
+# Default:
+#   - 'GET'
+#   - 'HEAD'
+#   - 'POST'
+#   - 'PUT'
+#   - 'PATCH'
+#   - 'DELETE'
+#   - 'OPTIONS'
+forgejo_config_cors_methods:
+  - 'GET'
+  - 'HEAD'
+  - 'POST'
+  - 'PUT'
+  - 'PATCH'
+  - 'DELETE'
+  - 'OPTIONS'
+
+# Max cache response time (TIME format). Default: 10m.
+forgejo_config_cors_max_age: '10m'
+
+# Allow request with credentials? Default: False.
+forgejo_config_cors_allow_credentials: false
+
+# List of permitted headers.
+#
+# Default:
+#   - 'Content-Type'
+#   - 'User-Agent'
+forgejo_config_cors_headers:
+  - 'Content-Type'
+  - 'User-Agent'
+
+# X-FRAME-OPTIONS header. Default: 'SAMEORIGIN'.
+forgejo_config_cors_x_frame_options: 'SAMEORIGIN'

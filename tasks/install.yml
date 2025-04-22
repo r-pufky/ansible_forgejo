@@ -1,0 +1,40 @@
+---
+###############################################################################
+# Forgejo Install
+###############################################################################
+# Install required base packages; download, verify and install specified
+# Forgejo version from codeberg release.
+
+- name: 'Install | packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.apt'
+  vars:
+    apt_packages:
+      - '{{ forgejo_role_packages }}'
+      - '{{ forgejo_role_redis if forgejo_service_redis_enable else [] }}'
+    apt_package_update_cache: true
+
+- name: 'Install | binary {{ forgejo_service_version }}'
+  when: not forgejo_service_force_config_only_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.repo'
+  vars:
+    repo_host: 'codeberg'
+    repo_release_owner: '{{ forgejo_role_repo_release_owner }}'
+    repo_release_repo: '{{ forgejo_role_repo_release_repo }}'
+    repo_release_tag: '{{ forgejo_service_version }}'
+    repo_release_asset: '{{ forgejo_role_repo_release_asset }}'
+    repo_release_checksum: '{{ forgejo_role_repo_release_asset }}.sha256'
+    repo_release_signature: '{{ forgejo_role_repo_release_asset }}.asc'
+    repo_release_specifier: '{{ forgejo_role_repo_release_specifier }}'
+    repo_release_gpg_key_id: '{{ forgejo_service_gpg_key_id }}'
+    repo_file_owner: '{{ forgejo_user }}'
+    repo_file_group: '{{ forgejo_group }}'
+    repo_extract_dir: '{{ forgejo_role_repo_extract_dir }}'
+    repo_extract_symlink: '{{ forgejo_role_repo_extract_symlink }}'
+    repo_extract_delete_old_versions:
+      '{{ forgejo_service_delete_old_versions_enable }}'
+    repo_force_overwrite: '{{ forgejo_service_force_overwrite }}'
+    repo_extract_mode: 'a-st,o-rwx'
+    repo_extract_binary_mode: '0755'
+    repo_extract_extra_opts: '--strip-components=1'

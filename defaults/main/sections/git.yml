@@ -1,0 +1,128 @@
+---
+###############################################################################
+# GIT [git]
+###############################################################################
+
+# GIT executable path.
+#
+# Values:
+#   '': Search PATH environment.
+#
+# Default: ''.
+forgejo_config_git_path: ''
+
+# The HOME directory for GIT.
+#
+# Special Case:
+#   * Relative paths are anchored to AppDataPath.
+#
+# Default: '{{ forgejo_config_data_path }}/home'.
+forgejo_config_git_home_path: '{{ forgejo_config_data_path }}/home'
+
+# Disable highlighting of added and removed changes? Default: False.
+forgejo_config_git_disable_diff_highlight: false
+
+# Max number of lines allowed in a single file in diff view. Default: 1000.
+forgejo_config_git_max_git_diff_lines: 1000
+
+# Max number of allowed characters in a line in diff view. Default: 5000.
+forgejo_config_git_max_git_diff_line_characters: 5000
+
+# Max number of files shown in diff view. Default: 100.
+forgejo_config_git_max_git_diff_files: 100
+
+# Default commits range size. Default: 50.
+forgejo_config_git_commits_range_size: 50
+
+# Default branches range size. Default: 20.
+forgejo_config_git_branches_range_size: 20
+
+# Enable verbose info print to stdout on push? Default: True.
+forgejo_config_git_verbose_push: true
+
+# Verbose info print to stdout delay (TIME format). Default: '5s'.
+forgejo_config_git_verbose_push_delay: '5s'
+
+# List of arguments for command 'git gc'.
+#
+# Default: [].
+#
+# Reference:
+# * http://git-scm.com/docs/git-gc/
+forgejo_config_git_gc_args: []
+
+# Use GIT wire protocol version 2?
+#
+# Add 'AcceptEnv GIT_PROTOCOL' to sshd_config file for GIT over SSH when using
+# OpenSSH server.
+#
+# Default: True.
+forgejo_config_git_enable_auto_git_wire_protocol: true
+
+# Enable Pull URL response to non-default branch if supported? Default: True.
+forgejo_config_git_pull_request_push_message: true
+
+# Do not cache Go-Git objects in memory greater than this in memory (Bytes).
+#
+# Values:
+#   0: Disables.
+#
+# Default: 1048576 (1MB).
+forgejo_config_git_large_object_threshold: 1048576
+
+# Enable core.protectNTFS? Default: False.
+forgejo_config_git_disable_core_protect_ntfs: false
+
+# Disable usae of using partial clones for git? Default: False.
+forgejo_config_git_disable_partial_clone: false
+
+###############################################################################
+# GIT Timeout [git.timeout]
+###############################################################################
+
+# Default operation timeout (seconds). Default: 360.
+forgejo_config_git_timeout_default: 360
+
+# Default migration timeout (seconds). Default: 600.
+forgejo_config_git_timeout_migrate: 600
+
+# Default mirror timeout (seconds). Default: 300.
+forgejo_config_git_timeout_mirror: 300
+
+# Default clone timeout (seconds). Default: 300.
+forgejo_config_git_timeout_clone: 300
+
+# Default pull timeout (seconds). Default: 300.
+forgejo_config_git_timeout_pull: 300
+
+# Default garbage collector timeout (seconds). Default: 60.
+forgejo_config_git_timeout_gc: 60
+
+# Default grep timeout (seconds). Default: 2.
+forgejo_config_git_timeout_grep: 2
+
+###############################################################################
+# GIT Config [git.config]
+###############################################################################
+# GIT set config options. Removed keys are not removed from git config
+# automatically.
+
+# GIT config options.
+#
+# forgejo_config_git_config:
+#     dict - gitconfig options.
+#   {VAR}: {VALUE} - GIT config option.
+#
+# forgejo_config_git_config:
+#   diff.algorithm: 'histogram'
+#   core.logAllRefUpdates: true
+#   gc.reflogExpire: 90
+#
+# Default:
+#   diff.algorithm: 'histogram'
+#   core.logAllRefUpdates: true
+#   gc.reflogExpire: 90
+forgejo_config_git_config:
+  diff.algorithm: 'histogram'
+  core.logAllRefUpdates: true
+  gc.reflogExpire: 90

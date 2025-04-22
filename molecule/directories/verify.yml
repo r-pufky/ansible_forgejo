@@ -1,0 +1,61 @@
+---
+# yamllint disable rule:line-length
+- name: 'Directories | verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Directories | verify | app.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'lineinfile.yml'
+      vars:
+        test_name: 'Directories | verify | app.ini | {{ item }}'
+        test_file: '/etc/forgejo/app.ini'
+        test_line: '{{ item }}'
+        test_state: 'present'
+      loop:
+        - 'ROOT = /var/lib/forgejo/gitea-repositories'
+        - 'TEMP_PATH = /var/lib/forgejo/data/tmp/uploads'
+        - 'LOCAL_COPY_PATH = /var/lib/forgejo/tmp/local-repo'
+        - 'APP_DATA_PATH = /var/lib/forgejo'
+        - 'PPROF_DATA_PATH = /var/lib/forgejo/data/tmp/pprof'
+        - 'PATH = /srv/git/data/forgejo.db'
+        - 'ISSUE_INDEXER_PATH = /var/lib/forgejo/indexers/issues.bleve'
+        - 'REPO_INDEXER_PATH = /var/lib/forgejo/indexers/repos.bleve'
+        - 'DATADIR = /srv/git/data/queues/common'
+        - 'ACME_DIRECTORY = /etc/forgejo/https'
+        - 'PROVIDER_CONFIG = /var/lib/forgejo/data/sessions'
+        - 'PATH = /srv/git/data/attachments'
+        - 'ROOT_PATH = /var/lib/forgejo/log'
+        - 'HOME_PATH = /srv/git/data/home'
+        - 'CHUNKED_UPLOAD_PATH = /srv/git/data/tmp/package-upload'
+        - 'PATH = /srv/git/data/packages'
+
+    - name: 'Directories | verify | permissions'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'file.yml'
+      vars:
+        test_name: 'Directories | verify | permissions | {{ item }}'
+        test_file: '{{ item }}'
+        test_owner: '305'
+        test_group: '305'
+        test_mode: '0755'
+        test_state: 'directory'
+      loop:
+        - '/var/lib/forgejo/gitea-repositories'
+        - '/var/lib/forgejo/data/tmp/uploads'
+        - '/var/lib/forgejo/tmp/local-repo'
+        - '/var/lib/forgejo'
+        - '/var/lib/forgejo/data/tmp/pprof'
+        - '/srv/git/data'  # forgejo.db
+        - '/var/lib/forgejo/indexers/issues.bleve'
+        - '/var/lib/forgejo/indexers/repos.bleve'
+        - '/srv/git/data/queues/common'
+        - '/etc/forgejo/https'
+        - '/var/lib/forgejo/data/sessions'
+        - '/srv/git/data/attachments'
+        - '/var/lib/forgejo/log'
+        - '/srv/git/data/home'
+        - '/srv/git/data/tmp/package-upload'
+        - '/srv/git/data/packages'

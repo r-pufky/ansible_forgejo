@@ -1,0 +1,369 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Configure Forgejo Install
+###############################################################################
+# Create directories, systemd services, and copy user provided certs. Set
+# configuration and make it read-only to forgejo_user. Run Forgejo under
+# specific role user, add ability to restart the service daily.
+#
+# New Forgejo options must be manually added to the template and role
+# default templates.
+#
+# Dump running configuration if enabled before applying changes.
+#
+# Args:
+#   _forgejo_uid: int - Forgejo user UID.
+#   _forgejo_gid: int - Forgejo user GID.
+#   _forgejo_home: str - Forgejo user HOME.
+#   _forgejo_config: list of dict - sanitized forgejo_tasks
+#   _forgejo_local_users: list of dict - Local user accounts to manage.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/installation-binary/
+# * https://codeberg.org/forgejo/forgejo/src/branch/forgejo/contrib/systemd/forgejo.service
+
+- name: 'Config | stop Forgejo'
+  ansible.builtin.systemd:
+    name: 'forgejo'
+    state: 'stopped'
+  failed_when: false
+  register: _forgejo_service
+
+# Directory created and service running from previous role execution.
+- name: 'Config | backup existing installation'
+  when: >
+    forgejo_service_backup_dump and
+    _repo_changed and
+    _forgejo_service.changed
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - 'dump'
+      - '--config'
+      - '{{ forgejo_config_custom_path }}/app.ini'
+    chdir: '{{ forgejo_config_data_path }}/backup'
+  changed_when: true
+  become: true
+  become_user: '{{ forgejo_user }}'
+
+- name: 'Config | manage required directories'
+  when: forgejo_media_set_perms_file_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.utils'
+    tasks_from: 'remote_file.yml'
+  vars:
+    file_path: '{{ item }}'
+    file_owner: '{{ forgejo_user }}'
+    file_group: '{{ forgejo_group }}'
+    file_mode: '{{ forgejo_media_perms_folder }}'
+    file_recurse: '{{ forgejo_media_perms_recursive_enable }}'
+    file_state: 'directory'
+  loop:
+    - '{{ forgejo_config_custom_path }}/mailer'
+    - '{{ forgejo_config_work_path }}'
+    - '{{ forgejo_config_data_path }}'
+    - '{{ forgejo_config_repository_root }}'
+    - '{{ forgejo_config_repository_upload_temp_path }}'
+    - '{{ forgejo_config_repository_local_local_copy_path }}'
+    - '{{ forgejo_config_server_app_data_path }}/jwt'
+    - '{{ forgejo_config_server_pprof_data_path }}'
+    - '{{ forgejo_config_database_path | dirname }}'  # DB file.
+    - '{{ forgejo_config_indexer_issue_indexer_path }}'
+    - '{{ forgejo_config_indexer_repo_indexer_path }}'
+    - '{{ forgejo_config_queue_datadir }}'
+    - '{{ forgejo_config_server_acme_directory }}'
+    - '{{ forgejo_config_session_provider_config }}'
+    - '{{ forgejo_config_attachment_path }}'
+    - '{{ forgejo_config_log_root_path }}'
+    - '{{ forgejo_config_git_home_path }}'
+    - '{{ forgejo_config_packages_chunked_upload_path }}'
+    - '{{ forgejo_config_packages_path }}'
+
+- name: 'Config | set SSH test key path'
+  when: >
+    forgejo_config_server_ssh_key_test_path | length > 0 and
+    forgejo_config_server_ssh_key_test_path != '/tmp' and
+    forgejo_media_set_perms_file_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.utils'
+    tasks_from: 'remote_file.yml'
+  vars:
+    file_path: '{{ forgejo_config_server_ssh_key_test_path }}'
+    file_owner: '{{ forgejo_user }}'
+    file_group: '{{ forgejo_group }}'
+    file_mode: '{{ forgejo_media_perms_folder }}'
+    file_recurse: '{{ forgejo_media_perms_recursive_enable }}'
+    file_state: 'directory'
+
+- name: 'Config | set local storage'
+  when: >
+    forgejo_config_storage_storage_type == 'local' and
+    forgejo_config_storage_path != '' and
+    forgejo_media_set_perms_file_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.utils'
+    tasks_from: 'remote_file.yml'
+  vars:
+    file_path: '{{ forgejo_config_storage_path }}'
+    file_owner: '{{ forgejo_user }}'
+    file_group: '{{ forgejo_group }}'
+    file_mode: '{{ forgejo_media_perms_folder }}'
+    file_recurse: '{{ forgejo_media_perms_recursive_enable }}'
+    file_state: 'directory'
+
+- name: 'Config | set restricted directories'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.utils'
+    tasks_from: 'remote_file.yml'
+  vars:
+    file_path: '{{ item }}'
+    file_owner: '{{ _forgejo_uid }}'
+    file_group: '{{ _forgejo_gid }}'
+    file_mode: '0700'
+    file_recurse: false
+    file_state: 'directory'
+  loop:
+    - '{{ _forgejo_home }}/.ssh'
+    - '{{ forgejo_config_data_path }}/backup'  # Dump files.
+
+- name: 'Config | Forgejo service'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'forgejo'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Forgejo (Beyond coding. We forge.)'
+          after:
+            - 'syslog.target'
+            - 'network.target'
+        service:
+          type: 'simple'
+          restart_sec: '2s'
+          exec_start:
+            - >-
+              {{ forgejo_role_repo_extract_symlink }} web
+              --config "{{ forgejo_config_custom_path }}/app.ini"
+              --custom-path "{{ forgejo_config_custom_path }}"
+              --work-path "{{ forgejo_config_work_path }}"
+          runtime_max_sec: '{{
+              "1d"
+              if forgejo_service_restart_daily_enable else
+              "infinity"
+            }}'
+          restart: 'always'
+        exec:
+          user: '{{ forgejo_user }}'
+          group: '{{ forgejo_group }}'
+          working_directory: '{{ forgejo_config_work_path }}'
+          environment:
+            - var: 'USER'
+              value: '{{ forgejo_user }}'
+            - var: 'HOME'
+              value: '{{ _forgejo_home }}'
+        install:
+          wanted_by:
+            - 'multi-user.target'
+
+- name: 'Config | set service hardening drop-in'
+  when: forgejo_service_harden_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'forgejo'
+        state: 'present'
+        drop_in: true
+        service: {}
+        exec:
+          no_new_privileges: true
+          private_tmp: true
+          protect_home: true
+          protect_system: true
+          private_devices: true
+          u_mask: '0077'
+          protect_kernel_tunables: true
+          protect_kernel_modules: true
+          protect_kernel_logs: true
+          protect_hostname:
+            '{{ not forgejo_container_enable | default(false) }}'
+          protect_clock: true
+          protect_control_groups: true
+          lock_personality: true
+          restrict_realtime: true
+          restrict_namespaces_allow: true
+          restrict_suid_sgid: true
+          memory_deny_write_execute: true
+          remove_ipc: true
+        resource_control:
+          restrict_address_families_allow: ['AF_INET', 'AF_INET6']
+          restrict_address_families_deny: ['AF_UNIX']
+          ip_accounting: true
+
+- name: 'Config | remove service hardening drop-in'
+  when: not forgejo_service_harden_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'forgejo'
+        state: 'absent'
+        drop_in: true
+
+- name: 'Config | set Oauth2 private key file'
+  when: forgejo_config_oauth2_jwt_signing_private_key_file | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ forgejo_config_oauth2_jwt_signing_private_key_file }}'
+    dest: '{{ forgejo_config_server_app_data_path }}/jwt/private.pem'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+# Auto-regenerated on startup if missing.
+- name: 'Config | reset Oauth2 private key file'
+  when: forgejo_config_oauth2_jwt_signing_private_key_file | length == 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ forgejo_config_server_app_data_path }}/jwt/private.pem'
+    state: 'absent'
+
+- name: 'Config | set mail client certificates'
+  when: forgejo_config_mailer_use_client_cert
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ forgejo_config_custom_path }}/mailer/cert.{{ item.type }}'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+  loop:
+    - {src: '{{ forgejo_config_mailer_client_cert_file }}', type: 'pem'}
+    - {src: '{{ forgejo_config_mailer_client_key_file }}', type: 'key'}
+  loop_control:
+    label: '{{ item.src }}'
+
+- name: 'Config | remove mail client certificates'
+  when: not forgejo_config_mailer_use_client_cert
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ forgejo_config_custom_path }}/mailer/cert.{{ item }}'
+    state: 'absent'
+  loop:
+    - 'pem'
+    - 'key'
+
+- name: 'Config | set server host keys'
+  when: forgejo_config_server_ssh_server_host_keys | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{
+        forgejo_config_server_ssh_server_host_keys
+        if forgejo_config_server_ssh_server_host_keys.endswith("/") else
+        forgejo_config_server_ssh_server_host_keys ~ "/"
+      }}'
+    dest: '{{ forgejo_config_server_app_data_path }}/ssh'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+- name: 'Config | set user trust keys'
+  when: forgejo_config_server_ssh_trusted_user_ca_keys_filename | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ forgejo_config_server_ssh_trusted_user_ca_keys_filename }}'
+    dest: '{{ _forgejo_home }}/.ssh/ca_trust_chain_root.pem'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+- name: 'Config | remove user trust keys'
+  when: forgejo_config_server_ssh_trusted_user_ca_keys_filename | length == 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ _forgejo_home }}/.ssh/ca_trust_chain_root.pem'
+    state: 'absent'
+
+- name: 'Config | set custom CA trust chain root certificate'
+  when: forgejo_config_server_acme_ca_root | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ forgejo_config_server_acme_ca_root }}'
+    dest: '{{ forgejo_config_server_acme_directory }}/ca_trust_chain_root.pem'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+- name: 'Config | remove custom CA trust chain root certificate'
+  when: forgejo_config_server_acme_ca_root | length == 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ forgejo_config_server_acme_directory }}/ca_trust_chain_root.pem'
+    state: 'absent'
+
+- name: 'Config | set server certificate'
+  when: forgejo_config_server_cert_file | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ forgejo_config_server_cert_file }}'
+    dest: '{{ forgejo_config_server_acme_directory }}/cert.pem'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+- name: 'Config | remove server certificate'
+  when: forgejo_config_server_cert_file | length == 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ forgejo_config_server_acme_directory }}/cert.pem'
+    state: 'absent'
+
+- name: 'Config | set server certificate key'
+  when: forgejo_config_server_key_file | length > 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.copy:
+    src: '{{ forgejo_config_server_key_file }}'
+    dest: '{{ forgejo_config_server_acme_directory }}/cert.key'
+    owner: '{{ _forgejo_uid }}'
+    group: '{{ _forgejo_gid }}'
+    mode: '0400'
+    directory_mode: '0750'
+    force: true
+
+- name: 'Config | remove server certificate key'
+  when: forgejo_config_server_key_file | length == 0
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.file:
+    path: '{{ forgejo_config_server_acme_directory }}/cert.key'
+    state: 'absent'
+
+- name: 'Config | set config'
+  notify: 'Handlers | reload forgejo'
+  ansible.builtin.template:
+    src: 'app.ini.j2'
+    dest: '{{ forgejo_config_custom_path }}/app.ini'
+    owner: '{{ forgejo_user }}'
+    group: '{{ forgejo_group }}'
+    mode: '0640'
+
+# Local user management requires service running or running 'install' state.
+- name: 'Config | start forgejo'
+  ansible.builtin.meta: 'flush_handlers'

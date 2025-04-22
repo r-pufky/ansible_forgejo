@@ -1,0 +1,45 @@
+---
+###############################################################################
+# Markdown [markdown]
+###############################################################################
+
+# Enable soft line breaks as hard line breaks in comments? Default: True.
+forgejo_config_markdown_enable_hard_line_break_in_comments: true
+
+# Enable soft line breaks as hard line breaks in documents? Default: False.
+forgejo_config_markdown_enable_hard_line_break_in_documents: false
+
+# List of custom URL-Schemes allowed as links when rendering Markdown.
+#
+# Special Case:
+#   *: URLs starting with HTTP and HTTPS are always displayed.
+#
+# Values:
+#   []: Allow all URL schemes (default).
+#
+# Default: [] (allow all).
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/List_of_URI_schemes
+forgejo_config_markdown_custom_url_schemes: []
+
+# List of file extensions that should be rendered as Markdown.
+#
+# Special Case:
+#   '': Render files without an extension.
+#
+# Default:
+#   - '.md'
+#   - '.markdown'
+#   - '.mdown'
+#   - '.mkd'
+#   - '.livemd'
+forgejo_config_markdown_file_extensions:
+  - '.md'
+  - '.markdown'
+  - '.mdown'
+  - '.mkd'
+  - '.livemd'
+
+# Enable math inline and block detection? Default: True.
+forgejo_config_markdown_enable_math: true

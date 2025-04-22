@@ -1,0 +1,55 @@
+---
+###############################################################################
+# Webhook [webhook]
+###############################################################################
+
+# Webhook task queue length. Default: 1000.
+forgejo_config_webhook_queue_length: 1000
+
+# Deliver timeout in seconds. Default: 5.
+forgejo_config_webhook_deliver_timeout: 5
+
+# List of allowed hosts for webhook calls.
+#
+# Special Case:
+#   * Wildcards are allowed.
+#
+# Values:
+#     {CIDR}: CIDR IPv4/IPv6.
+#       {IP}: IPv4 or IPv6.
+#     {HOST}: Hostname..
+#   loopback: Localhost.
+#    private: Private networks.
+#   external: Public networks (effectively *) (default).
+#          *: All hosts (deprecated).
+#
+# Default:
+#   - 'external'
+forgejo_config_webhook_allowed_host_list:
+  - 'external'
+
+# Enable TLS certification verification skip? Default: False.
+# Allow insecure certification
+forgejo_config_webhook_skip_tls_verify: false
+
+# Number of history items in each page. Default: 10.
+forgejo_config_webhook_paging_num: 10
+
+# Maximum number of commits sent in payload for a push webhook event.
+#
+# If there are more commits only the most recent ones are sent.
+#
+# Default: 15.
+forgejo_config_webhook_payload_commit_limit: 15
+
+# Proxy server URL. Default: '' (use environment setting).
+forgejo_config_webhook_proxy_url: ''
+
+# List of host names requiring proxy.
+#
+# Special Case:
+#    *: Globbing patterns allowed.
+#   **: Match all hosts.
+#
+# Default: [] (no required hosts).
+forgejo_config_webhook_proxy_hosts: []

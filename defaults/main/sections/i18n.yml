@@ -1,0 +1,22 @@
+---
+###############################################################################
+# Internationalization [i18n]
+###############################################################################
+
+# List of supported languages.
+#
+# The first locale will be used as the default if user browser's language
+# doesn't match any locale in the list.
+#
+# forgejo_config_i18n_languages:
+#     list of dict - Language to name mapping and priority list.
+#   - lang: str - Locale.
+#     name: str - Human readable language name.
+#
+# forgejo_config_i18n_languages:
+#   - lang: 'en-US'
+#     name: 'English'
+#   - lang: 'zh-CN'
+#     name: '简体中文'
+# Default: '' (use default mapping).
+forgejo_config_i18n_languages: []

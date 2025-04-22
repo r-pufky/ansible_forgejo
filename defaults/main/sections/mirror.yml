@@ -1,0 +1,43 @@
+---
+###############################################################################
+# Mirror [mirror]
+###############################################################################
+
+# Enable mirror functionality?
+#
+# Values:
+#   False: Disable all mirrors. Pre-existing mirrors remain valid but won't be
+#          updated; may be converted to regular repo.
+#    True: Enable mirror functionality (default).
+#
+# Default: True.
+forgejo_config_mirrors_enabled: true
+
+# Disable creation of new pull mirrors?
+#
+# Values:
+#   False: Disable new pull mirrors. Pre-existing mirrors remain valid.
+#    True: Enable new pull mirror functionality (default).
+#
+# Default: False.
+forgejo_config_mirrors_disable_new_pull: false
+
+# Disable creation of new push mirrors?
+#
+# Values:
+#   False: Disable new push mirrors. Pre-existing mirrors remain valid.
+#    True: Enable new push mirror functionality (default).
+#
+# Default: False.
+forgejo_config_mirrors_disable_new_push: false
+
+# Default interval between each check (TIME format). Default: '8h'.
+forgejo_config_mirrors_default_interval: '8h'
+
+# Minimum interval between each check (TIME format).
+#
+# Values:
+#   >1: Must be greater than 1.
+#
+# Default: 10.
+forgejo_config_mirrors_min_interval: '10m'

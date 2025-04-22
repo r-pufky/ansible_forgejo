@@ -1,0 +1,205 @@
+---
+###############################################################################
+# Logs [log]
+###############################################################################
+# Reference:
+# * https://forgejo.org/docs/latest/admin/logging-documentation/
+
+# Root path for log files.
+#
+# Special Case:
+#   * Relative paths are anchored to AppWorkPath.
+#
+# Default: '{{ forgejo_config_work_path }}/log' (AppWorkPath/log).
+forgejo_config_log_root_path: '{{ forgejo_config_work_path }}/log'
+
+# List of main Logging modes.
+#
+# Manage each writer individually with forgejo_config_log_writers.
+#
+# Values:
+#   console: Log to console (default).
+#      file: Log to file.
+#      conn: Log to connection.
+#
+# Default: ['console'].
+forgejo_config_log_mode:
+  - 'console'
+
+# Logging level (up to severity level).
+#
+# Values:
+#   trace: Trace.
+#   debug: Debug.
+#    info: Info (default).
+#    warn: Warn.
+#   error: Error.
+#    none: None.
+#
+# Default: 'info'.
+forgejo_config_log_level: 'info'
+
+# Stacktrace logging level (events at or above).
+#
+# Values:
+#   trace: Trace.
+#   debug: Debug.
+#   info: Info.
+#   warn: Warn.
+#   error: Error.
+#   none: None (default).
+#
+# Default: 'none'.
+forgejo_config_log_stacktrace_level: 'none'
+
+# Log buffer length. Default: 10000.
+forgejo_config_log_buffer_len: 10000
+
+# Default sub logger mode.
+#
+# Special Case:
+#   '': Disable.
+#    ,: Use forgejo_config_log_mode.
+#
+# Values:
+#   console: Log to console (default).
+#      file: Log to file.
+#      conn: Log to connection.
+#
+# Default: '' (disabled).
+forgejo_config_log_logger_default_mode: ','
+
+# Access sub logger mode.
+#
+# Special Case:
+#   '': Disable.
+#    ,: Use forgejo_config_log_mode.
+#
+# Values:
+#   console: Log to console (default).
+#      file: Log to file.
+#      conn: Log to connection.
+#
+# Default: '' (disabled).
+forgejo_config_log_logger_access_mode: ''
+
+# Router sub logger mode.
+#
+# Special Case:
+#   '': Disable.
+#    ,: Use forgejo_config_log_mode.
+#
+# Values:
+#   console: Log to console (default).
+#      file: Log to file.
+#      conn: Log to connection.
+#
+# Default: ',' (forgejo_config_log_mode).
+forgejo_config_log_logger_router_mode: ','
+
+# Xorm sub logger mode.
+#
+# Requires forgejo_config_database_log_sql=true.
+#
+# Special Case:
+#   '': Disable.
+#    ,: Use forgejo_config_log_mode.
+#
+# Values:
+#   console: Log to console (default).
+#      file: Log to file.
+#      conn: Log to connection.
+#
+# Default: ',' (forgejo_config_log_mode).
+forgejo_config_log_logger_xorm_mode: ','
+
+# Enable SSH GIT request logging? Default: False.
+forgejo_config_log_enable_ssh_log: false
+
+# List of request headers to log in access log.
+#
+# Requires forgejo_config_log_logger_access_mode.
+#
+# Creates log in NCSA common log format for matched headers. First match in
+# order of configuration will be logged.
+#
+# X-Request-ID: test-id-123
+# forgejo_config_log_request_id_headers: ['X-Request-ID']
+# log: 127.0.0.1:58384 - - [14/Feb/2023:16:33:51 +0800] "test-id-123"
+#
+# X-Trace-ID: trace-id-1q2w3e4r
+# forgejo_config_log_request_id_headers:
+#   - 'X-Request-ID'
+#   - 'X-Trace-ID'
+#   - 'X-Req-ID'
+# log: 127.0.0.1:58384 - - [14/Feb/2023:16:33:51 +0800] "trace-id-1q2w3e4r"
+#
+# Default: [] (disabled).
+forgejo_config_log_request_id_headers: []
+
+# Template used to create access log.
+#
+# Format string for log template, use double curly for replacements.
+#
+# Special Case:
+#              .Ctx: context.Context of the request.
+#         .Identity: SignedUserName or "-" if not logged in.
+#            .Start: Start time of the request.
+#   .ResponseWriter: ResponseWriter from the request.
+#        .RequestID: Value matching REQUEST_ID_HEADERS（default: -, if not
+#                    matched）.
+#
+# Default: !unsafe '' (default template).
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#access-log-log
+forgejo_config_log_access_log_template: !unsafe ''
+
+###############################################################################
+# Log Modes (Writers) [log.%(WriterMode)]
+###############################################################################
+
+# forgejo_config_log_writers:
+#     dict - Custom writer configuration.
+#   {NAME}: str - Log Writer name.
+#     {KEY}: {VALUE} - Log Writer options.
+#
+# forgejo_config_log_writers:
+#   log.console:
+#     MODE: 'console'
+#     LEVEL: 'Info'
+#     FLAGS: 'journald'
+#     COLORIZE: false
+#   log.file:
+#     LOG_ROTATE: true
+#     MAX_SIZE_SHIFT: 28
+#     DAILY_ROTATE: true
+#     MAX_DAYS: 7
+#     COMPRESS: true
+#     COMPRESSION_LEVEL: -1
+#   log.conn:
+#     RECONNECT_ON_MSG: false
+#     RECONNECT: false
+#     PROTOCOL: 'tcp'
+#
+# [log.console]
+# MODE = console
+# LEVEL = Info
+# FLAGS = journald
+# COLORIZE = false
+#
+# [log.file]
+# LOG_ROTATE = true
+# MAX_SIZE_SHIFT = 28
+# DAILY_ROTATE = true
+# MAX_DAYS = 7
+# COMPRESS = true
+# COMPRESSION_LEVEL = -1
+#
+# [log.conn]
+# RECONNECT_ON_MSG = false
+# RECONNECT = false
+# PROTOCOL = tcp
+#
+# Default: {}.
+forgejo_config_log_writers: {}

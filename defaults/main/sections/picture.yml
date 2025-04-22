@@ -1,0 +1,67 @@
+---
+###############################################################################
+# Picture [picture]
+###############################################################################
+# Configure storage options in forgejo_config_storage_sub_system.
+
+# Missing repository avatar handling.
+#
+# Values:
+#     none: No avatar will be displayed (default).
+#   random: Random avatar will be displayed.
+#    image: Use forgejo_config_picture_repository_avatar_fallback_image.
+#
+# Default: 'none'.
+forgejo_config_picture_repository_avatar_fallback: 'none'
+
+# Default repository avatar image URL path.
+#
+# Special Case:
+#   * Relative to application URL path.
+#
+# Default: '/img/repo_default.png'.
+forgejo_config_picture_repository_avatar_fallback_image: '/img/repo_default.png'
+
+# Max avatar width (pixels). Default: 4096.
+forgejo_config_picture_avatar_max_width: 4096
+
+# Max avatar height (pixels). Default: 4096.
+forgejo_config_picture_avatar_max_height: 4096
+
+# Multiplication factor for rendered avatar images.
+#
+# Larger values result in finer rendering on HiDPI devices.
+#
+# Default: 2.
+forgejo_config_picture_avatar_rendered_size_factor: 2
+
+# Maximum allowed size for uploaded avatars (Bytes). Default: 1048576 (1MB).
+forgejo_config_picture_avatar_max_file_size: 1048576
+
+# Maximum size before triggering resizing/converting (Bytes). Default: 262144.
+forgejo_config_picture_avatar_max_origin_size: 262144
+
+# Gravatar source.
+#
+# Values:
+#   gravatar: Gravatar (default).
+#    duoshuo: Gravatar for chinese users.
+#      {URL}: Custom avatar URI (e.g. http://cn.gravatar.com/avatar/).
+#
+# Default: 'gravatar'.
+forgejo_config_picture_gravatar_source: 'gravatar'
+
+# Disable gravatar (always disabled in offline mode)? Default: False.
+forgejo_config_picture_disable_gravatar: false
+
+# Enable federated avatar lookup?
+#
+# Federated avatar lookup uses DNS to discover avatar associated with emails.
+# Always disabled when forgejo_config_picture_disable_gravatar=false or in
+# offline mode.
+#
+# Default: False.
+#
+# Reference:
+# * https://www.libravatar.org
+forgejo_config_picture_enable_federated_avatar: false

@@ -1,0 +1,18 @@
+---
+- name: 'Backup | verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Backup | verify | enumerate backups'
+      ansible.builtin.find:
+        paths: '/srv/git/data/backup'
+        follow: true
+        recurse: false
+        file_type: 'file'
+      register: _forgejo_test_backups
+
+    - name: 'Backup | verify | assert backups'
+      ansible.builtin.assert:
+        quiet: true
+        that: _forgejo_test_backups.files | length > 0
+        fail_msg: 'No backup was made in /src/git/data/backup.'

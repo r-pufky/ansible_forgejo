@@ -1,0 +1,248 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Forgejo Service Configuration
+###############################################################################
+# Skeleton database must be setup before role is applied (except SQLite).
+# Database backend migrations (SQLite/Postgres/MySQL) must be done manually.
+
+# Version.
+#
+# Existing databases are migrated automatically when new versions are
+# installed but may not support backward compatibility. Always read release
+# notes before updating versions. Forgejo releases LTS, stable, and old-stable
+# releases without differentiating.
+#
+# Version is always validated against repository checksum and signature. Set
+# repo_host_access_token if codeberg API is rate limited. See r_pufky.srv.repo.
+#
+# Values:
+#   {VERSION}: Tagged release to use ('v10.0.3').
+#
+# Default: 'v.10.0.3'.
+#
+# Reference:
+# * https://forgejo.org/releases
+forgejo_service_version: 'v10.0.3'
+
+# Forgejo GPG key ID.
+#
+# Binary installations are automatically validated against the published key
+# with the specified ID.
+#
+# Reference:
+# * https://keys.openpgp.org/search
+# * https://forgejo.org/download
+forgejo_service_gpg_key_id: 'EB114F5E6C0DC2BCDD183550A4B61A2DC5923710'
+
+# Enable installation of Redis memcache server?
+#
+# A local Redis server will be configured automatically with default options as
+# default configuration assumes it exists. Disable if managing Redis
+# externally.
+#
+# Default: True.
+forgejo_service_redis_enable: true
+
+# Manage local Forgejo users.
+#
+# forgejo_local_users:
+#     list of dict - User accounts to manage.
+#   - username: str - Username.
+#     password: str - Password.
+#     email: str - Email.
+#     admin: bool - Enable administrator privileges for account.
+#         Default: False.
+#     must_change_password: bool - Force password change on login.
+#         Default: True.
+#     restricted: bool - Enable restricted user account.
+#         Default: False.
+#     state: str - User state.
+#         Values:
+#           present: Create user.
+#            absent: Delete user.
+#         Default: 'present'.
+#
+# forgejo_local_users:
+#   - username: 'admin_user'
+#     password: 'admin'
+#     email: 'admin@example.com'
+#     admin: true
+#   - username: 'standard_user'
+#     password: 'sample'
+#     email: 'user@example.com'
+#     must_change_password: true
+#   - username: 'old_admin'
+#     state: 'absent'
+#
+# Default: [] ().
+forgejo_local_users: []
+
+# Enable backup dump of database and config on upgrade?
+#
+# If the service is running and a new version is installed, dump a backup of
+# the existing configuration and database before performing any operations.
+#
+# Backups are stored in {{ forgejo_config_data_path }}/backup.
+#
+# Default: True.
+forgejo_service_backup_dump: true
+
+# Enable polling for forgejo_config_server_http_port?
+#
+# Forgejo will report service is active and running but may not be ready to
+# accept API requests for user modifications. Wait until the webserver is
+# responding before attempting API calls. Automatically proceeds after
+# forgejo_role_poll_timeout seconds.
+#
+# Disabling may lead to errors during role application:
+#
+#   Command error: database is locked
+#
+# Default: True (poll).
+forgejo_service_poll_enable: true
+
+# Remove old installs on upgrade success? Default: True.
+forgejo_service_delete_old_versions_enable: true
+
+# Force overwrite existing install?
+#
+# DATA DESTRUCTIVE.
+#
+# Removes existing cached downloaded archives and existing same-version install
+# directories (if any). Any user data in these directories are DESTROYED.
+#
+# Default: False.
+forgejo_service_force_overwrite: false
+
+# Automatically restart Forgejo daily? Default: False.
+forgejo_service_restart_daily_enable: false
+
+# Only apply configuration?
+#
+# Reduces role application time by ONLY applying configuration changes. Does
+# NOT affect forgejo_media_set_perms_file_enable.
+#
+# This should ONLY be used after the role has been fully run once.
+#
+# Useful when adding a change without reconfiguring the whole system or
+# checking and installing a new version. Suggest applying with extra options:
+#
+#   ansible-playbook site.yml --tags Forgejo -e 'forgejo_service_force_config_only_enable=true'
+#
+# Default: False.
+forgejo_service_force_config_only_enable: false
+
+# Is this role applied to a container?
+#
+# Decision: manual user setting - There is currently no good way to
+#     deterministically and consistently detect if a remote host is a
+#     container outside of common cases.
+#
+# Hosts marked as containers will automatically disable changes:
+#   * ProtectHostname if forgejo_service_harden_enable=true.
+#
+# Special Case:
+#   * srv_container_enable=true forces forgejo_container_enable=true.
+#
+# Default: False.
+forgejo_container_enable: false
+
+###############################################################################
+# Forgejo User
+###############################################################################
+
+# User that Forgejo will run under.
+#
+# Enable forgejo_create_user if this account is not externally managed.
+#
+# Default: 'git'.
+forgejo_user: 'git'
+
+# Group that Forgejo will run under.
+#
+# Enable forgejo_create_user if this group is not externally managed.
+#
+# Default: 'git'.
+forgejo_group: 'git'
+
+# Create forgejo_user, forgejo_group if not detected?
+#
+# Applied via r_pufky.srv.users, see vars/main.yml for default user attributes.
+#
+# Default: True.
+forgejo_create_user: true
+
+###############################################################################
+# Media Permissions
+###############################################################################
+# Directories set in configuration are managed using these settings.
+
+# Recursively set media permissions?
+#
+# Forgejo installations with large media and metadata caches will be
+# excessively slow.
+#
+# Default: False.
+forgejo_media_perms_recursive_enable: false
+
+# Media folder permissions octal.
+#
+# Media folders always set using forgejo_media_perms_folder, forgejo_user, and
+# forgejo_group.
+#
+# Default: '0755'.
+forgejo_media_perms_folder: '0755'
+
+# Enable setting of media file permissions?
+#
+# Set file permissions use forgejo_media_perms_file, forgejo_user, and
+# forgejo_group. Large sets of files may be slow to set permissions.
+#
+# Useful when first configuring to ensure service has access to all specified
+# media locations. Suggest applying with extra options:
+#
+#   ansible-playbook site.yml --tags Forgejo -e 'forgejo_media_set_perms_file_enable=true'
+#
+# Default: False.
+forgejo_media_set_perms_file_enable: true
+
+# Media file permissions octal.
+#
+# Media folders always set using forgejo_media_perms_folder, forgejo_user, and
+# forgejo_group.
+#
+# Default: '0644'.
+forgejo_media_perms_file: '0644'
+
+###############################################################################
+# Forgejo Service Hardening
+###############################################################################
+
+# Harden Forgejo service?
+#
+# Applies systemd drop-in restricting Forgejo to:
+# * NoNewPrivileges=true
+# * PrivateTmp=true
+# * ProtectHome=true
+# * ProtectSystem=true
+# * PrivateDevices=true
+# * UMask='0077'
+# * ProtectKernelTunables=true
+# * ProtectKernelModules=true
+# * ProtectKernelLogs=true
+# * ProtectHostname=true
+# * ProtectClock=true
+# * ProtectControlGroups=true
+# * LockPersonality=true
+# * RestrictRealtime=true
+# * RestrictNamespacesAllow=true
+# * RestrictSuidSgid=true
+# * MemoryDenyWriteExecute=true
+# * RemoveIpc=true
+# * RestrictAddressFamilies=AF_INET,AF_INET6
+# * RestrictAddressFamilies=~AF_UNIX
+# * IpAccounting=true
+#
+# Default: True.
+forgejo_service_harden_enable: true

@@ -1,0 +1,28 @@
+---
+###############################################################################
+# Project [project]
+###############################################################################
+
+# List of kanban default template types.
+#
+# Default:
+#   - 'To Do'
+#   - 'In Progress'
+#   - 'Done'
+forgejo_config_project_project_board_basic_kanban_type:
+  - 'To Do'
+  - 'In Progress'
+  - 'Done'
+
+# List of bug triage default template types.
+#
+# Default:
+#   - 'Needs Triage'
+#   - 'High Priority'
+#   - 'Low Priority'
+#   - 'Closed'
+forgejo_config_project_project_board_bug_triage_type:
+  - 'Needs Triage'
+  - 'High Priority'
+  - 'Low Priority'
+  - 'Closed'

@@ -1,0 +1,59 @@
+---
+###############################################################################
+# Markup [markup]
+###############################################################################
+
+# Maximum number of characters in a mermaid source.
+#
+# Values:
+#   -1: Unlimited.
+#    0: Disables.
+#
+# Default: 5000.
+forgejo_config_markup_mermaid_max_source_characters: 5000
+
+# Maximum number of lines allowed for a filepreview.
+#
+# Values:
+#   -1: Unlimited.
+#    0: Disables.
+#
+# Default: 50.
+forgejo_config_markup_filepreview_max_lines: 50
+
+###############################################################################
+# Markup External Tools & Sanitizers [markup.*]
+###############################################################################
+
+# List of external markup tools and sanitizers to configure.
+#
+# forgejo_config_markup_external:
+#     dict - External markup tool configuration.
+#   {NAME}: str - Markup tool name.
+#     {KEY}: {VALUE} - External tool options.
+#
+# forgejo_config_markup_external:
+#   markup.asciidoc:
+#     ENABLED: true
+#     NEED_POSTPROCESS: true
+#     FILE_EXTENSIONS: '.adoc,.asciidoc'
+#     RENDER_COMMAND: 'asciidoctor --embedded --safe-mode=secure --out-file=- -'
+#     IS_INPUT_FILE: false
+#   markup.sanitizer.1:
+#     ELEMENT: 'span'
+#     ALLOW_ATTR: 'class'
+#     REGEXP: '^(info|warning|error)$'
+#   markup.sanitizer.asciidoc:
+#     ENABLED: false
+#     FILE_EXTENSIONS: '.adoc,.asciidoc'
+#     RENDER_COMMAND: 'asciidoc --out-file=- -'
+#     IS_INPUT_FILE: false
+#     RENDER_CONTENT_MODE: 'sanitized'
+#   markup.sanitizer.asciidoc.rule-1:
+#     ENABLED: true
+#
+# Default: {} (default).
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#markup-markup
+forgejo_config_markup_external: {}

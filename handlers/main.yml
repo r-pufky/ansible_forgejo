@@ -1,0 +1,19 @@
+---
+###############################################################################
+# Forgejo Handlers
+###############################################################################
+
+- name: 'Handlers | reload redis memcache'
+  listen: 'Handlers | reload forgejo'
+  when: forgejo_service_redis_enable
+  ansible.builtin.systemd:
+    name: 'redis-server'
+    enabled: true
+    state: 'restarted'
+
+- name: 'Handlers | restart forgejo'
+  listen: 'Handlers | reload forgejo'
+  ansible.builtin.systemd:
+    name: 'forgejo'
+    enabled: true
+    state: 'restarted'

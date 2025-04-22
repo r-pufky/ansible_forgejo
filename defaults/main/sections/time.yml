@@ -1,0 +1,17 @@
+---
+###############################################################################
+# Time [time]
+###############################################################################
+
+# Default timezone to display.
+#
+# Values:
+#        {TZ}: IANA timezone.
+#          '': UTC (default).
+#         UTC: UTC.
+#     Etc/UTC: UTC.
+#       local: Use machine timezone.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+forgejo_config_time_default_ui_location: ''

@@ -1,0 +1,14 @@
+---
+###############################################################################
+# Badges [badges]
+###############################################################################
+
+# Enable repository badges (shields.io or similar)? Default: True.
+forgejo_config_badges_enabled: true
+
+# Badge generator template URL.
+#
+# Default:
+#   !unsafe 'https://img.shields.io/badge/{{.label}}-{{.text}}-{{.color}}'.
+forgejo_config_badges_generator_url_template:
+  !unsafe 'https://img.shields.io/badge/{{.label}}-{{.text}}-{{.color}}'

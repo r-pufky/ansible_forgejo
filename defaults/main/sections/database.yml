@@ -1,0 +1,173 @@
+---
+###############################################################################
+# Database Connection [database]
+###############################################################################
+# Automatically installs required packages and disables unrelated options.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#database-database
+
+# Database backend.
+#
+# Values:
+#   postgres: Postgres. HIGHLY recommended.
+#      mysql: MariaDB.
+#    sqlite3: Sqlite3 (default).
+#
+# Default: 'sqlite3'.
+forgejo_config_database_db_type: 'sqlite3'
+
+###############################################################################
+# Shared (PostgreSQL & MySQL) Database Options
+###############################################################################
+# Requires forgejo_config_database_db_type=postgres|mysql
+
+# Database host.
+#
+# Values:
+#              '': Disabled (default).
+#        {SOCKET}: Unix socket.
+#   {HOST}:{PORT}: Host and port combination.
+#
+# Default: '' (disabled).
+forgejo_config_database_host: ''
+
+# Database name.
+#
+# Special Case:
+#   * Use 'gitea' for pre-existing Gitea installs; 'forgejo' for new installs.
+#
+# Default: ''.
+forgejo_config_database_name: ''
+
+# Database user. Default: 'root'
+forgejo_config_database_user: 'root'
+
+# Database password.
+#
+# Role will automatically wrap password with required `` quoting for forgejo.
+#
+# Default: ''.
+forgejo_config_database_passwd: !unsafe ''
+
+# Database SSL mode.
+#
+# Values:
+#         False: Disable SSL (MySQL only) (default).
+#          True: Enable SSL (MySQL only).
+#   skip-verify: Skip verification (MySQL only).
+#       disable: Disable SSL (PostgreSQL only).
+#       require: Require SSL (PostgreSQL only).
+#   verify-full: Require SSL with full CA chain verification (PostgreSQL only).
+#
+# Default: False (disabled).
+forgejo_config_database_ssl_mode: false
+
+###############################################################################
+# SQLite Specific Options
+###############################################################################
+
+# Database path.
+#
+# Special Case:
+#   * Relative paths are anchored to AppDataPath.
+#
+# Default: '{{ forgejo_config_data_path }}/forgejo.db'.
+forgejo_config_database_path: '{{ forgejo_config_data_path }}/forgejo.db'
+
+# SQLite query timeout (seconds). Default: 500.
+forgejo_config_database_sqlite_timeout: 500
+
+# SQLite journal mode.
+#
+# defaults to sqlite database default (often DELETE), can be used to enable WAL
+# mode.
+# Values:
+#     delete: Rollback journal is deleted at conclusion of each transaction.
+#   truncate: Truncate rollback journal to zero-length instead of deleting it.
+#    persist: Prevent rollback journal from being deleted at end of each
+#             transaction. Header is overwritten with zeros preventing other
+#             database connections from rolling the journal back.
+#     memory: Store rollback journal in volatile RAM.
+#        wal: Use a write-ahead log instead of a rollback journal to implement
+#             transactions.
+#        off: Disable rollback journal completely
+#         '': Use database default (often delete) (default).
+#
+# Default: '' (database default).
+#
+# Reference:
+# * https://www.sqlite.org/pragma.html#pragma_journal_mode
+forgejo_config_database_sqlite_journal_mode: ''
+
+###############################################################################
+# MySQL Specific Options
+###############################################################################
+
+# Database character set collation.
+#
+# Values:
+#   '': Auto-detect a support case-sensitive collation (default).
+#
+# Default: '' (auto-detect).
+forgejo_config_database_charset_collation: ''
+
+###############################################################################
+# PostgreSQL Specific Options
+###############################################################################
+
+# Database schema. Default: ''.
+forgejo_config_database_schema: ''
+
+###############################################################################
+# General Database Options
+###############################################################################
+
+# Iteration buffer size. Default: 50.
+forgejo_config_database_iterate_buffer_size: 50
+
+# Log database generated SQL? Default: False.
+forgejo_config_database_log_sql: false
+
+# Maximum number of DB Connect retries. Default: 10.
+forgejo_config_database_db_retries: 10
+
+# Backoff time per DB retry (TIME format). Default: '3s'.
+forgejo_config_database_db_retry_backoff: '3s'
+
+# Max idle database connections. Default 2.
+forgejo_config_database_max_idle_conns: 2
+
+# Max connection lifetime (TIME format).
+#
+# MySQL connections should use at least 3+ seconds to prevent invalid
+# connection errors.
+#
+# Values:
+#   0: Disabled.
+#
+# Default: '3s'.
+#
+# Reference:
+# * https://github.com/go-gitea/gitea/issues/6804
+# * https://github.com/go-gitea/gitea/issues/7071
+forgejo_config_database_conn_max_lifetime: '3s'
+
+# Max connection idle time (TIME format).
+#
+# Values:
+#   0: disabled.
+#
+# Default: 0 (disabled).
+forgejo_config_database_conn_max_idletime: 0
+
+# Maximum number of open connections. Default: 100.
+forgejo_config_database_max_open_conns: 100
+
+# Enable database models migrations automatically? Default: True.
+forgejo_config_database_auto_migration: true
+
+# Log warning when query execution time exceeds threshold (TIME format).
+#
+# Default: 5.
+forgejo_config_database_slow_query_threshold: '5s'

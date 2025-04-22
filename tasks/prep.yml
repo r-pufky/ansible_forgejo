@@ -1,0 +1,1613 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Forgejo Prep
+###############################################################################
+# Prepare system for install by creating user/group for service, sanitizing
+# directories to absolute paths, and standardized Forgejo configuration.
+#
+# Relative directories are standardized to absolute paths based on the Forgejo
+# documented defaults for those relative paths, which enables management of
+# those directories during installation. Once all preparation work is done, all
+# config options may be used to reference locations in later config stages.
+#
+# Config section order matters - last loaded values from configuration sections
+# win (repeated sections will overwrite earlier values of the same section).
+#
+# Decision: Use forgejo_config_*_path in place of App*Path sections - path
+#     sections by default use additional paths on top of the base path when
+#     resolving relative paths (e.g. forgejo_config_data_path and
+#     forgejo_config_server_app_data_path are technically different paths in
+#     the default Forgejo config. We standardized those to the same paths here
+#     to prevent many nuanced edge case errors in managing those files, as well
+#     as preventing variable order dependency resolution errors).
+#
+# Generates:
+#   _forgejo_uid: int - Forgejo user UID.
+#   _forgejo_gid: int - Forgejo user GID.
+#   _forgejo_home: str - Forgejo user HOME.
+#   _forgejo_config: dict - Forgejo sanitized configuration.
+#   _forgejo_local_users: list of dict - Local user accounts to manage.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/installation-binary/
+
+- name: 'Prep | manage users'
+  when: forgejo_create_user
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.users'
+    tasks_from: 'role_account_add.yml'
+  vars:
+    users_role_group: '{{ forgejo_role_group }}'
+    users_role_user: '{{ forgejo_role_user }}'
+
+- name: 'Prep | enumerate system user {{ forgejo_user }}'
+  ansible.builtin.user:
+    name: '{{ forgejo_user }}'
+  check_mode: true
+  changed_when: false
+  register: _forgejo_user_query
+
+- name: 'Prep | parse system user UID/GID'
+  ansible.builtin.set_fact:
+    _forgejo_uid: '{{ _forgejo_user_query.uid }}'
+    _forgejo_gid: '{{ _forgejo_user_query.group }}'
+    _forgejo_home: '{{ _forgejo_user_query.home }}'
+    _forgejo_local_users: '{{ [] }}'
+
+- name: 'Prep | sanitize base paths'
+  ansible.builtin.set_fact:
+    forgejo_config_custom_path:
+      '{{ forgejo_config_custom_path | regex_replace("^\\/", "") }}'
+    forgejo_config_work_path:
+      '{{ forgejo_config_work_path | regex_replace("^\\/", "") }}'
+    forgejo_config_data_path:
+      '{{ forgejo_config_data_path | regex_replace("^\\/", "") }}'
+
+- name: 'Prep | resolve path dependencies'
+  ansible.builtin.set_fact:
+    forgejo_config_server_app_data_path: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_server_app_data_path
+        if not forgejo_config_server_app_data_path.startswith("/") else
+        forgejo_config_server_app_data_path | regex_replace("^\\/", "")
+      }}'
+
+- name: 'Prep | resolve relative paths'
+  ansible.builtin.set_fact:
+    forgejo_config_repository_root: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_repository_root
+        if not forgejo_config_repository_root.startswith("/") else
+        forgejo_config_repository_root | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_repository_upload_temp_path: '{{
+        forgejo_config_server_app_data_path ~ "/" ~ forgejo_config_repository_upload_temp_path
+        if not forgejo_config_repository_upload_temp_path.startswith("/") else
+        forgejo_config_repository_upload_temp_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_repository_local_local_copy_path: '{{
+        forgejo_config_server_app_data_path ~ "/" ~ forgejo_config_repository_local_local_copy_path
+        if not forgejo_config_repository_local_local_copy_path.startswith("/") else
+        forgejo_config_repository_local_local_copy_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_server_pprof_data_path: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_server_pprof_data_path
+        if not forgejo_config_server_pprof_data_path.startswith("/") else
+        forgejo_config_server_pprof_data_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_database_path: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_database_path
+        if not forgejo_config_database_path.startswith("/") else
+        forgejo_config_database_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_indexer_issue_indexer_path: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_indexer_issue_indexer_path
+        if not forgejo_config_indexer_issue_indexer_path.startswith("/") else
+        forgejo_config_indexer_issue_indexer_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_indexer_repo_indexer_path: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_indexer_repo_indexer_path
+        if not forgejo_config_indexer_repo_indexer_path.startswith("/") else
+        forgejo_config_indexer_repo_indexer_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_queue_datadir: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_queue_datadir
+        if not forgejo_config_queue_datadir.startswith("/") else
+        forgejo_config_queue_datadir | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_server_acme_directory: '{{
+        forgejo_config_custom_path ~ "/" ~ forgejo_config_server_acme_directory
+        if not forgejo_config_server_acme_directory.startswith("/") else
+        forgejo_config_server_acme_directory | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_session_provider_config: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_session_provider_config
+        if not forgejo_config_session_provider_config.startswith("/") else
+        forgejo_config_session_provider_config | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_attachment_path: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_attachment_path
+        if not forgejo_config_attachment_path.startswith("/") else
+        forgejo_config_attachment_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_log_root_path: '{{
+        forgejo_config_work_path ~ "/" ~ forgejo_config_log_root_path
+        if not forgejo_config_log_root_path.startswith("/") else
+        forgejo_config_log_root_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_git_home_path: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_git_home_path
+        if not forgejo_config_git_home_path.startswith("/") else
+        forgejo_config_git_home_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_packages_chunked_upload_path: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_packages_chunked_upload_path
+        if not forgejo_config_packages_chunked_upload_path.startswith("/") else
+        forgejo_config_packages_chunked_upload_path | regex_replace("^\\/", "")
+      }}'
+    forgejo_config_packages_path: '{{
+        forgejo_config_data_path ~ "/" ~ forgejo_config_packages_path
+        if not forgejo_config_packages_path.startswith("/") else
+        forgejo_config_packages_path | regex_replace("^\\/", "")
+      }}'
+
+- name: 'Prep | enumerate server host keys'
+  when: forgejo_config_server_ssh_server_host_keys | length > 0
+  block:
+    - name: 'Prep | enumerate server host keys | query'
+      delegate_to: 'localhost'
+      ansible.builtin.find:
+        paths: '{{ forgejo_config_server_ssh_server_host_keys }}'
+        excludes: ['*.pub']
+        follow: true
+        recurse: true
+        file_type: 'file'
+      register: _forgejo_source_ssh_keys
+
+    - name: 'Prep | parse enumerated keys'
+      ansible.builtin.set_fact:
+        _forgejo_parsed_ssh_keys: '{{
+            _forgejo_parsed_ssh_keys | default([]) +
+            [item.path | replace(forgejo_config_server_ssh_server_host_keys ~ "/", "")]
+          }}'
+      loop: '{{ _forgejo_source_ssh_keys.files }}'
+      loop_control:
+        label: '{{ item.path }}'
+
+# Maintain sorted list for idempotent config.
+- name: 'Prep | add default server host key locations'
+  ansible.builtin.set_fact:
+    _forgejo_enumerated_ssh_keys: '{{
+        _forgejo_enumerated_ssh_keys | default([]) +
+        [forgejo_config_server_app_data_path ~ "/ssh/" ~ item]
+      }}'
+  loop: '{{ _forgejo_parsed_ssh_keys | default([]) | sort }}'
+
+- name: 'Prep | sanitize forgejo_local_users'
+  when: forgejo_local_users | length > 0
+  ansible.builtin.set_fact:
+    _forgejo_local_users: '{{
+        _forgejo_local_users | default([]) +
+        [forgejo_role_template_local_users | combine(item)]
+      }}'
+  loop: '{{ forgejo_local_users }}'
+  loop_control:
+    label: '{{ item.username }}'
+
+# Configuration of gogs/gitea/forgejo is no longer simple or easy. Parse
+# settings, creating list of dicts to maintain section ordering for idempotent
+# template rendering; keeping logic within task for easier updates and
+# validation. Empty values are not rendered.
+- name: 'Prep | build base config'
+  ansible.builtin.set_fact:
+    _forgejo_config: [
+      general: {
+        APP_NAME: '{{ forgejo_config_app_name }}',
+        APP_SLOGAN: '{{ forgejo_config_app_slogan }}',
+        APP_DISPLAY_NAME_FORMAT: '{{
+            forgejo_config_app_display_name_format
+            if forgejo_config_app_display_name_format != "{APP_NAME}: {APP_SLOGAN}" else
+            ""
+          }}',
+        RUN_USER: '{{ forgejo_config_run_user | default(forgejo_user) }}',
+        RUN_MODE: '{{
+            forgejo_config_run_mode
+            if forgejo_config_run_mode != "prod" else
+            ""
+          }}',
+        WORK_PATH: '{{ forgejo_config_work_path }}',
+      },
+      repository: {
+        ROOT: '{{ forgejo_config_repository_root }}',
+        SCRIPT_TYPE: '{{ forgejo_config_repository_script_type }}',
+        DETECTED_CHARSETS_ORDER: '{{
+            forgejo_config_repository_detected_charsets_order | join(",")
+          }}',
+        ANSI_CHARSET: '{{ forgejo_config_repository_ansi_charset }}',
+        FORCE_PRIVATE: '{{ forgejo_config_repository_force_private }}',
+        DEFAULT_PRIVATE: '{{ forgejo_config_repository_default_private }}',
+        DEFAULT_PUSH_CREATE_PRIVATE:
+          '{{ forgejo_config_repository_default_push_create_private }}',
+        MAX_CREATION_LIMIT:
+          '{{ forgejo_config_repository_max_creation_limit }}',
+        PREFERRED_LICENSES:
+          '{{ forgejo_config_repository_preferred_licenses | join(",") }}',
+        DISABLE_HTTP_GIT: '{{ forgejo_config_repository_disable_http_git }}',
+        ACCESS_CONTROL_ALLOW_ORIGIN:
+          '{{ forgejo_config_repository_access_control_allow_origin }}',
+        USE_COMPAT_SSH_URI:
+          '{{ forgejo_config_repository_use_compat_ssh_uri }}',
+        GO_GET_CLONE_URL_PROTOCOL:
+          '{{ forgejo_config_repository_go_get_clone_url_protocol | lower }}',
+        DEFAULT_CLOSE_ISSUES_VIA_COMMITS_IN_ANY_BRANCH: '{{
+            forgejo_config_repository_default_close_issues_via_commits_in_any_branch
+           }}',
+        ENABLE_PUSH_CREATE_USER:
+          '{{ forgejo_config_repository_enable_push_create_user }}',
+        ENABLE_PUSH_CREATE_ORG:
+          '{{ forgejo_config_repository_enable_push_create_org }}',
+        DISABLED_REPO_UNITS:
+          '{{ forgejo_config_repository_disabled_repo_units | join(",") }}',
+        DEFAULT_REPO_UNITS:
+          '{{ forgejo_config_repository_default_repo_units | join(",") }}',
+        DEFAULT_FORK_REPO_UNITS: '{{
+            forgejo_config_repository_default_fork_repo_units | join(",")
+          }}',
+        PREFIX_ARCHIVE_FILES:
+          '{{ forgejo_config_repository_prefix_archive_files }}',
+        DISABLE_MIGRATIONS:
+          '{{ forgejo_config_repository_disable_migrations }}',
+        DISABLE_STARS: '{{ forgejo_config_repository_disable_stars }}',
+        DISABLE_FORKS: '{{ forgejo_config_repository_disable_forks }}',
+        DEFAULT_BRANCH: '{{ forgejo_config_repository_default_branch }}',
+        ALLOW_ADOPTION_OF_UNADOPTED_REPOSITORIES: '{{
+            forgejo_config_repository_allow_adoption_of_unadopted_repositories
+          }}',
+        ALLOW_DELETION_OF_UNADOPTED_REPOSITORIES: '{{
+            forgejo_config_repository_allow_deletion_of_unadopted_repositories
+          }}',
+        DISABLE_DOWNLOAD_SOURCE_ARCHIVES:
+          '{{ forgejo_config_repository_disable_download_source_archives }}',
+        ALLOW_FORK_WITHOUT_MAXIMUM_LIMIT:
+          '{{ forgejo_config_repository_allow_fork_without_maximum_limit }}',
+      },
+      repository.editor: {
+        LINE_WRAP_EXTENSIONS: '{{
+            forgejo_config_repository_editor_line_wrap_extensions | join(",")
+          }}',
+        PREVIEWABLE_FILE_MODES: '{{
+            forgejo_config_repository_editor_previewable_file_modes | join(",")
+          }}',
+      },
+      repository.pull-request: {
+        WORK_IN_PROGRESS_PREFIXES: '{{
+            forgejo_config_repository_pull_request_work_in_progress_prefixes | join(",")
+          }}',
+        CLOSE_KEYWORDS: '{{
+            forgejo_config_repository_pull_request_close_keywords | join(",")
+          }}',
+        REOPEN_KEYWORDS: '{{
+            forgejo_config_repository_pull_request_reopen_keywords | join(",")
+          }}',
+        DEFAULT_MERGE_STYLE: '{{
+            forgejo_config_repository_pull_request_default_merge_style | lower
+          }}',
+        DEFAULT_MERGE_MESSAGE_COMMITS_LIMIT: '{{
+            forgejo_config_repository_pull_request_default_merge_message_commits_limit
+          }}',
+        DEFAULT_MERGE_MESSAGE_SIZE: '{{
+            forgejo_config_repository_pull_request_default_merge_message_size
+          }}',
+        DEFAULT_MERGE_MESSAGE_ALL_AUTHORS: '{{
+            forgejo_config_repository_pull_request_default_merge_message_all_authors
+          }}',
+        DEFAULT_MERGE_MESSAGE_MAX_APPROVERS: '{{
+            forgejo_config_repository_pull_request_default_merge_message_max_approvers
+          }}',
+        DEFAULT_MERGE_MESSAGE_OFFICIAL_APPROVERS_ONLY: '{{
+            forgejo_config_repository_pull_request_default_merge_message_official_approvers_only
+          }}',
+        DEFAULT_UPDATE_STYLE: '{{
+            forgejo_config_repository_pull_request_default_update_style | lower
+          }}',
+        POPULATE_SQUASH_COMMENT_WITH_COMMIT_MESSAGES: '{{
+            forgejo_config_repository_pull_request_populate_squash_comment_with_commit_messages
+          }}',
+        ADD_CO_COMMITTER_TRAILERS: '{{
+            forgejo_config_repository_pull_request_add_co_committer_trailers
+          }}',
+        TEST_CONFLICTING_PATCHES_WITH_GIT_APPLY: '{{
+            forgejo_config_repository_pull_request_test_conflicting_patches_with_git_apply
+          }}',
+        RETARGET_CHILDREN_ON_MERGE: '{{
+            forgejo_config_repository_pull_request_retarget_children_on_merge
+          }}',
+      },
+      repository.issue: {
+        LOCK_REASONS:
+          '{{ forgejo_config_repository_issue_lock_reasons | join(",") }}',
+        MAX_PINNED: '{{ forgejo_config_repository_issue_max_pinned }}',
+      },
+      repository.upload: {
+        ENABLED: '{{ forgejo_config_repository_upload_enabled }}',
+        TEMP_PATH: '{{ forgejo_config_repository_upload_temp_path }}',
+        ALLOWED_TYPES:
+          '{{ forgejo_config_repository_upload_allowed_types | join(",") }}',
+        FILE_MAX_SIZE: '{{ forgejo_config_repository_upload_file_max_size }}',
+        MAX_FILES: '{{ forgejo_config_repository_upload_max_files }}',
+      },
+      repository.release: {
+        ALLOWED_TYPES:
+          '{{ forgejo_config_repository_release_allowed_types | join(",") }}',
+        DEFAULT_PAGING_NUM:
+          '{{ forgejo_config_repository_release_default_paging_num }}',
+      },
+      repository.signing: {
+        FORMAT: '{{ forgejo_config_repository_signing_signing_format }}',
+        SIGNING_KEY: '{{ forgejo_config_repository_signing_signing_key }}',
+        SIGNING_NAME: '{{ forgejo_config_repository_signing_signing_name }}',
+        SIGNING_EMAIL: '{{ forgejo_config_repository_signing_signing_email }}',
+        DEFAULT_TRUST_MODEL:
+          '{{ forgejo_config_repository_signing_default_trust_model }}',
+        INITIAL_COMMIT:
+          '{{ forgejo_config_repository_signing_initial_commit | join(",") }}',
+        CRUD_ACTIONS:
+          '{{ forgejo_config_repository_signing_crud_actions | join(",") }}',
+        WIKI: '{{ forgejo_config_repository_signing_wiki | join(",") }}',
+        MERGES: '{{ forgejo_config_repository_signing_merges | join(",") }}',
+      },
+      repository.local: {
+        LOCAL_COPY_PATH:
+          '{{ forgejo_config_repository_local_local_copy_path }}',
+      },
+      repository.mimetype_mapping:
+        '{{ forgejo_config_repository_mimetype_mapping }}',
+      badges: {
+        ENABLED: '{{ forgejo_config_badges_enabled }}',
+        GENERATOR_URL_TEMPLATE:
+          '{{ forgejo_config_badges_generator_url_template }}',
+      },
+      cors: {
+        ENABLED: '{{ forgejo_config_cors_enabled }}',
+        ALLOW_DOMAIN: '{{ forgejo_config_cors_allow_domain | join(",") }}',
+        METHODS: '{{ forgejo_config_cors_methods | join(",") }}',
+        MAX_AGE: '{{ forgejo_config_cors_max_age }}',
+        ALLOW_CREDENTIALS: '{{ forgejo_config_cors_allow_credentials }}',
+        HEADERS: '{{ forgejo_config_cors_headers | join(",") }}',
+        X_FRAME_OPTIONS: '{{ forgejo_config_cors_x_frame_options }}',
+      },
+      ui: {
+        EXPLORE_PAGING_NUM:
+          '{{ forgejo_config_ui_config_ui_explore_paging_num }}',
+        ISSUE_PAGING_NUM: '{{ forgejo_config_ui_issue_paging_num }}',
+        REPO_SEARCH_PAGING_NUM:
+          '{{ forgejo_config_ui_repo_search_paging_num }}',
+        MEMBERS_PAGING_NUM: '{{ forgejo_config_ui_members_paging_num }}',
+        FEED_MAX_COMMIT_NUM: '{{ forgejo_config_ui_feed_max_commit_num }}',
+        FEED_PAGING_NUM: '{{ forgejo_config_ui_feed_paging_num }}',
+        SITEMAP_PAGING_NUM: '{{ forgejo_config_ui_sitemap_paging_num }}',
+        PACKAGES_PAGING_NUM: '{{ forgejo_config_ui_packages_paging_num }}',
+        GRAPH_MAX_COMMIT_NUM: '{{ forgejo_config_ui_graph_max_commit_num }}',
+        CODE_COMMENT_LINES: '{{ forgejo_config_ui_code_comment_lines }}',
+        MAX_DISPLAY_FILE_SIZE: '{{ forgejo_config_ui_max_display_file_size }}',
+        AMBIGUOUS_UNICODE_DETECTION:
+          '{{ forgejo_config_ui_ambiguous_unicode_detection }}',
+        SHOW_USER_EMAIL: '{{ forgejo_config_ui_show_user_email }}',
+        DEFAULT_THEME: '{{ forgejo_config_ui_default_theme }}',
+        THEMES: '{{ forgejo_config_ui_themes | join(",") }}',
+        REACTIONS: '{{ forgejo_config_ui_reactions | join(",") }}',
+        REACTION_MAX_USER_NUM: '{{ forgejo_config_ui_reaction_max_user_num }}',
+        CUSTOM_EMOJIS: '{{ forgejo_config_ui_custom_emojis | join(",") }}',
+        DEFAULT_SHOW_FULL_NAME:
+          '{{ forgejo_config_ui_default_show_full_name }}',
+        SEARCH_REPO_DESCRIPTION:
+          '{{ forgejo_config_ui_search_repo_description }}',
+        ONLY_SHOW_RELEVANT_REPOS:
+          '{{ forgejo_config_ui_only_show_relevant_repos }}',
+        EXPLORE_PAGING_DEFAULT_SORT:
+          '{{ forgejo_config_ui_explore_paging_default_sort }}',
+        SKIP_ESCAPE_CONTEXTS:
+          '{{ forgejo_config_ui_skip_escape_contexts | join(",") }}',
+        PREFERRED_TIMESTAMP_TENSE:
+          '{{ forgejo_config_ui_preferred_timestamp_tense }}',
+      },
+      ui.admin: {
+        USER_PAGING_NUM: '{{ forgejo_config_ui_admin_user_paging_num }}',
+        REPO_PAGING_NUM: '{{ forgejo_config_ui_admin_repo_paging_num }}',
+        NOTICE_PAGING_NUM: '{{ forgejo_config_ui_admin_notice_paging_num }}',
+        ORG_PAGING_NUM: '{{ forgejo_config_ui_admin_org_paging_num }}',
+      },
+      ui.user: {
+        REPO_PAGING_NUM: '{{ forgejo_config_ui_user_repo_paging_num }}',
+      },
+      ui.meta: {
+        AUTHOR: '{{ forgejo_config_ui_meta_author }}',
+        DESCRIPTION: '{{ forgejo_config_ui_meta_description }}',
+        KEYWORDS: '{{ forgejo_config_ui_meta_keywords | join(",") }}',
+      },
+      ui.notification: {
+        MIN_TIMEOUT: '{{ forgejo_config_ui_notification_min_timeout }}',
+        MAX_TIMEOUT: '{{ forgejo_config_ui_notification_max_timeout }}',
+        TIMEOUT_STEP: '{{ forgejo_config_ui_notification_timeout_step }}',
+        EVENT_SOURCE_UPDATE_TIME:
+          '{{ forgejo_config_ui_notification_event_source_update_time }}',
+      },
+      ui.svg: {
+        ENABLE_RENDER: '{{ forgejo_config_ui_svg_enable_render }}',
+      },
+      ui.csv: {
+        MAX_FILE_SIZE: '{{ forgejo_config_ui_csv_max_file_size }}',
+        MAX_ROWS: '{{ forgejo_config_ui_max_rows }}',
+      },
+      markdown: {
+        ENABLE_HARD_LINE_BREAK_IN_COMMENTS:
+          '{{ forgejo_config_markdown_enable_hard_line_break_in_comments }}',
+        ENABLE_HARD_LINE_BREAK_IN_DOCUMENTS:
+          '{{ forgejo_config_markdown_enable_hard_line_break_in_documents }}',
+        CUSTOM_URL_SCHEMES:
+          '{{ forgejo_config_markdown_custom_url_schemes | join(",") }}',
+        FILE_EXTENSIONS:
+          '{{ forgejo_config_markdown_file_extensions | join(",") }}',
+        ENABLE_MATH: '{{ forgejo_config_markdown_enable_math }}',
+      },
+      server: {
+        PROTOCOL: '{{ forgejo_config_server_protocol | lower }}',
+        USE_PROXY_PROTOCOL: '{{ forgejo_config_server_use_proxy_protocol }}',
+        PROXY_PROTOCOL_TLS_BRIDGING:
+          '{{ forgejo_config_server_proxy_protocol_tls_bridging }}',
+        PROXY_PROTOCOL_HEADER_TIMEOUT:
+          '{{ forgejo_config_server_proxy_protocol_header_timeout }}',
+        PROXY_PROTOCOL_ACCEPT_UNKNOWN:
+          '{{ forgejo_config_server_proxy_protocol_accept_unknown }}',
+        DOMAIN: '{{ forgejo_config_server_domain }}',
+        ROOT_URL: '{{ forgejo_config_server_root_url }}',
+        STATIC_URL_PREFIX: '{{ forgejo_config_server_static_url_prefix }}',
+        HTTP_ADDR: '{{ forgejo_config_server_http_addr }}',
+        HTTP_PORT: '{{ forgejo_config_server_http_port }}',
+        REDIRECT_OTHER_PORT: '{{ forgejo_config_server_redirect_other_port }}',
+        PORT_TO_REDIRECT: '{{ forgejo_config_server_port_to_redirect }}',
+        REDIRECTOR_USE_PROXY_PROTOCOL:
+          '{{ forgejo_config_server_redirector_use_proxy_protocol }}',
+        SSL_MIN_VERSION: '{{ forgejo_config_server_ssl_min_version }}',
+        SSL_MAX_VERSION: '{{ forgejo_config_server_ssl_max_version }}',
+        SSL_CURVE_PREFERENCES:
+          '{{ forgejo_config_server_ssl_curve_preferences | join(",") }}',
+        SSL_CIPHER_SUITES:
+          '{{ forgejo_config_server_ssl_cipher_suites | join(",") }}',
+        PER_WRITE_TIMEOUT: '{{ forgejo_config_server_per_write_timeout }}',
+        PER_WRITE_PER_KB_TIMEOUT:
+          '{{ forgejo_config_server_per_write_per_kb_timeout }}',
+        UNIX_SOCKET_PERMISSION:
+          '{{ forgejo_config_server_unix_socket_permission }}',
+        LOCAL_ROOT_URL: '{{ forgejo_config_server_local_root_url }}',
+        LOCAL_USE_PROXY_PROTOCOL:
+          '{{ forgejo_config_server_local_use_proxy_protocol }}',
+        DISABLE_SSH: '{{ forgejo_config_server_disable_ssh }}',
+        START_SSH_SERVER: '{{ forgejo_config_server_start_ssh_server }}',
+        SSH_SERVER_USE_PROXY_PROTOCOL:
+          '{{ forgejo_config_server_ssh_server_use_proxy_protocol }}',
+        BUILTIN_SSH_SERVER_USER:
+          '{{ forgejo_config_server_builtin_ssh_server_user }}',
+        SSH_DOMAIN: '{{ forgejo_config_server_ssh_domain }}',
+        SSH_USER: '{{ forgejo_config_server_ssh_user }}',
+        SSH_LISTEN_HOST: '{{ forgejo_config_server_ssh_listen_host }}',
+        SSH_PORT: '{{ forgejo_config_server_ssh_port }}',
+        SSH_LISTEN_PORT: '{{ forgejo_config_server_ssh_listen_port }}',
+        SSH_ROOT_PATH: '{{ forgejo_config_server_ssh_root_path }}',
+        SSH_CREATE_AUTHORIZED_KEYS_FILE:
+          '{{ forgejo_config_server_ssh_create_authorized_keys_file }}',
+        SSH_CREATE_AUTHORIZED_PRINCIPALS_FILE:
+          '{{ forgejo_config_server_ssh_create_authorized_principals_file }}',
+        SSH_SERVER_CIPHERS:
+          '{{ forgejo_config_server_ssh_server_ciphers | join(",") }}',
+        SSH_SERVER_KEY_EXCHANGES:
+          '{{ forgejo_config_server_ssh_server_key_exchanges | join(",") }}',
+        SSH_SERVER_MACS:
+          '{{ forgejo_config_server_ssh_server_macs | join(",") }}',
+        SSH_SERVER_HOST_KEYS:  # Only exists if used.
+          '{{ _forgejo_enumerated_ssh_keys | default([]) | join(",") }}',
+        SSH_KEY_TEST_PATH: '{{ forgejo_config_server_ssh_key_test_path }}',
+        SSH_KEYGEN_PATH: '{{ forgejo_config_server_ssh_keygen_path }}',
+        SSH_AUTHORIZED_KEYS_BACKUP:
+          '{{ forgejo_config_server_ssh_authorized_keys_backup }}',
+        SSH_AUTHORIZED_PRINCIPALS_ALLOW: '{{
+            forgejo_config_server_ssh_authorized_principals_allow | join(",")
+          }}',
+        SSH_AUTHORIZED_PRINCIPALS_BACKUP:
+          '{{ forgejo_config_server_ssh_authorized_principals_backup }}',
+        SSH_TRUSTED_USER_CA_KEYS:
+          '{{ forgejo_config_server_ssh_trusted_user_ca_keys | join(",") }}',
+        SSH_TRUSTED_USER_CA_KEYS_FILENAME: '{{
+            _forgejo_home ~ "/.ssh/ca_trust_chain_root.pem"
+            if forgejo_config_server_ssh_trusted_user_ca_keys_filename | length > 0 else
+            ""
+          }}',
+        SSH_EXPOSE_ANONYMOUS:
+          '{{ forgejo_config_server_ssh_expose_anonymous }}',
+        SSH_AUTHORIZED_KEYS_COMMAND_TEMPLATE:
+          '{{ forgejo_config_server_ssh_authorized_keys_command_template }}',
+        SSH_PER_WRITE_TIMEOUT:
+          '{{ forgejo_config_server_ssh_per_write_timeout }}',
+        SSH_PER_WRITE_PER_KB_TIMEOUT:
+          '{{ forgejo_config_server_ssh_per_write_per_kb_timeout }}',
+        MINIMUM_KEY_SIZE_CHECK:
+          '{{ forgejo_config_server_minimum_key_size_check }}',
+        OFFLINE_MODE: '{{ forgejo_config_server_offline_mode }}',
+        ENABLE_ACME: '{{ forgejo_config_server_enable_acme }}',
+        ACME_URL: '{{ forgejo_config_server_acme_url }}',
+        ACME_ACCEPTTOS: '{{ forgejo_config_server_acme_accepttos }}',
+        ACME_CA_ROOT: '{{
+            forgejo_config_server_acme_directory ~ "/ca_trust_chain_root.pem"
+            if forgejo_config_server_acme_ca_root | length > 0 else
+            ""
+          }}',
+        ACME_EMAIL: '{{ forgejo_config_server_acme_email }}',
+        ACME_DIRECTORY: '{{ forgejo_config_server_acme_directory }}',
+        CERT_FILE: '{{
+            forgejo_config_server_acme_directory ~ "/cert.pem"
+            if forgejo_config_server_cert_file | length > 0 else
+            ""
+          }}',
+        KEY_FILE: '{{
+            forgejo_config_server_acme_directory ~ "/cert.key"
+            if forgejo_config_server_key_file | length > 0 else
+            ""
+          }}',
+        STATIC_ROOT_PATH: '{{ forgejo_config_server_static_root_path }}',
+        APP_DATA_PATH: '{{ forgejo_config_server_app_data_path }}',
+        ENABLE_GZIP: '{{ forgejo_config_server_enable_gzip }}',
+        ENABLE_PPROF: '{{ forgejo_config_server_enable_pprof }}',
+        PPROF_DATA_PATH: '{{ forgejo_config_server_pprof_data_path }}',
+        LANDING_PAGE: '{{ forgejo_config_server_landing_page }}',
+        LFS_START_SERVER: '{{ forgejo_config_server_lfs_start_server }}',
+        LFS_JWT_SECRET: '{{ forgejo_config_server_lfs_jwt_secret }}',
+        LFS_HTTP_AUTH_EXPIRY:
+          '{{ forgejo_config_server_lfs_http_auth_expiry }}',
+        LFS_MAX_FILE_SIZE: '{{ forgejo_config_server_lfs_max_file_size }}',
+        LFS_LOCKS_PAGING_NUM:
+          '{{ forgejo_config_server_lfs_locks_paging_num }}',
+        LFS_MAX_BATCH_SIZE: '{{ forgejo_config_server_lfs_max_batch_size }}',
+        ALLOW_GRACEFUL_RESTARTS:
+          '{{ forgejo_config_server_allow_graceful_restarts }}',
+        GRACEFUL_HAMMER_TIME:
+          '{{ forgejo_config_server_graceful_hammer_time }}',
+        STARTUP_TIMEOUT: '{{ forgejo_config_server_startup_timeout }}',
+        STATIC_CACHE_TIME: '{{ forgejo_config_server_static_cache_time }}',
+      },
+      database: {
+        DB_TYPE: '{{ forgejo_config_database_db_type }}',
+        HOST: '{{
+            forgejo_config_database_host
+            if forgejo_config_database_db_type | lower != "sqlite3" else
+            ""
+          }}',
+        NAME: '{{
+            forgejo_config_database_name
+            if forgejo_config_database_db_type | lower != "sqlite3" else
+            ""
+          }}',
+        USER: '{{
+            forgejo_config_database_user
+            if forgejo_config_database_db_type | lower != "sqlite3" else
+            ""
+          }}',
+        PASSWD: '{{
+            forgejo_config_database_passwd
+            if forgejo_config_database_db_type | lower != "sqlite3" else
+            ""
+          }}',
+        SSL_MODE: '{{
+            forgejo_config_database_ssl_mode
+            if forgejo_config_database_db_type | lower != "sqlite3" else
+            ""
+          }}',
+        PATH: '{{
+            forgejo_config_database_path
+            if forgejo_config_database_db_type | lower == "sqlite3" else
+            ""
+          }}',
+        SQLITE_TIMEOUT: '{{
+            forgejo_config_database_sqlite_timeout
+            if forgejo_config_database_db_type | lower == "sqlite3" else
+            ""
+          }}',
+        SQLITE_JOURNAL_MODE: '{{
+            forgejo_config_database_sqlite_journal_mode
+            if forgejo_config_database_db_type | lower == "sqlite3" else
+            ""
+          }}',
+        CHARSET_COLLATION: '{{
+            forgejo_config_database_charset_collation
+            if forgejo_config_database_db_type | lower == "mysql"
+          }}',
+        SCHEMA: '{{
+            forgejo_config_database_schema
+            if forgejo_config_database_db_type | lower == "postgres"
+          }}',
+        ITERATE_BUFFER_SIZE:
+          '{{ forgejo_config_database_iterate_buffer_size }}',
+        LOG_SQL: '{{ forgejo_config_database_log_sql }}',
+        DB_RETRIES: '{{ forgejo_config_database_db_retries }}',
+        DB_RETRY_BACKOFF: '{{ forgejo_config_database_db_retry_backoff }}',
+        MAX_IDLE_CONNS: '{{ forgejo_config_database_max_idle_conns }}',
+        CONN_MAX_LIFETIME: '{{ forgejo_config_database_conn_max_lifetime }}',
+        CONN_MAX_IDLETIME: '{{ forgejo_config_database_conn_max_idletime }}',
+        MAX_OPEN_CONNS: '{{ forgejo_config_database_max_open_conns }}',
+        AUTO_MIGRATION: '{{ forgejo_config_database_auto_migration }}',
+        SLOW_QUERY_THRESHOLD:
+          '{{ forgejo_config_database_slow_query_threshold }}',
+      },
+      indexer: {
+        ISSUE_INDEXER_TYPE: '{{ forgejo_config_indexer_issue_indexer_type }}',
+        ISSUE_INDEXER_PATH: '{{ forgejo_config_indexer_issue_indexer_path }}',
+        ISSUE_INDEXER_CONN_STR:
+          '{{ forgejo_config_indexer_issue_indexer_conn_str }}',
+        ISSUE_INDEXER_NAME: '{{ forgejo_config_indexer_issue_indexer_name }}',
+        STARTUP_TIMEOUT: '{{ forgejo_config_indexer_startup_timeout }}',
+        REPO_INDEXER_ENABLED:
+          '{{ forgejo_config_indexer_repo_indexer_enabled }}',
+        REPO_INDEXER_REPO_TYPES:
+          '{{ forgejo_config_indexer_repo_indexer_repo_types | join(",") }}',
+        REPO_INDEXER_TYPE: '{{ forgejo_config_indexer_repo_indexer_type }}',
+        REPO_INDEXER_PATH: '{{ forgejo_config_indexer_repo_indexer_path }}',
+        REPO_INDEXER_CONN_STR:
+          '{{ forgejo_config_indexer_repo_indexer_conn_str }}',
+        REPO_INDEXER_NAME: '{{ forgejo_config_indexer_repo_indexer_name }}',
+        REPO_INDEXER_INCLUDE:
+          '{{ forgejo_config_indexer_repo_indexer_include | join(",") }}',
+        REPO_INDEXER_EXCLUDE:
+          '{{ forgejo_config_indexer_repo_indexer_exclude | join(",") }}',
+        REPO_INDEXER_EXCLUDE_VENDORED:
+          '{{ forgejo_config_indexer_repo_indexer_exclude_vendored }}',
+        MAX_FILE_SIZE: '{{ forgejo_config_indexer_max_file_size }}',
+      },
+      queue: {
+        TYPE: '{{ forgejo_config_queue_type }}',
+        DATADIR: '{{ forgejo_config_queue_datadir }}',
+        LENGTH: '{{ forgejo_config_queue_length }}',
+        BATCH_LENGTH: '{{ forgejo_config_queue_batch_length }}',
+        CONN_STR: '{{ forgejo_config_queue_conn_str }}',
+        QUEUE_NAME: '{{ forgejo_config_queue_queue_name }}',
+        SET_NAME: '{{ forgejo_config_queue_set_name }}',
+        MAX_WORKERS: '{{ forgejo_config_queue_max_workers }}',
+      },
+      admin: {
+        DISABLE_REGULAR_ORG_CREATION:
+          '{{ forgejo_config_admin_disable_regular_org_creation }}',
+        DEFAULT_EMAIL_NOTIFICATIONS:
+          '{{ forgejo_config_admin_default_email_notifications }}',
+        SEND_NOTIFICATION_EMAIL_ON_NEW_USER:
+          '{{ forgejo_config_admin_send_notification_email_on_new_user }}',
+        USER_DISABLED_FEATURES:
+          '{{ forgejo_config_admin_user_disabled_features | join(",") }}',
+        EXTERNAL_USER_DISABLE_FEATURES: '{{
+            forgejo_config_admin_external_user_disable_features | join(",")
+           }}',
+      },
+      security: {
+        INSTALL_LOCK: '{{ forgejo_config_security_install_lock }}',
+        SECRET_KEY: '{{ forgejo_config_security_secret_key }}',
+        INTERNAL_TOKEN: '{{ forgejo_config_security_internal_token }}',
+        LOGIN_REMEMBER_DAYS:
+          '{{ forgejo_config_security_login_remember_days }}',
+        COOKIE_REMEMBER_NAME:
+          '{{ forgejo_config_security_cookie_remember_name }}',
+        REVERSE_PROXY_AUTHENTICATION_USER:
+          '{{ forgejo_config_security_reverse_proxy_authentication_user }}',
+        REVERSE_PROXY_AUTHENTICATION_EMAIL:
+          '{{ forgejo_config_security_reverse_proxy_authentication_email }}',
+        REVERSE_PROXY_AUTHENTICATION_FULL_NAME: '{{
+            forgejo_config_security_reverse_proxy_authentication_full_name
+          }}',
+        REVERSE_PROXY_LIMIT:
+          '{{ forgejo_config_security_reverse_proxy_limit }}',
+        REVERSE_PROXY_TRUSTED_PROXIES: '{{
+            forgejo_config_security_reverse_proxy_trusted_proxies | join(",")
+          }}',
+        MIN_PASSWORD_LENGTH:
+          '{{ forgejo_config_security_min_password_length }}',
+        IMPORT_LOCAL_PATHS: '{{ forgejo_config_security_import_local_paths }}',
+        DISABLE_GIT_HOOKS: '{{ forgejo_config_security_disable_git_hooks }}',
+        DISABLE_WEBHOOKS: '{{ forgejo_config_security_disable_webhooks }}',
+        ONLY_ALLOW_PUSH_IF_GITEA_ENVIRONMENT_SET: '{{
+            forgejo_config_security_only_allow_push_if_gitea_environment_set
+          }}',
+        PASSWORD_COMPLEXITY:
+          '{{ forgejo_config_security_password_complexity | join(",") }}',
+        PASSWORD_HASH_ALGO: '{{ forgejo_config_security_password_hash_algo }}',
+        CSRF_COOKIE_HTTP_ONLY:
+          '{{ forgejo_config_security_csrf_cookie_http_only }}',
+        PASSWORD_CHECK_PWN: '{{ forgejo_config_security_password_check_pwn }}',
+        SUCCESSFUL_TOKENS_CACHE_SIZE:
+          '{{ forgejo_config_security_successful_tokens_cache_size }}',
+        DISABLE_QUERY_AUTH_TOKEN:
+          '{{ forgejo_config_security_disable_query_auth_token }}',
+      },
+      camo: {
+        ENABLED: '{{ forgejo_config_camo_enabled }}',
+        SERVER_URL: '{{ forgejo_config_camo_server_url }}',
+        HMAC_KEY: '{{ forgejo_config_camo_hmac_key }}',
+      },
+      openid: {
+        ENABLE_OPENID_SIGNIN:
+          '{{ forgejo_config_openid_enable_openid_signin }}',
+        ENABLE_OPENID_SIGNUP:
+          '{{ forgejo_config_openid_enable_openid_signup }}',
+        WHITELISTED_URIS:
+          '{{ forgejo_config_openid_whitelisted_uris | join(" ") }}',
+        BLACKLISTED_URIS:
+          '{{ forgejo_config_openid_blacklisted_uris | join(" ") }}',
+      },
+      oauth2_client: {
+        REGISTER_EMAIL_CONFIRM:
+          '{{ forgejo_config_oauth2_client_register_email_confirm }}',
+        OPENID_CONNECT_SCOPES: '{{
+            forgejo_config_oauth2_client_openid_connect_scopes | join(" ")
+          }}',
+        ENABLE_AUTO_REGISTRATION:
+          '{{ forgejo_config_oauth2_client_enable_auto_registration }}',
+        USERNAME: '{{ forgejo_config_oauth2_client_username | lower }}',
+        UPDATE_AVATAR: '{{ forgejo_config_oauth2_client_update_avatar }}',
+        ACCOUNT_LINKING:
+          '{{ forgejo_config_oauth2_client_account_linking | lower }}',
+      },
+      service: {
+        ACTIVE_CODE_LIVE_MINUTES:
+          '{{ forgejo_config_service_active_code_live_minutes }}',
+        RESET_PASSWD_CODE_LIVE_MINUTES:
+          '{{ forgejo_config_service_reset_passwd_code_live_minutes }}',
+        REGISTER_EMAIL_CONFIRM:
+          '{{ forgejo_config_service_register_email_confirm }}',
+        REGISTER_MANUAL_CONFIRM:
+          '{{ forgejo_config_service_register_manual_confirm }}',
+        EMAIL_DOMAIN_ALLOWLIST:
+          '{{ forgejo_config_service_email_domain_allowlist | join(",") }}',
+        EMAIL_DOMAIN_BLOCKLIST:
+          '{{ forgejo_config_service_email_domain_blocklist | join(",") }}',
+        EMAIL_DOMAIN_BLOCK_DISPOSABLE:
+          '{{ forgejo_config_service_email_domain_block_disposable }}',
+        DISABLE_REGISTRATION:
+          '{{ forgejo_config_service_disable_registration }}',
+        ALLOW_ONLY_INTERNAL_REGISTRATION:
+          '{{ forgejo_config_service_allow_only_internal_registration }}',
+        ALLOW_ONLY_EXTERNAL_REGISTRATION:
+          '{{ forgejo_config_service_allow_only_external_registration }}',
+        REQUIRE_SIGNIN_VIEW:
+          '{{ forgejo_config_service_require_signin_view }}',
+        ENABLE_NOTIFY_MAIL: '{{ forgejo_config_service_enable_notify_mail }}',
+        ENABLE_BASIC_AUTHENTICATION:
+          '{{ forgejo_config_service_enable_basic_authentication }}',
+        ENABLE_REVERSE_PROXY_AUTHENTICATION:
+          '{{ forgejo_config_service_enable_reverse_proxy_authentication }}',
+        ENABLE_REVERSE_PROXY_AUTHENTICATION_API: '{{
+            forgejo_config_service_enable_reverse_proxy_authentication_api
+          }}',
+        ENABLE_REVERSE_PROXY_AUTO_REGISTRATION: '{{
+            forgejo_config_service_enable_reverse_proxy_auto_registration
+          }}',
+        ENABLE_REVERSE_PROXY_EMAIL:
+          '{{ forgejo_config_service_enable_reverse_proxy_email }}',
+        ENABLE_REVERSE_PROXY_FULL_NAME:
+          '{{ forgejo_config_service_enable_reverse_proxy_full_name }}',
+        ENABLE_CAPTCHA: '{{ forgejo_config_service_enable_captcha }}',
+        REQUIRE_CAPTCHA_FOR_LOGIN:
+          '{{ forgejo_config_service_require_captcha_for_login }}',
+        REQUIRE_EXTERNAL_REGISTRATION_CAPTCHA:
+          '{{ forgejo_config_service_require_external_registration_captcha }}',
+        REQUIRE_EXTERNAL_REGISTRATION_PASSWORD: '{{
+            forgejo_config_service_require_external_registration_password
+          }}',
+        CAPTCHA_TYPE: '{{ forgejo_config_service_captcha_type }}',
+        RECAPTCHA_URL: '{{ forgejo_config_service_recaptcha_url }}',
+        RECAPTCHA_SECRET: '{{ forgejo_config_service_recaptcha_secret }}',
+        RECAPTCHA_SITEKEY: '{{ forgejo_config_service_recaptcha_sitekey }}',
+        HCAPTCHA_SECRET: '{{ forgejo_config_service_hcaptcha_secret }}',
+        HCAPTCHA_SITEKEY: '{{ forgejo_config_service_hcaptcha_sitekey }}',
+        MCAPTCHA_URL: '{{ forgejo_config_service_mcaptcha_url }}',
+        MCAPTCHA_SECRET: '{{ forgejo_config_service_mcaptcha_secret }}',
+        MCAPTCHA_SITEKEY: '{{ forgejo_config_service_mcaptcha_sitekey }}',
+        CF_TURNSTILE_SECRET:
+          '{{ forgejo_config_service_cf_turnstile_secret }}',
+        CF_TURNSTILE_SITEKEY:
+          '{{ forgejo_config_service_cf_turnstile_sitekey }}',
+        DEFAULT_KEEP_EMAIL_PRIVATE:
+          '{{ forgejo_config_service_default_keep_email_private }}',
+        DEFAULT_ALLOW_CREATE_ORGANIZATION:
+          '{{ forgejo_config_service_default_allow_create_organization }}',
+        DEFAULT_USER_IS_RESTRICTED:
+          '{{ forgejo_config_service_default_user_is_restricted }}',
+        ALLOW_DOTS_IN_USERNAMES:
+          '{{ forgejo_config_service_allow_dots_in_usernames }}',
+        DEFAULT_USER_VISIBILITY:
+          '{{ forgejo_config_service_default_user_visibility }}',
+        ALLOWED_USER_VISIBILITY_MODES:
+          '{{ forgejo_config_service_allowed_user_visibility_modes | join(",") }}',
+        DEFAULT_ORG_VISIBILITY:
+          '{{ forgejo_config_service_default_org_visibility }}',
+        DEFAULT_ORG_MEMBER_VISIBLE:
+          '{{ forgejo_config_service_default_org_member_visible }}',
+        DEFAULT_ENABLE_DEPENDENCIES:
+          '{{ forgejo_config_service_default_enable_dependencies }}',
+        ALLOW_CROSS_REPOSITORY_DEPENDENCIES:
+          '{{ forgejo_config_service_allow_cross_repository_dependencies }}',
+        USER_LOCATION_MAP_URL:
+          '{{ forgejo_config_service_user_location_map_url }}',
+        ENABLE_USER_HEATMAP:
+          '{{ forgejo_config_service_enable_user_heatmap }}',
+        ENABLE_TIMETRACKING:
+          '{{ forgejo_config_service_enable_timetracking }}',
+        DEFAULT_ENABLE_TIMETRACKING:
+          '{{ forgejo_config_service_default_enable_timetracking }}',
+        DEFAULT_ALLOW_ONLY_CONTRIBUTORS_TO_TRACK_TIME: '{{
+            forgejo_config_service_default_allow_only_contributors_to_track_time
+          }}',
+        NO_REPLY_ADDRESS: '{{ forgejo_config_service_no_reply_address }}',
+        SHOW_REGISTRATION_BUTTON:
+          '{{ forgejo_config_service_show_registration_button }}',
+        ENABLE_INTERNAL_SIGNIN:
+          '{{ forgejo_config_service_enable_internal_signin }}',
+        SHOW_MILESTONES_DASHBOARD_PAGE:
+          '{{ forgejo_config_service_show_milestones_dashboard_page }}',
+        AUTO_WATCH_NEW_REPOS:
+          '{{ forgejo_config_service_auto_watch_new_repos }}',
+        AUTO_WATCH_ON_CHANGES:
+          '{{ forgejo_config_service_auto_watch_on_changes }}',
+        USER_DELETE_WITH_COMMENTS_MAX_TIME:
+          '{{ forgejo_config_service_user_delete_with_comments_max_time }}',
+        VALID_SITE_URL_SCHEMES:
+          '{{ forgejo_config_service_valid_site_url_schemes | join(",") }}',
+        USERNAME_COOLDOWN_PERIOD:
+          '{{ forgejo_config_service_username_cooldown_period }}',
+        MAX_USER_REDIRECTS: '{{ forgejo_config_service_max_user_redirects }}',
+      },
+      service.explore: {
+        REQUIRE_SIGNIN_VIEW:
+          '{{ forgejo_config_service_explore_require_signin_view }}',
+        DISABLE_USERS_PAGE:
+          '{{ forgejo_config_service_explore_disable_users_page }}',
+        DISABLE_ORGANIZATIONS_PAGE:
+          '{{ forgejo_config_service_explore_disable_organizations_page }}',
+        DISABLE_CODE_PAGE:
+          '{{ forgejo_config_service_explore_disable_code_page }}',
+      },
+      ssh.minimum_key_sizes: {
+        ED25519: '{{ forgejo_config_ssh_minimum_key_sizes_ed25519 }}',
+        ECDSA: '{{ forgejo_config_ssh_minimum_key_sizes_ecdsa }}',
+        RSA: '{{ forgejo_config_ssh_minimum_key_sizes_rsa }}',
+        DSA: '{{ forgejo_config_ssh_minimum_key_sizes_dsa }}',
+      },
+      webhook: {
+        QUEUE_LENGTH: '{{ forgejo_config_webhook_queue_length }}',
+        DELIVER_TIMEOUT: '{{ forgejo_config_webhook_deliver_timeout }}',
+        ALLOWED_HOST_LIST:
+          '{{ forgejo_config_webhook_allowed_host_list | join(",") }}',
+        SKIP_TLS_VERIFY: '{{ forgejo_config_webhook_skip_tls_verify }}',
+        PAGING_NUM: '{{ forgejo_config_webhook_paging_num }}',
+        PAYLOAD_COMMIT_LIMIT:
+          '{{ forgejo_config_webhook_payload_commit_limit }}',
+        PROXY_URL: '{{ forgejo_config_webhook_proxy_url }}',
+        PROXY_HOSTS: '{{ forgejo_config_webhook_proxy_url | join(",") }}',
+      },
+      mailer: {
+        ENABLED: '{{ forgejo_config_mailer_enabled }}',
+        # SEND_BUFFER_LEN is deprecated and must be specified in custom options
+        # This will prevent startup.
+        # > Removed queue option: `[mailer].SEND_BUFFER_LEN`. Use new options in `[queue.mailer]`
+        # > Please update your app.ini to remove deprecated config options
+        SUBJECT_PREFIX: '{{ forgejo_config_mailer_subject_prefix }}',
+        PROTOCOL: '{{ forgejo_config_mailer_protocol }}',
+        SMTP_ADDR: '{{ forgejo_config_mailer_smtp_addr }}',
+        SMTP_PORT: '{{ forgejo_config_mailer_smtp_port }}',
+        ENABLE_HELO: '{{ forgejo_config_mailer_enable_helo }}',
+        HELO_HOSTNAME: '{{ forgejo_config_mailer_helo_hostname }}',
+        FORCE_TRUST_SERVER_CERT:
+          '{{ forgejo_config_mailer_force_trust_server_cert }}',
+        USE_CLIENT_CERT: '{{ forgejo_config_mailer_use_client_cert }}',
+        CLIENT_CERT_FILE: '{{
+            forgejo_config_server_acme_directory ~ "/cert.pem"
+            if forgejo_config_mailer_client_cert_file | length > 0 else
+            ""
+          }}',
+        CLIENT_KEY_FILE: '{{
+            forgejo_config_server_acme_directory ~ "/cert.key"
+            if forgejo_config_mailer_client_key_file | length > 0 else
+            ""
+          }}',
+        FROM: '{{ forgejo_config_mailer_from }}',
+        ENVELOPE_FROM: '{{ forgejo_config_mailer_envelope_from }}',
+        FROM_DISPLAY_NAME_FORMAT:
+          '{{ forgejo_config_mailer_from_display_name_format }}',
+        USER: '{{ forgejo_config_mailer_user }}',
+        PASSWD: '{{ forgejo_config_mailer_passwd }}',
+        SEND_AS_PLAIN_TEXT: '{{ forgejo_config_mailer_send_as_plain_text }}',
+        SENDMAIL_PATH: '{{ forgejo_config_mailer_sendmail_path }}',
+        SENDMAIL_ARGS: '{{ forgejo_config_mailer_sendmail_args | join(" ") }}',
+        SENDMAIL_TIMEOUT: '{{ forgejo_config_mailer_sendmail_timeout }}',
+        SENDMAIL_CONVERT_CRLF:
+          '{{ forgejo_config_mailer_sendmail_convert_crlf }}',
+      },
+      mailer.override_header: '{{ forgejo_config_mailer_override_header }}',
+      email.incoming: {
+        ENABLED: '{{ forgejo_config_email_incoming_enabled }}',
+        REPLY_TO_ADDRESS:
+          '{{ forgejo_config_email_incoming_reply_to_address }}',
+        HOST: '{{ forgejo_config_email_incoming_host }}',
+        PORT: '{{ forgejo_config_email_incoming_port }}',
+        USERNAME: '{{ forgejo_config_email_incoming_username }}',
+        PASSWORD: '{{ forgejo_config_email_incoming_password }}',
+        USE_TLS: '{{ forgejo_config_email_incoming_use_tls }}',
+        SKIP_TLS_VERIFY: '{{ forgejo_config_email_incoming_skip_tls_verify }}',
+        MAILBOX: '{{ forgejo_config_email_incoming_mailbox }}',
+        DELETE_HANDLED_MESSAGE:
+          '{{ forgejo_config_email_incoming_delete_handled_message }}',
+        MAXIMUM_MESSAGE_SIZE:
+          '{{ forgejo_config_email_incoming_maximum_message_size }}',
+      },
+      cache: {
+        ADAPTER: '{{ forgejo_config_cache_adapter }}',
+        INTERVAL: '{{ forgejo_config_cache_interval }}',
+        HOST: '{{ forgejo_config_cache_host }}',
+        ITEM_TTL: '{{ forgejo_config_cache_item_ttl }}',
+      },
+      cache.last_commit: {
+        ITEM_TTL: '{{ forgejo_config_cache_last_commit_item_ttl }}',
+        COMMITS_COUNT: '{{ forgejo_config_cache_last_commit_commits_count }}',
+      },
+      session: {
+        PROVIDER: '{{ forgejo_config_session_provider }}',
+        PROVIDER_CONFIG: '{{ forgejo_config_session_provider_config }}',
+        COOKIE_NAME: '{{ forgejo_config_session_cookie_name }}',
+        COOKIE_SECURE: '{{ forgejo_config_session_cookie_secure }}',
+        GC_INTERVAL_TIME: '{{ forgejo_config_session_gc_interval_time }}',
+        SESSION_LIFE_TIME: '{{ forgejo_config_session_session_life_time }}',
+        DOMAIN: '{{ forgejo_config_session_domain }}',
+        SAME_SITE: '{{ forgejo_config_session_same_site }}',
+      },
+      picture: {
+        REPOSITORY_AVATAR_FALLBACK:
+          '{{ forgejo_config_picture_repository_avatar_fallback | lower }}',
+        REPOSITORY_AVATAR_FALLBACK_IMAGE:
+          '{{ forgejo_config_picture_repository_avatar_fallback_image }}',
+        AVATAR_MAX_WIDTH: '{{ forgejo_config_picture_avatar_max_width }}',
+        AVATAR_MAX_HEIGHT: '{{ forgejo_config_picture_avatar_max_height }}',
+        AVATAR_RENDERED_SIZE_FACTOR:
+          '{{ forgejo_config_picture_avatar_rendered_size_factor }}',
+        AVATAR_MAX_FILE_SIZE:
+          '{{ forgejo_config_picture_avatar_max_file_size }}',
+        AVATAR_MAX_ORIGIN_SIZE:
+          '{{ forgejo_config_picture_avatar_max_origin_size }}',
+        GRAVATAR_SOURCE: '{{ forgejo_config_picture_gravatar_source }}',
+        DISABLE_GRAVATAR: '{{ forgejo_config_picture_disable_gravatar }}',
+        ENABLE_FEDERATED_AVATAR:
+          '{{ forgejo_config_picture_enable_federated_avatar }}',
+      },
+      project: {
+        PROJECT_BOARD_BASIC_KANBAN_TYPE: '{{
+            forgejo_config_project_project_board_basic_kanban_type | join(",")
+          }}',
+        PROJECT_BOARD_BUG_TRIAGE_TYPE: '{{
+            forgejo_config_project_project_board_bug_triage_type | join(",")
+          }}',
+      },
+      attachment: {
+        ENABLED: '{{ forgejo_config_attachment_enabled }}',
+        ALLOWED_TYPES:
+          '{{ forgejo_config_attachment_allowed_types | join(",") }}',
+        MAX_SIZE: '{{ forgejo_config_attachment_max_size }}',
+        MAX_FILES: '{{ forgejo_config_attachment_max_files }}',
+        STORAGE_TYPE: '{{ forgejo_config_attachment_storage_type }}',
+        PATH: '{{ forgejo_config_attachment_path }}',
+        SERVE_DIRECT: '{{
+            forgejo_config_attachment_serve_direct
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ENDPOINT: '{{
+            forgejo_config_attachment_minio_endpoint
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ACCESS_KEY_ID: '{{
+            forgejo_config_attachment_minio_access_key_id
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_SECRET_ACCESS_KEY: '{{
+            forgejo_config_attachment_minio_secret_access_key
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET: '{{
+            forgejo_config_attachment_minio_bucket
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET_LOOKUP: '{{
+            forgejo_config_attachment_minio_bucket_lookup
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_LOCATION: '{{
+            forgejo_config_attachment_minio_location
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BASE_PATH: '{{
+            forgejo_config_attachment_minio_base_path
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_USE_SSL: '{{
+            forgejo_config_attachment_minio_use_ssl
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_INSECURE_SKIP_VERIFY: '{{
+            forgejo_config_attachment_minio_insecure_skip_verify
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_CHECKSUM_ALGORITHM: '{{
+            forgejo_config_attachment_minio_checksum_algorithm
+            if forgejo_config_attachment_storage_type | lower != "local" else
+            ""
+          }}',
+      },
+      lfs_client: {
+        BATCH_SIZE: '{{ forgejo_config_lfs_client_batch_size }}',
+        BATCH_OPERATION_CONCURRENCY:
+          '{{ forgejo_config_lfs_client_batch_operation_concurrency }}',
+      },
+      log: {
+        ROOT_PATH: '{{ forgejo_config_log_root_path }}',
+        MODE: '{{ forgejo_config_log_mode | join(",") }}',
+        LEVEL: '{{ forgejo_config_log_level | title }}',
+        STACKTRACE_LEVEL: '{{ forgejo_config_log_stacktrace_level | title }}',
+        BUFFER_LEN: '{{ forgejo_config_log_buffer_len }}',
+        logger.default.MODE: '{{ forgejo_config_log_logger_default_mode }}',
+        logger.access.MODE: '{{ forgejo_config_log_logger_access_mode }}',
+        logger.router.MODE: '{{ forgejo_config_log_logger_router_mode }}',
+        logger.xorm.MODE: '{{ forgejo_config_log_logger_xorm_mode }}',
+        ENABLE_SSH_LOG: '{{ forgejo_config_log_enable_ssh_log }}',
+        REQUEST_ID_HEADERS:
+          '{{ forgejo_config_log_request_id_headers | join(",") }}',
+        ACCESS_LOG_TEMPLATE: '{{ forgejo_config_log_access_log_template }}',
+      },
+      cron: {
+        ENABLED: '{{ forgejo_config_cron_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_run_at_start }}',
+        NOTICE_ON_SUCCESS: '{{ forgejo_config_cron_notice_on_success }}',
+      },
+      cron.archive_cleanup: {
+        ENABLED: '{{ forgejo_config_cron_archive_cleanup_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_archive_cleanup_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_archive_cleanup_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_archive_cleanup_schedule }}',
+        OLDER_THAN: '{{ forgejo_config_cron_archive_cleanup_older_than }}',
+      },
+      cron.update_mirrors: {
+        ENABLED: '{{ forgejo_config_cron_update_mirrors_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_update_mirrors_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_update_mirrors_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_update_mirrors_schedule }}',
+        PULL_LIMIT: '{{ forgejo_config_cron_update_mirrors_pull_limit }}',
+        PUSH_LIMIT: '{{ forgejo_config_cron_update_mirrors_push_limit }}',
+      },
+      cron.repo_health_check: {
+        ENABLED: '{{ forgejo_config_cron_repo_health_check_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_repo_health_check_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_repo_health_check_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_repo_health_check_schedule }}',
+        TIMEOUT: '{{ forgejo_config_cron_repo_health_check_timeout }}',
+        ARGS: '{{ forgejo_config_cron_repo_health_check_args | join(" ") }}',
+      },
+      cron.check_repo_stats: {
+        ENABLED: '{{ forgejo_config_cron_check_repo_stats_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_check_repo_stats_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_check_repo_stats_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_check_repo_stats_schedule }}',
+      },
+      cron.cleanup_hook_task_table: {
+        ENABLED: '{{ forgejo_config_cron_cleanup_hook_task_table_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_cleanup_hook_task_table_run_at_start }}',
+        SCHEDULE: '{{ forgejo_config_cron_cleanup_hook_task_table_schedule }}',
+        CLEANUP_TYPE:
+          '{{ forgejo_config_cron_cleanup_hook_task_table_cleanup_type }}',
+        OLDER_THAN:
+          '{{ forgejo_config_cron_cleanup_hook_task_table_older_than }}',
+        NUMBER_TO_KEEP:
+          '{{ forgejo_config_cron_cleanup_hook_task_table_number_to_keep }}',
+      },
+      cron.cleanup_packages: {
+        ENABLED: '{{ forgejo_config_cron_cleanup_packages_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_cleanup_packages_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_cleanup_packages_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_cleanup_packages_schedule }}',
+        OLDER_THAN: '{{ forgejo_config_cron_cleanup_packages_older_than }}',
+      },
+      cron.update_migration_poster_id: {
+        ENABLED:
+          '{{ forgejo_config_cron_update_migration_poster_id_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_update_migration_poster_id_run_at_start }}',
+        NOTICE_ON_SUCCESS: '{{
+            forgejo_config_cron_update_migration_poster_id_notice_on_success
+          }}',
+        SCHEDULE:
+          '{{ forgejo_config_cron_update_migration_poster_id_schedule }}',
+      },
+      cron.sync_external_users: {
+        ENABLED: '{{ forgejo_config_cron_sync_external_users_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_sync_external_users_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_sync_external_users_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_sync_external_users_schedule }}',
+        UPDATE_EXISTING:
+          '{{ forgejo_config_cron_sync_external_users_update_existing }}',
+      },
+      cron.cleanup_actions: {
+        ENABLED: '{{ forgejo_config_cron_cleanup_actions_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_cleanup_actions_run_at_start }}',
+        SCHEDULE: '{{ forgejo_config_cron_cleanup_actions_schedule }}',
+      },
+      cron.git_gc_repos: {
+        ENABLED: '{{ forgejo_config_cron_git_gc_repos_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_git_gc_repos_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_git_gc_repos_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_git_gc_repos_schedule }}',
+        TIMEOUT: '{{ forgejo_config_cron_git_gc_repos_timeout }}',
+        ARGS: '{{ forgejo_config_cron_git_gc_repos_args | join(" ") }}',
+      },
+      cron.resync_all_sshkeys: {
+        ENABLED: '{{ forgejo_config_cron_resync_all_sshkeys_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_resync_all_sshkeys_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_resync_all_sshkeys_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_resync_all_sshkeys_schedule }}',
+      },
+      cron.resync_all_hooks: {
+        ENABLED: '{{ forgejo_config_cron_resync_all_hooks_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_resync_all_hooks_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_resync_all_hooks_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_resync_all_hooks_schedule }}',
+      },
+      cron.reinit_missing_repos: {
+        ENABLED: '{{ forgejo_config_cron_reinit_missing_repos_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_reinit_missing_repos_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_reinit_missing_repos_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_reinit_missing_repos_schedule }}',
+      },
+      cron.delete_missing_repos: {
+        ENABLED: '{{ forgejo_config_cron_delete_missing_repos_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_delete_missing_repos_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_delete_missing_repos_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_delete_missing_repos_schedule }}',
+      },
+      cron.delete_generated_repository_avatars: {
+        ENABLED: '{{
+            forgejo_config_cron_delete_generated_repository_avatars_enabled
+          }}',
+        RUN_AT_START: '{{
+            forgejo_config_cron_delete_generated_repository_avatars_run_at_start
+          }}',
+        NOTICE_ON_SUCCESS: '{{
+            forgejo_config_cron_delete_generated_repository_avatars_notice_on_success
+          }}',
+        SCHEDULE: '{{
+            forgejo_config_cron_delete_generated_repository_avatars_schedule
+          }}',
+      },
+      cron.delete_old_actions: {
+        ENABLED: '{{ forgejo_config_cron_delete_old_actions_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_delete_old_actions_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_delete_old_actions_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_delete_old_actions_schedule }}',
+        OLDER_THAN: '{{ forgejo_config_cron_delete_old_actions_older_than }}',
+      },
+      cron.update_checker: {
+        ENABLED: '{{ forgejo_config_cron_update_checker_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_update_checker_run_at_start }}',
+        ENABLE_SUCCESS_NOTICE:
+          '{{ forgejo_config_cron_update_checker_enable_success_notice }}',
+        SCHEDULE: '{{ forgejo_config_cron_update_checker_schedule }}',
+        HTTP_ENDPOINT:
+          '{{ forgejo_config_cron_update_checker_http_endpoint }}',
+        DOMAIN_ENDPOINT:
+          '{{ forgejo_config_cron_update_checker_domain_endpoint }}',
+      },
+      cron.delete_old_system_notices: {
+        ENABLED: '{{ forgejo_config_cron_delete_old_system_notices_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_delete_old_system_notices_run_at_start }}',
+        NO_SUCCESS_NOTICE: '{{
+            forgejo_config_cron_delete_old_system_notices_no_success_notice
+          }}',
+        SCHEDULE:
+          '{{ forgejo_config_cron_delete_old_system_notices_schedule }}',
+        OLDER_THAN:
+          '{{ forgejo_config_cron_delete_old_system_notices_older_than }}',
+      },
+      cron.gc_lfs: {
+        ENABLED: '{{ forgejo_config_cron_gc_lfs_enabled }}',
+        RUN_AT_START: '{{ forgejo_config_cron_gc_lfs_run_at_start }}',
+        SCHEDULE: '{{ forgejo_config_cron_gc_lfs_schedule }}',
+        OLDER_THAN: '{{ forgejo_config_cron_gc_lfs_older_than }}',
+        LAST_UPDATED_MORE_THAN_AGO:
+          '{{ forgejo_config_cron_gc_lfs_last_updated_more_than_ago }}',
+        NUMBER_TO_CHECK_PER_REPO:
+          '{{ forgejo_config_cron_gc_lfs_number_to_check_per_repo }}',
+        PROPORTION_TO_CHECK_PER_REPO:
+          '{{ forgejo_config_cron_gc_lfs_proportion_to_check_per_repo }}',
+      },
+      cron.delete_inactive_accounts: {
+        ENABLED: '{{ forgejo_config_cron_delete_inactive_accounts_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_delete_inactive_accounts_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_cleanup_packages_notice_on_success }}',
+        SCHEDULE:
+          '{{ forgejo_config_cron_delete_inactive_accounts_schedule }}',
+        OLDER_THAN:
+          '{{ forgejo_config_cron_delete_inactive_accounts_older_than }}',
+      },
+      cron.deleted_branches_cleanup: {
+        ENABLED: '{{ forgejo_config_cron_deleted_branches_cleanup_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_deleted_branches_cleanup_run_at_start }}',
+        NOTICE_ON_SUCCESS: '{{
+            forgejo_config_cron_deleted_branches_cleanup_notice_on_success
+          }}',
+        SCHEDULE:
+          '{{ forgejo_config_cron_deleted_branches_cleanup_schedule }}',
+        OLDER_THAN:
+          '{{ forgejo_config_cron_deleted_branches_cleanup_older_than }}',
+      },
+      cron.delete_repo_archives: {
+        ENABLED: '{{ forgejo_config_cron_delete_repo_archives_enabled }}',
+        RUN_AT_START:
+          '{{ forgejo_config_cron_delete_repo_archives_run_at_start }}',
+        NOTICE_ON_SUCCESS:
+          '{{ forgejo_config_cron_delete_repo_archives_notice_on_success }}',
+        SCHEDULE: '{{ forgejo_config_cron_delete_repo_archives_schedule }}',
+      },
+      git: {
+        PATH: '{{ forgejo_config_git_path }}',
+        HOME_PATH: '{{ forgejo_config_git_home_path }}',
+        DISABLE_DIFF_HIGHLIGHT:
+          '{{ forgejo_config_git_disable_diff_highlight }}',
+        MAX_GIT_DIFF_LINES: '{{ forgejo_config_git_max_git_diff_lines }}',
+        MAX_GIT_DIFF_LINE_CHARACTERS:
+          '{{ forgejo_config_git_max_git_diff_line_characters }}',
+        MAX_GIT_DIFF_FILES: '{{ forgejo_config_git_max_git_diff_files }}',
+        COMMITS_RANGE_SIZE: '{{ forgejo_config_git_commits_range_size }}',
+        BRANCHES_RANGE_SIZE: '{{ forgejo_config_git_branches_range_size }}',
+        VERBOSE_PUSH: '{{ forgejo_config_git_verbose_push }}',
+        VERBOSE_PUSH_DELAY: '{{ forgejo_config_git_verbose_push_delay }}',
+        GC_ARGS: '{{ forgejo_config_git_gc_args | join(" ") }}',
+        ENABLE_AUTO_GIT_WIRE_PROTOCOL:
+          '{{ forgejo_config_git_enable_auto_git_wire_protocol }}',
+        PULL_REQUEST_PUSH_MESSAGE:
+          '{{ forgejo_config_git_pull_request_push_message }}',
+        LARGE_OBJECT_THRESHOLD:
+          '{{ forgejo_config_git_large_object_threshold }}',
+        DISABLE_CORE_PROTECT_NTFS:
+          '{{ forgejo_config_git_disable_core_protect_ntfs }}',
+        DISABLE_PARTIAL_CLONE:
+          '{{ forgejo_config_git_disable_partial_clone }}',
+      },
+      git.timeout: {
+        DEFAULT: '{{ forgejo_config_git_timeout_default }}',
+        MIGRATE: '{{ forgejo_config_git_timeout_migrate }}',
+        MIRROR: '{{ forgejo_config_git_timeout_mirror }}',
+        CLONE: '{{ forgejo_config_git_timeout_clone }}',
+        PULL: '{{ forgejo_config_git_timeout_pull }}',
+        GC: '{{ forgejo_config_git_timeout_gc }}',
+        GREP: '{{ forgejo_config_git_timeout_grep }}',
+      },
+      git.config: '{{ forgejo_config_git_config }}',
+      metrics: {
+        ENABLED: '{{ forgejo_config_metrics_enabled }}',
+        TOKEN: '{{ forgejo_config_metrics_token }}',
+        ENABLED_ISSUE_BY_LABEL:
+          '{{ forgejo_config_metrics_enabled_issue_by_label }}',
+        ENABLED_ISSUE_BY_REPOSITORY:
+          '{{ forgejo_config_metrics_enabled_issue_by_repository }}',
+      },
+      api: {
+        ENABLE_SWAGGER: '{{ forgejo_config_api_enable_swagger }}',
+        MAX_RESPONSE_ITEMS: '{{ forgejo_config_api_max_response_items }}',
+        DEFAULT_PAGING_NUM: '{{ forgejo_config_api_default_paging_num }}',
+        DEFAULT_GIT_TREES_PER_PAGE:
+          '{{ forgejo_config_api_default_git_trees_per_page }}',
+        DEFAULT_MAX_BLOB_SIZE:
+          '{{ forgejo_config_api_default_max_blob_size }}',
+      },
+      oauth2: {
+        ENABLED: '{{ forgejo_config_oauth2_enabled }}',
+        JWT_SIGNING_ALGORITHM:
+          '{{ forgejo_config_oauth2_jwt_signing_algorithm | upper }}',
+        JWT_SIGNING_PRIVATE_KEY_FILE:
+          '{{ forgejo_config_server_app_data_path }}/jwt/private.pem',
+        JWT_SECRET: '{{ forgejo_config_oauth2_jwt_secret }}',
+        ACCESS_TOKEN_EXPIRATION_TIME:
+          '{{ forgejo_config_oauth2_access_token_expiration_time }}',
+        REFRESH_TOKEN_EXPIRATION_TIME:
+          '{{ forgejo_config_oauth2_refresh_token_expiration_time }}',
+        INVALIDATE_REFRESH_TOKENS:
+          '{{ forgejo_config_oauth2_invalidate_refresh_tokens }}',
+        MAX_TOKEN_LENGTH: '{{ forgejo_config_oauth2_max_token_length }}',
+        DEFAULT_APPLICATIONS:
+          '{{ forgejo_config_oauth2_default_applications | join(",") }}',
+      },
+      i18n: {
+        LANGS: '{{
+            forgejo_config_i18n_languages | map(attribute="lang") | list | join(",")
+            if forgejo_config_i18n_languages | length > 0 else
+            ""
+          }}',
+        NAMES: '{{
+            forgejo_config_i18n_languages | map(attribute="name") | list | join(",")
+            if forgejo_config_i18n_languages | length > 0 else
+            ""
+          }}',
+      },
+      markup: {
+        MERMAID_MAX_SOURCE_CHARACTERS:
+          '{{ forgejo_config_markup_mermaid_max_source_characters }}',
+        FILEPREVIEW_MAX_LINES:
+          '{{ forgejo_config_markup_filepreview_max_lines }}',
+      },
+      highlight.mapping: '{{ forgejo_config_highlight_mapping }}',
+      time: {
+        DEFAULT_UI_LOCATION: '{{ forgejo_config_time_default_ui_location }}',
+      },
+      migrations: {
+        MAX_ATTEMPTS: '{{ forgejo_config_migrations_max_attempts }}',
+        RETRY_BACKOFF: '{{ forgejo_config_migrations_retry_backoff }}',
+        ALLOWED_DOMAINS:
+          '{{ forgejo_config_migrations_allowed_domains | join(",") }}',
+        BLOCKED_DOMAINS:
+          '{{ forgejo_config_migrations_blocked_domains | join(",") }}',
+        ALLOW_LOCALNETWORKS:
+          '{{ forgejo_config_migrations_allow_localnetworks }}',
+        SKIP_TLS_VERIFY: '{{ forgejo_config_migrations_skip_tls_verify }}',
+      },
+      federation: {
+        ENABLED: '{{ forgejo_config_federation_enabled }}',
+        SHARE_USER_STATISTICS:
+          '{{ forgejo_config_federation_share_user_statistics }}',
+        MAX_SIZE: '{{ forgejo_config_federation_max_size }}',
+        ALGORITHMS: '{{ forgejo_config_federation_algorithms | join(",") }}',
+        DIGEST_ALGORITHM: '{{ forgejo_config_federation_digest_algorithm }}',
+        GET_HEADERS: '{{ forgejo_config_federation_get_headers | join(",") }}',
+        POST_HEADERS:
+          '{{ forgejo_config_federation_post_headers | join(",") }}',
+      },
+      packages: {
+        ENABLED: '{{ forgejo_config_packages_enabled }}',
+        CHUNKED_UPLOAD_PATH:
+          '{{ forgejo_config_packages_chunked_upload_path }}',
+        LIMIT_TOTAL_OWNER_COUNT:
+          '{{ forgejo_config_packages_limit_total_owner_count }}',
+        LIMIT_TOTAL_OWNER_SIZE:
+          '{{ forgejo_config_packages_limit_total_owner_size }}',
+        LIMIT_SIZE_ALPINE: '{{ forgejo_config_packages_limit_size_alpine }}',
+        LIMIT_SIZE_CARGO: '{{ forgejo_config_packages_limit_size_cargo }}',
+        LIMIT_SIZE_CHEF: '{{ forgejo_config_packages_limit_size_chef }}',
+        LIMIT_SIZE_COMPOSER:
+          '{{ forgejo_config_packages_limit_size_composer }}',
+        LIMIT_SIZE_CONAN: '{{ forgejo_config_packages_limit_size_conan }}',
+        LIMIT_SIZE_CONDA: '{{ forgejo_config_packages_limit_size_conda }}',
+        LIMIT_SIZE_CONTAINER:
+          '{{ forgejo_config_packages_limit_size_container }}',
+        LIMIT_SIZE_CRAN: '{{ forgejo_config_packages_limit_size_cran }}',
+        LIMIT_SIZE_DEBIAN: '{{ forgejo_config_packages_limit_size_debian }}',
+        LIMIT_SIZE_GENERIC: '{{ forgejo_config_packages_limit_size_generic }}',
+        LIMIT_SIZE_GO: '{{ forgejo_config_packages_limit_size_go }}',
+        LIMIT_SIZE_HELM: '{{ forgejo_config_packages_limit_size_helm }}',
+        LIMIT_SIZE_MAVEN: '{{ forgejo_config_packages_limit_size_maven }}',
+        LIMIT_SIZE_NPM: '{{ forgejo_config_packages_limit_size_npm }}',
+        LIMIT_SIZE_NUGET: '{{ forgejo_config_packages_limit_size_nuget }}',
+        LIMIT_SIZE_PUB: '{{ forgejo_config_packages_limit_size_pub }}',
+        LIMIT_SIZE_PYPI: '{{ forgejo_config_packages_limit_size_pypi }}',
+        LIMIT_SIZE_RPM: '{{ forgejo_config_packages_limit_size_rpm }}',
+        LIMIT_SIZE_RUBYGEMS:
+          '{{ forgejo_config_packages_limit_size_rubygems }}',
+        LIMIT_SIZE_SWIFT: '{{ forgejo_config_packages_limit_size_swift }}',
+        LIMIT_SIZE_VAGRANT: '{{ forgejo_config_packages_limit_size_vagrant }}',
+        DEFAULT_RPM_SIGN_ENABLED:
+          '{{ forgejo_config_packages_default_rpm_sign_enabled }}',
+        STORAGE_TYPE: '{{ forgejo_config_packages_storage_type }}',
+        PATH: '{{ forgejo_config_packages_path }}',
+        SERVE_DIRECT: '{{
+            forgejo_config_packages_serve_direct
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ENDPOINT: '{{
+            forgejo_config_packages_minio_endpoint
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ACCESS_KEY_ID: '{{
+            forgejo_config_packages_minio_access_key_id
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_SECRET_ACCESS_KEY: '{{
+            forgejo_config_packages_minio_secret_access_key
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET: '{{
+            forgejo_config_packages_minio_bucket
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET_LOOKUP: '{{
+            forgejo_config_packages_minio_bucket_lookup
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_LOCATION: '{{
+            forgejo_config_packages_minio_location
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BASE_PATH: '{{
+            forgejo_config_packages_minio_base_path
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_USE_SSL: '{{
+            forgejo_config_packages_minio_use_ssl
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_INSECURE_SKIP_VERIFY: '{{
+            forgejo_config_packages_minio_insecure_skip_verify
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_CHECKSUM_ALGORITHM: '{{
+            forgejo_config_packages_minio_checksum_algorithm
+            if forgejo_config_packages_storage_type | lower != "local" else
+            ""
+          }}',
+      },
+      mirror: {
+        ENABLED: '{{ forgejo_config_mirrors_enabled }}',
+        DISABLE_NEW_PULL: '{{ forgejo_config_mirrors_disable_new_pull }}',
+        DISABLE_NEW_PUSH: '{{ forgejo_config_mirrors_disable_new_push }}',
+        DEFAULT_INTERVAL: '{{ forgejo_config_mirrors_default_interval }}',
+        MIN_INTERVAL: '{{ forgejo_config_mirrors_min_interval }}',
+      },
+      storage: {
+        STORAGE_TYPE: '{{ forgejo_config_storage_storage_type }}',
+        PATH: '{{ forgejo_config_storage_path }}',
+        SERVE_DIRECT: '{{
+            forgejo_config_storage_serve_direct
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ENDPOINT: '{{
+            forgejo_config_storage_config_minio_endpoint
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_ACCESS_KEY_ID: '{{
+            forgejo_config_storage_config_minio_access_key_id
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_SECRET_ACCESS_KEY: '{{
+            forgejo_config_storage_config_minio_secret_access_key
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET: '{{
+            forgejo_config_storage_config_minio_bucket
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_BUCKET_LOOKUP: '{{
+            forgejo_config_storage_config_minio_bucket_lookup
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_LOCATION: '{{
+            forgejo_config_storage_config_minio_location
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_USE_SSL: '{{
+            forgejo_config_storage_config_minio_use_ssl
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_INSECURE_SKIP_VERIFY: '{{
+            forgejo_config_storage_config_minio_insecure_skip_verify
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+        MINIO_CHECKSUM_ALGORITHM: '{{
+            forgejo_config_storage_minio_checksum_algorithm
+            if forgejo_config_storage_storage_type | lower != "local" else
+            ""
+          }}',
+      },
+      quota: {
+        ENABLED: '{{ forgejo_config_quota_enabled }}',
+        DEFAULT_GROUPS:
+          '{{ forgejo_config_quota_default_groups | join(",") }}',
+      },
+      quota.default: {
+        TOTAL: '{{ forgejo_config_quota_default_total }}',
+      },
+      proxy: {
+        PROXY_ENABLED: '{{ forgejo_config_proxy_proxy_enabled }}',
+        PROXY_URL: '{{ forgejo_config_proxy_proxy_url }}',
+        PROXY_HOSTS: '{{ forgejo_config_proxy_proxy_hosts | join(",") }}',
+      },
+      actions: {
+        ENABLED: '{{ forgejo_config_actions_enabled }}',
+        DEFAULT_ACTIONS_URL:
+          '{{ forgejo_config_actions_default_actions_url }}',
+        LOG_RETENTION_DAYS: '{{ forgejo_config_actions_log_retention_days }}',
+        LOG_COMPRESSION: '{{ forgejo_config_actions_log_compression }}',
+        ARTIFACT_RETENTION_DAYS:
+          '{{ forgejo_config_actions_artifact_retention_days }}',
+        ZOMBIE_TASK_TIMEOUT:
+          '{{ forgejo_config_actions_zombie_task_timeout }}',
+        ENDLESS_TASK_TIMEOUT:
+          '{{ forgejo_config_actions_endless_task_timeout }}',
+        ABANDONED_JOB_TIMEOUT:
+          '{{ forgejo_config_actions_abandoned_job_timeout }}',
+        SKIP_WORKFLOW_STRINGS:
+          '{{ forgejo_config_actions_skip_workflow_strings | join(",") }}',
+        LIMIT_DISPATCH_INPUTS:
+          '{{ forgejo_config_actions_limit_dispatch_inputs }}',
+      },
+      other: {
+        SHOW_FOOTER_VERSION: '{{ forgejo_config_other_show_footer_version }}',
+        SHOW_FOOTER_TEMPLATE_LOAD_TIME:
+          '{{ forgejo_config_other_show_footer_template_load_time }}',
+        SHOW_FOOTER_POWERED_BY:
+          '{{ forgejo_config_other_show_footer_powered_by }}',
+        ENABLE_SITEMAP: '{{ forgejo_config_other_enable_sitemap }}',
+        ENABLE_FEED: '{{ forgejo_config_other_enable_feed }}',
+      },
+      F3: {
+        ENABLED: '{{ forgejo_config_f3_enabled }}',
+      },
+    ]
+
+- name: 'Prep | extend config with dynamic sections'
+  ansible.builtin.set_fact:
+    _forgejo_config: '{{
+        _forgejo_config +
+        [forgejo_config_queue_individual] +
+        [forgejo_config_log_writers] +
+        [forgejo_config_markup_external] +
+        [forgejo_config_storage_sub_system] +
+        [forgejo_config_extensions]
+      }}'  # Always load extensions last.

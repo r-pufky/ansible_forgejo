@@ -1,0 +1,181 @@
+---
+###############################################################################
+# Packages [packages]
+###############################################################################
+
+# Enable/Disable package registry capabilities? Default: True.
+forgejo_config_packages_enabled: true
+
+# Path for chunked uploads.
+#
+# Special Case:
+#   * Relative paths anchored to AppDataPath.
+#
+# Default: '{{ forgejo_config_data_path }}/tmp/package-upload'.
+forgejo_config_packages_chunked_upload_path:
+  '{{ forgejo_config_data_path }}/tmp/package-upload'
+
+# Maximum count of package versions a single owner can have.
+#
+# Values:
+#   -1: No limit (default).
+#
+# Default: -1 (no limit).
+forgejo_config_packages_limit_total_owner_count: -1
+
+# Maximum size of packages a single owner can use (SIZE format). Default: -1.
+forgejo_config_packages_limit_total_owner_size: -1
+
+# Maximum size of an Alpine upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_alpine: -1
+
+# Maximum size of a Cargo upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_cargo: -1
+
+# Maximum size of a Chef upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_chef: -1
+
+# Maximum size of a Composer upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_composer: -1
+
+# Maximum size of a Conan upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_conan: -1
+
+# Maximum size of a Conda upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_conda: -1
+
+# Maximum size of a Container upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_container: -1
+
+# Maximum size of a CRAN upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_cran: -1
+
+# Maximum size of a Debian upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_debian: -1
+
+# Maximum size of a Generic upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_generic: -1
+
+# Maximum size of a Go upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_go: -1
+
+# Maximum size of a Helm upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_helm: -1
+
+# Maximum size of a Maven upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_maven: -1
+
+# Maximum size of a npm upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_npm: -1
+
+# Maximum size of a NuGet upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_nuget: -1
+
+# Maximum size of a Pub upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_pub: -1
+
+# Maximum size of a PyPI upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_pypi: -1
+
+# Maximum size of a RPM upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_rpm: -1
+
+# Maximum size of a RubyGems upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_rubygems: -1
+
+# Maximum size of a Swift upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_swift: -1
+
+# Maximum size of a Vagrant upload (SIZE format). Default: -1.
+forgejo_config_packages_limit_size_vagrant: -1
+
+# Enable RPM re-signing by default? Default: False.
+forgejo_config_packages_default_rpm_sign_enabled: false
+
+###############################################################################
+# Storage Options
+###############################################################################
+# Reference:
+# * https://forgejo.org/docs/latest/admin/storage/
+
+# Packages storage type.
+#
+# Values:
+#   local: Local disk (default).
+#   minio: S3 compatible object storage service.
+#
+# Default: 'local'.
+forgejo_config_packages_storage_type: 'local'
+
+# Attachment path.
+#
+# Requires forgejo_config_packages_storage_type=local.
+#
+# Special Case:
+#   * Relative paths anchored to AppDataPath.
+#
+# Default: '{{ forgejo_config_data_path }}/packages'.
+forgejo_config_packages_path: '{{ forgejo_config_data_path }}/packages'
+
+###############################################################################
+# Minio Storage Options
+###############################################################################
+# All options require forgejo_config_packages_storage_type=minio.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/storage/#using-minio-1
+
+# Enable redirect to authenticated URL to serve files directly? Default: False.
+forgejo_config_packages_serve_direct: false
+
+# Minio endpoint. Default: 'localhost:9000'.
+forgejo_config_packages_minio_endpoint: 'localhost:9000'
+
+# Minio accessKeyID.
+#
+# Values:
+#   '': Search for credentials in known environment variables
+#       (MINIO_ACCESS_KEY_ID, AWS_ACCESS_KEY_ID), credentials files
+#       (~/.mc/config.json, ~/.aws/credentials), and EC2 instance metadata
+#       (default).
+#
+# Default: '' (search).
+forgejo_config_packages_minio_access_key_id: ''
+
+# Minio secretAccessKey. Default: ''.
+forgejo_config_packages_minio_secret_access_key: ''
+
+# Minio attachment storage bucket. Default: 'forgejo'.
+forgejo_config_packages_minio_bucket: 'forgejo'
+
+# Minio URL storage bucket lookup.
+#
+# Values:
+#   auto: Automatic.
+#    dns: Use DNS.
+#   path: Use path.
+#     '': auto (default).
+#
+# Default: '' (auto).
+forgejo_config_packages_minio_bucket_lookup: ''
+
+# Minio create bucket location. Default: 'us-east-1'.
+forgejo_config_packages_minio_location: 'us-east-1'
+
+# Minio bucket base path. Default: 'packages/'.
+forgejo_config_packages_minio_base_path: 'packages/'
+
+# Enable Minio SSL? Default: False.
+forgejo_config_packages_minio_use_ssl: false
+
+# Minio skip SSL verification? Default: False.
+forgejo_config_packages_minio_insecure_skip_verify: false
+
+# Minio checksum algorithm.
+#
+# Values:
+#   default: MinIO or AWS S3.
+#       md5: Cloudflare or Backblaze.
+#
+# Default: 'default'.
+forgejo_config_packages_minio_checksum_algorithm: 'default'

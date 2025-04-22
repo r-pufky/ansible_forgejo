@@ -1,0 +1,47 @@
+---
+###############################################################################
+# Federation [federation]
+###############################################################################
+
+# Enable federation? Default: False.
+forgejo_config_federation_enabled: false
+
+# Enable user statistics for node info? Default: True.
+forgejo_config_federation_share_user_statistics: true
+
+# Maximum federation request and response size (MB). Default: 4.
+forgejo_config_federation_max_size: 4
+
+# List HTTP signature algorithms.
+#
+# Default:
+#  - 'rsa-sha256'
+#  - 'rsa-sha512'
+#  - 'ed25519'
+forgejo_config_federation_algorithms:
+  - 'rsa-sha256'
+  - 'rsa-sha512'
+  - 'ed25519'
+
+# HTTP signature digest algorithm. Default: 'SHA-256'.
+forgejo_config_federation_digest_algorithm: 'SHA-256'
+
+# List of GET headers for federation requests.
+#
+# Default:
+#   - '(request-target)'
+#   - 'Date'
+forgejo_config_federation_get_headers:
+  - '(request-target)'
+  - 'Date'
+
+# List of POST headers for federation requests.
+#
+# Default:
+#   - '(request-target)'
+#   - 'Date'
+#   - 'Digest'
+forgejo_config_federation_post_headers:
+  - '(request-target)'
+  - 'Date'
+  - 'Digest'

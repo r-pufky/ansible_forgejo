@@ -1,0 +1,21 @@
+---
+- name: 'Force forgejo_container_enable=true (srv_container_enable)'
+  when: srv_container_enable | default(false)
+  ansible.builtin.set_fact:
+    forgejo_container_enable: true
+
+- name: 'Assert'
+  ansible.builtin.include_tasks: 'assert.yml'
+- name: 'Prep'
+  ansible.builtin.include_tasks: 'prep.yml'
+
+- name: 'Install'
+  when: not forgejo_service_force_config_only_enable
+  ansible.builtin.include_tasks: 'install.yml'
+
+- name: 'Config'
+  ansible.builtin.include_tasks: 'config.yml'
+
+- name: 'Local users'
+  when: forgejo_local_users | length > 0
+  ansible.builtin.include_tasks: 'local_users.yml'

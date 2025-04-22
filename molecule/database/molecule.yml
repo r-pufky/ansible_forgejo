@@ -1,0 +1,81 @@
+---
+# yamllint disable rule:line-length
+# Confirm:
+# * Database passwords are properly escaped in config.
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        repo_testing_enable: true
+        repo_testing_versions:
+          - comment: 'forgejo'
+            version: 'v10.0.3'
+            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
+            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
+            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+        forgejo_container_enable: true
+        forgejo_service_harden_enable: true
+        forgejo_config_security_internal_token: 'test'
+        forgejo_config_server_lfs_jwt_secret: 'test'
+        forgejo_config_security_secret_key: 'test'
+    host_vars:
+      forgejo-debian-12-database_postgres:
+        forgejo_config_database_db_type: 'postgres'
+        forgejo_config_database_host: '127.0.0.1'
+        forgejo_config_database_name: 'forgejo'
+        forgejo_config_database_user: 'root'
+        forgejo_config_database_passwd: 'test'
+        forgejo_config_database_ssl_mode: false
+      forgejo-debian-12-database_mysql:
+        forgejo_config_database_db_type: 'mysql'
+        forgejo_config_database_host: '127.0.0.1'
+        forgejo_config_database_name: 'forgejo'
+        forgejo_config_database_user: 'root'
+        forgejo_config_database_passwd: 'test'
+        forgejo_config_database_ssl_mode: false
+platforms:
+  - name: 'forgejo-debian-12-database_postgres'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+  - name: 'forgejo-debian-12-database_mysql'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # Files created, extracted, created, deleted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

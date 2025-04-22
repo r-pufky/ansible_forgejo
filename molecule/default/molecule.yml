@@ -1,0 +1,166 @@
+---
+# yamllint disable rule:line-length
+# Confirm:
+# * service is active and running (default).
+# * Default configuration is syntactically correct.
+# * Configuration extensions are syntactically correct.
+# * Hardened drop-in works.
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        repo_testing_enable: true
+        repo_testing_versions:
+          - comment: 'forgejo'
+            version: 'v10.0.3'
+            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
+            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
+            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+        forgejo_container_enable: true
+        forgejo_service_harden_enable: true
+    host_vars:
+      forgejo-debian-12-default:
+        forgejo_config_security_install_lock: true
+        forgejo_local_users:
+          - username: 'admin_test'
+            password: 'admin'
+            email: 'admin@example.com'
+            admin: true
+          - username: 'user_test'
+            password: 'test'
+            email: 'user@example.com'
+          - username: 'user_test'
+            state: 'absent'
+      forgejo-debian-12-default_extensions:
+        forgejo_config_repository_mimetype_mapping:
+          '.apk': 'application/vnd.android.package-archive'
+        forgejo_config_mailer_override_header:
+          Reply-To: 'test@example.com, test2@example.com'
+          Content-Type: 'text/html; charset=utf-8'
+          In-Reply-To: ''
+        forgejo_config_git_config: {}
+        forgejo_config_i18n_languages:
+          - lang: 'en-US'
+            name: 'English'
+          - lang: 'zh-CN'
+            name: '简体中文'
+        forgejo_config_highlight_mapping:
+          '.toml': 'ini'
+        forgejo_config_queue_individual:
+          queue.mail:
+            SET_NAME: '_mail'
+        forgejo_config_log_writers:
+          log.console:
+            MODE: 'console'
+            LEVEL: 'Info'
+            FLAGS: 'journald'
+            COLORIZE: false
+          log.file:
+            LOG_ROTATE: true
+            MAX_SIZE_SHIFT: 28
+            DAILY_ROTATE: true
+            MAX_DAYS: 7
+            COMPRESS: true
+            COMPRESSION_LEVEL: -1
+          log.conn:
+            RECONNECT_ON_MSG: false
+            RECONNECT: false
+            PROTOCOL: 'tcp'
+        forgejo_config_markup_external:
+          markup.asciidoc:
+            ENABLED: true
+            NEED_POSTPROCESS: true
+            FILE_EXTENSIONS: '.adoc,.asciidoc'
+            RENDER_COMMAND: 'asciidoctor --embedded --safe-mode=secure --out-file=- -'
+            IS_INPUT_FILE: false
+          markup.sanitizer.1:
+            ELEMENT: 'span'
+            ALLOW_ATTR: 'class'
+            REGEXP: '(info|warning|error)'
+          markup.sanitizer.asciidoc:
+            ENABLED: false
+            FILE_EXTENSIONS: '.adoc,.asciidoc'
+            RENDER_COMMAND: 'asciidoc --out-file=- -'
+            IS_INPUT_FILE: false
+            RENDER_CONTENT_MODE: 'sanitized'
+          markup.sanitizer.asciidoc.rule-1:
+            ENABLED: true
+        forgejo_config_storage_sub_system:
+          repo-archive:
+            STORAGE_TYPE: 'local'
+            PATH: 'data/repo-archive'
+          actions.artifacts:
+            STORAGE_TYPE: 'minio'
+            SERVE_DIRECT: false
+            MINIO_ENDPOINT: 'localhost:9000'
+            MINIO_ACCESS_KEY_ID: ''
+            MINIO_SECRET_ACCESS_KEY: ''
+            MINIO_BUCKET: 'forgejo'
+            MINIO_BUCKET_LOOKUP: ''
+            MINIO_LOCATION: 'us-east-1'
+            MINIO_BASE_PATH: 'repo-archive/'
+            MINIO_USE_SSL: false
+            MINIO_INSECURE_SKIP_VERIFY: false
+            MINIO_CHECKSUM_ALGORITHM: 'default'
+          storage.my_minio:
+            STORAGE_TYPE: 'minio'
+            MINIO_ENDPOINT: 'localhost:9000'
+            MINIO_ACCESS_KEY_ID: ''
+            MINIO_SECRET_ACCESS_KEY: ''
+            MINIO_BUCKET: 'forgejo'
+            MINIO_BUCKET_LOOKUP: ''
+            MINIO_LOCATION: 'us-east-1'
+            MINIO_BASE_PATH: 'repo-archive/'
+            MINIO_USE_SSL: false
+            MINIO_INSECURE_SKIP_VERIFY: false
+        forgejo_config_extensions:
+          server:
+            ROOT_URL: 'http://127.0.0.1:3000/'
+platforms:
+  - name: 'forgejo-debian-12-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+    published_ports:
+      - '3000/tcp'
+  - name: 'forgejo-debian-12-default_extensions'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # Files created, extracted, created, deleted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

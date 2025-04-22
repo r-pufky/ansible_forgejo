@@ -1,0 +1,21 @@
+---
+###############################################################################
+# Highlight Mapping [highlight.mapping]
+###############################################################################
+
+# Extension mapping to highlight class.
+#
+# Forgejo will highlight files using the linguist-language or gitlab-language
+# attribute from the .gitattributes file if available. If this is not set or
+# the language is unavailable, the file extension will be looked up in this
+# mapping or the filetype using heuristics.
+#
+# forgejo_config_highlight_mapping:
+#     dict - Extension to highlight syntax mapping.
+#   {EXT}: {MAP} - Syntax highlighting to use for extension.
+#
+# forgejo_config_highlight_mapping:
+#   '.toml': 'ini'
+#
+# Default: {}.
+forgejo_config_highlight_mapping: {}

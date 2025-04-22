@@ -1,0 +1,19 @@
+---
+###############################################################################
+# Proxy [proxy]
+###############################################################################
+
+# Enable proxy? Default: False.
+forgejo_config_proxy_proxy_enabled: false
+
+# Proxy server URL. Default: '' (Use environment).
+forgejo_config_proxy_proxy_url: ''
+
+# List of host names requiring proxy.
+#
+# Special Case:
+#    *: Glob patterns (*) are accepted.
+#   **: Match all hosts.
+#
+# Default: [] (no hosts).
+forgejo_config_proxy_proxy_hosts: []

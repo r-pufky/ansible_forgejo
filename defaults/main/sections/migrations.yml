@@ -1,0 +1,44 @@
+---
+###############################################################################
+# Migrations [migrations]
+###############################################################################
+
+# Max attempts per HTTP/HTTPS request on migrations. Default: 3.
+forgejo_config_migrations_max_attempts: 3
+
+# Backoff time per HTTP/HTTPS request retry (seconds). Default: 3.
+forgejo_config_migrations_retry_backoff: 3
+
+# List of allowed domains for migration.
+#
+# Superseded by forgejo_config_migrations_blocked_domains.
+#
+# Special Case:
+#    *: Wildcards are allowed.
+#   []: Allow all (default).
+#
+# Default: [] (allow all).
+forgejo_config_migrations_allowed_domains: []
+
+# List of blocked domains for migration.
+#
+# Precedence over forgejo_config_migrations_allowed_domains.
+#
+# Special Case:
+#    *: Wildcards are allowed.
+#   []: Allow all (default).
+#
+# Default: [] (allow all).
+forgejo_config_migrations_blocked_domains: []
+
+# Enable local network migrations?
+#
+# Allows private addresses defined by RFC1918, RFC1122, RFC4632, and RFC4291.
+# If a domain is allowed by forgejo_config_migrations_allowed_domains, this
+# option will be ignored.
+#
+# Default: False.
+forgejo_config_migrations_allow_localnetworks: false
+
+# Enable skipping of server certificate validation (unsafe)? Default: False.
+forgejo_config_migrations_skip_tls_verify: false

@@ -1,7 +1,12 @@
 ---
-# yamllint disable rule:line-length
-# Confirm:
+###############################################################################
+# Backup
+###############################################################################
+# Version upgrades trigger automatic install backup before upgrade if enabled.
+#
+# Tests:
 # * Upgrading forgejo trigger backup of existing data.
+
 dependency:
   name: 'galaxy'
 driver:
@@ -21,14 +26,32 @@ provisioner:
         repo_testing_versions:
           - comment: 'forgejo'
             version: 'v10.0.3'
-            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
-            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
-            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+            asset: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64"
+              }}'
+            checksum: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.sha256"
+              }}'
+            signature: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
+              }}'
           - comment: 'forgejo'
             version: 'v10.0.4'
-            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.4-linux-amd64'
-            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.4-linux-amd64.sha256'
-            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.4-linux-amd64.asc'
+            asset: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.4-linux-amd64"
+              }}'
+            checksum: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.4-linux-amd64.sha256"
+              }}'
+            signature: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.4-linux-amd64.asc"
+              }}'
         forgejo_container_enable: true
         forgejo_service_harden_enable: true
         forgejo_config_security_install_lock: true

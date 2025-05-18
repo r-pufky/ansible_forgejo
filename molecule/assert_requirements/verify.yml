@@ -3,6 +3,6 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Assert requirements | verify | PASS'
+    - name: 'Assert requirements | verify | PASS ✔'
       ansible.builtin.debug:
-        msg: 'Tests PASSED during converge.'
+        msg: '✔ Tests PASSED during converge.'

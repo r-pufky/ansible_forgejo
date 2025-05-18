@@ -1,9 +1,14 @@
 ---
-# yamllint disable rule:line-length
-# Confirm:
+###############################################################################
+# Directories
+###############################################################################
+# Relative paths are resolved and created correctly.
+#
+# Tests:
 # * Relative managed directory paths are resolved properly (absolute path with
 #   no trailing slash).
 # * Managed directory paths are created correctly.
+
 dependency:
   name: 'galaxy'
 driver:
@@ -23,9 +28,18 @@ provisioner:
         repo_testing_versions:
           - comment: 'forgejo'
             version: 'v10.0.3'
-            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
-            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
-            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+            asset: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64"
+              }}'
+            checksum: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.sha256"
+              }}'
+            signature: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
+              }}'
         forgejo_container_enable: true
         forgejo_service_harden_enable: true
         forgejo_config_security_internal_token: 'test'

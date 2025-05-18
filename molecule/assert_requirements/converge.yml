@@ -1,29 +1,33 @@
 ---
-# yamllint disable rule:line-length
-# Catch assertion errors as the role is called.
-
 - name: 'Assert requirements | converge'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: 'Assert requirements | converge | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
     - name: 'Assert requirements | converge | load cached secrets'
       ansible.builtin.set_fact:
-        _test_lfs_jwt_secret: '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
+        _test_lfs_jwt_secret:
+          '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
         _test_secret_key: '{{ lookup("file", _test_cache ~ "/secret_key") }}'
 
     # Indirectly test default security key warning.
-    - name: 'Assert requirements | converge | assert data locations are not in install paths'
+    - name: >
+        Assert requirements | converge |
+        assert data locations are not in install paths
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | assert data locations are not in install paths'
+        test_name: >
+          Assert requirements | converge |
+          assert data locations are not in install paths
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_work_path="/tmp/test" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_work_path="/tmp/test" did not trigger assertion.'
         forgejo_config_security_secret_key: '!#@FDEWREWR&*('
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_data_path: '/tmp/test'
@@ -31,14 +35,19 @@
         forgejo_config_custom_path: '/tmp/test2'
         forgejo_role_repo_extract_symlink: '/tmp/test2'
 
-    - name: 'Assert requirements | converge | assert data locations are not in install paths'
+    - name: >
+        Assert requirements | converge |
+        assert data locations are not in install paths
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | assert data locations are not in install paths'
+        test_name: >
+          Assert requirements | converge |
+          assert data locations are not in install paths
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_custom_path="/tmp/test" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_custom_path="/tmp/test" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_data_path: '/tmp/test'
@@ -46,14 +55,20 @@
         forgejo_config_custom_path: '/tmp/test'
         forgejo_role_repo_extract_symlink: '/tmp/test2'
 
-    - name: 'Assert requirements | converge | assert data locations are not in install paths'
+    - name: >
+        Assert requirements | converge |
+        assert data locations are not in install paths
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | assert data locations are not in install paths'
+        test_name: >
+          Assert requirements | converge |
+          assert data locations are not in install paths
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_role_repo_extract_symlink="/tmp/test" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_role_repo_extract_symlink="/tmp/test"
+          did not trigger assertion.
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_data_path: '/tmp/test'
@@ -63,157 +78,198 @@
 
     - name: 'Assert requirements | converge | user manual confirmation'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | user manual confirmation'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_register_email_confirm=true did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_register_email_confirm=true
+          did not trigger assertion.
         forgejo_config_service_register_manual_confirm: true
         forgejo_config_service_register_email_confirm: true
 
     - name: 'Assert requirements | converge | registration only using forgejo'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | registration only using forgejo'
+        test_name:
+          'Assert requirements | converge | registration only using forgejo'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_register_email_confirm=true did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_register_email_confirm=true
+          did not trigger assertion.
         forgejo_config_service_allow_only_internal_registration: true
         forgejo_config_service_register_email_confirm: true
 
-    - name: 'Assert requirements | converge | registration using third-party services'
+    - name: >
+        Assert requirements | converge |
+        registration using third-party services
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | registration using third-party services'
+        test_name: >
+          Assert requirements | converge |
+          registration using third-party services
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_register_email_confirm=true did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_register_email_confirm=true
+          did not trigger assertion.
         forgejo_config_service_allow_only_external_registration: true
         forgejo_config_service_register_email_confirm: true
 
     - name: 'Assert requirements | converge | Google recaptcha (secret)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | Google recaptcha (secret)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_recaptcha_secret="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_recaptcha_secret="" did not trigger assertion.
         forgejo_config_service_recaptcha_secret: ''
         forgejo_config_service_recaptcha_sitekey: 'test'
 
     - name: 'Assert requirements | converge | Google recaptcha (sitekey)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | Google recaptcha (sitekey)'
+        test_name:
+          'Assert requirements | converge | Google recaptcha (sitekey)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_recaptcha_sitekey="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_recaptcha_sitekey=""
+          did not trigger assertion.
         forgejo_config_service_recaptcha_secret: 'test'
         forgejo_config_service_recaptcha_sitekey: ''
 
     - name: 'Assert requirements | converge | hCaptcha recaptcha (secret)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | hCaptcha recaptcha (secret)'
+        test_name:
+          'Assert requirements | converge | hCaptcha recaptcha (secret)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_hcaptcha_secret="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_hcaptcha_secret=""
+          did not trigger assertion.
         forgejo_config_service_hcaptcha_secret: ''
         forgejo_config_service_hcaptcha_sitekey: 'test'
 
     - name: 'Assert requirements | converge | hCaptcha recaptcha (sitekey)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | hCaptcha recaptcha (sitekey)'
+        test_name:
+          'Assert requirements | converge | hCaptcha recaptcha (sitekey)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_hcaptcha_sitekey="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_hcaptcha_sitekey="" did not trigger assertion.
         forgejo_config_service_hcaptcha_secret: 'test'
         forgejo_config_service_hcaptcha_sitekey: ''
 
     - name: 'Assert requirements | converge | mCaptcha recaptcha (URL)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | mCaptcha recaptcha (URL)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_mcaptcha_url="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_service_mcaptcha_url="" did not trigger assertion.'
         forgejo_config_service_mcaptcha_url: ''
         forgejo_config_service_mcaptcha_secret: 'test'
         forgejo_config_service_mcaptcha_sitekey: 'test'
 
     - name: 'Assert requirements | converge | mCaptcha recaptcha (secret)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | mCaptcha recaptcha (secret)'
+        test_name:
+          'Assert requirements | converge | mCaptcha recaptcha (secret)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_mcaptcha_secret="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_mcaptcha_secret="" did not trigger assertion.
         forgejo_config_service_mcaptcha_url: 'test'
         forgejo_config_service_mcaptcha_secret: ''
         forgejo_config_service_mcaptcha_sitekey: 'test'
 
     - name: 'Assert requirements | converge | mCaptcha recaptcha (sitekey)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | mCaptcha recaptcha (sitekey)'
+        test_name:
+          'Assert requirements | converge | mCaptcha recaptcha (sitekey)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_mcaptcha_sitekey="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_mcaptcha_sitekey="" did not trigger assertion.
         forgejo_config_service_mcaptcha_url: 'test'
         forgejo_config_service_mcaptcha_secret: 'test'
         forgejo_config_service_mcaptcha_sitekey: ''
 
-    - name: 'Assert requirements | converge | Cloudflare Turnstile recaptcha (secret)'
+    - name: >
+        Assert requirements | converge |
+        Cloudflare Turnstile recaptcha (secret)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | Cloudflare Turnstile recaptcha (secret)'
+        test_name: >
+          Assert requirements | converge |
+          Cloudflare Turnstile recaptcha (secret)
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_cf_turnstile_secret="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_cf_turnstile_secret=""
+          did not trigger assertion.
         forgejo_config_service_cf_turnstile_secret: ''
         forgejo_config_service_cf_turnstile_sitekey: 'test'
 
-    - name: 'Assert requirements | converge | Cloudflare Turnstile recaptcha (sitekey)'
+    - name: >
+        Assert requirements | converge |
+        Cloudflare Turnstile recaptcha (sitekey)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | Cloudflare Turnstile recaptcha (sitekey)'
+        test_name: >
+          Assert requirements | converge |
+          Cloudflare Turnstile recaptcha (sitekey)
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_service_cf_turnstile_sitekey="" did not trigger assertion.'
+        test_fail_message: >
+          forgejo_config_service_cf_turnstile_sitekey=""
+          did not trigger assertion.
         forgejo_config_service_cf_turnstile_secret: 'test'
         forgejo_config_service_cf_turnstile_sitekey: ''
 
-    - name: 'Assert requirements | converge | forgejo_config_security_secret_key'
+    - name:
+        'Assert requirements | converge | forgejo_config_security_secret_key'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | forgejo_config_security_secret_key'
+        test_name:
+          'Assert requirements | converge | forgejo_config_security_secret_key'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_security_secret_key="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_security_secret_key="" did not trigger assertion.'
         forgejo_config_security_secret_key: ''
 
     - name: 'Assert requirements | converge | ACME server (TOS)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | ACME server (TOS)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_server_acme_accepttos="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_acme_accepttos="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_enable_acme: true
         forgejo_config_server_acme_accepttos: false
@@ -222,12 +278,13 @@
 
     - name: 'Assert requirements | converge | ACME server (email)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | ACME server (email)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_server_acme_email="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_acme_email="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_enable_acme: true
         forgejo_config_server_acme_accepttos: true
@@ -236,12 +293,13 @@
 
     - name: 'Assert requirements | converge | ACME server (directory)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | ACME server (directory)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_server_acme_directory="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_acme_directory="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_enable_acme: true
         forgejo_config_server_acme_accepttos: true
@@ -250,23 +308,26 @@
 
     - name: 'Assert requirements | converge | LFS JWT secret'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | LFS JWT secret'
         test_role: 'r_pufky.srv.forgejo'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        test_fail_message: 'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
         forgejo_config_server_lfs_jwt_secret: ''
 
     - name: 'Assert requirements | converge | required Camo settings (URL)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required Camo settings (URL)'
+        test_name:
+          'Assert requirements | converge | required Camo settings (URL)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_camo_enabled: true
@@ -275,26 +336,31 @@
 
     - name: 'Assert requirements | converge | required Camo settings (key)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required Camo settings (key)'
+        test_name:
+          'Assert requirements | converge | required Camo settings (key)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_server_lfs_jwt_secret="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_camo_enabled: true
         forgejo_config_camo_server_url: ''
         forgejo_config_camo_hmac_key: 'test'
 
-    - name: 'Assert requirements | converge | required database settings (host)'
+    - name:
+        'Assert requirements | converge | required database settings (host)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required Camo settings (host)'
+        test_name:
+          'Assert requirements | converge | required Camo settings (host)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_database_host="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_database_host="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_database_db_type: 'postgres'
@@ -303,14 +369,17 @@
         forgejo_config_database_user: 'test'
         forgejo_config_database_passwd: 'test'
 
-    - name: 'Assert requirements | converge | required database settings (name)'
+    - name:
+        'Assert requirements | converge | required database settings (name)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required database settings (name)'
+        test_name:
+          'Assert requirements | converge | required database settings (name)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_database_name="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_database_name="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_database_db_type: 'postgres'
@@ -319,14 +388,17 @@
         forgejo_config_database_user: 'test'
         forgejo_config_database_passwd: 'test'
 
-    - name: 'Assert requirements | converge | required database settings (user)'
+    - name:
+        'Assert requirements | converge | required database settings (user)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required database settings (user)'
+        test_name:
+          'Assert requirements | converge | required database settings (user)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_database_user="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_database_user="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_database_db_type: 'postgres'
@@ -335,14 +407,17 @@
         forgejo_config_database_user: ''
         forgejo_config_database_passwd: 'test'
 
-    - name: 'Assert requirements | converge | required database settings (passwd)'
+    - name:
+        'Assert requirements | converge | required database settings (passwd)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | required database settings (passwd)'
+        test_name: >
+          Assert requirements | converge | required database settings (passwd)
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_database_passwd="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_database_passwd="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_database_db_type: 'postgres'
@@ -353,12 +428,13 @@
 
     - name: 'Assert requirements | converge | Oauth2 JWT secret'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | Oauth2 JWT secret'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_oauth2_jwt_secret="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_oauth2_jwt_secret="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_oauth2_jwt_signing_algorithm: 'HS256'
@@ -366,25 +442,31 @@
 
     - name: 'Assert requirements | converge | log request headers'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name: 'Assert requirements | converge | log request headers'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_log_logger_access_mode="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_log_logger_access_mode="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_config_log_request_id_headers: ['X-Request-ID', 'X-Trace-ID', 'X-Req-ID']
+        forgejo_config_log_request_id_headers:
+          - 'X-Request-ID'
+          - 'X-Trace-ID'
+          - 'X-Req-ID'
         forgejo_config_log_logger_access_mode: ''
 
     - name: 'Assert requirements | converge | mailer client certificates (cert)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | mailer client certificates (cert)'
+        test_name:
+          'Assert requirements | converge | mailer client certificates (cert)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_mailer_client_key_file="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_mailer_client_key_file="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_mailer_use_client_cert: true
@@ -393,12 +475,14 @@
 
     - name: 'Assert requirements | converge | mailer client certificates (key)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
-        test_name: 'Assert requirements | converge | mailer client certificates (key)'
+        test_name:
+          'Assert requirements | converge | mailer client certificates (key)'
         test_role: 'r_pufky.srv.forgejo'
-        test_fail_message: 'forgejo_config_mailer_client_key_file="" did not trigger assertion.'
+        test_fail_message:
+          'forgejo_config_mailer_client_key_file="" did not trigger assertion.'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_mailer_use_client_cert: true

@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Forgejo Role Options
 ###############################################################################
@@ -27,7 +26,7 @@ forgejo_role_packages:
   - 'gnupg2'
   - 'xz-utils'
 
-forgejo_role_redis:  # includes redis-server, redis-tools
+forgejo_role_redis:  # Includes redis-server, redis-tools.
   - 'redis'
 
 ###############################################################################

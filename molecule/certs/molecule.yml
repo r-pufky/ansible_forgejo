@@ -1,8 +1,14 @@
 ---
-# yamllint disable rule:line-length
-# Confirm:
+###############################################################################
+# Certs
+###############################################################################
+# SSH keys are enumerated on the controller correctly and configuration file
+# is updated with valid configuration.
+#
+# Tests:
 # * Ansible sourced files are setup correctly.
 # * Host SSH keys are enumerated and copied correctly.
+
 dependency:
   name: 'galaxy'
 driver:
@@ -22,9 +28,18 @@ provisioner:
         repo_testing_versions:
           - comment: 'forgejo'
             version: 'v10.0.3'
-            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64'
-            checksum: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.sha256'
-            signature: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/forgejo-10.0.3-linux-amd64.asc'
+            asset: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64"
+              }}'
+            checksum: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.sha256"
+              }}'
+            signature: '{{
+                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+                "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
+              }}'
         forgejo_container_enable: true
         forgejo_service_harden_enable: true
         forgejo_config_security_install_lock: true

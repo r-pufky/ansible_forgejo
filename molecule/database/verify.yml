@@ -1,12 +1,11 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Database | verify'
   hosts: 'forgejo-debian-12-database_postgres'
   gather_facts: false
   tasks:
     - name: 'Database | verify | assert Postgres app.ini'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'lineinfile.yml'
       vars:
         test_name: 'Database | verify | assert Postgres app.ini | {{ item }}'
@@ -26,7 +25,7 @@
   tasks:
     - name: 'Database | verify | assert MySQL app.ini'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'lineinfile.yml'
       vars:
         test_name: 'Database | verify | assert MySQL app.ini {{ item }}'

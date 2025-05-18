@@ -1,9 +1,12 @@
 ---
+# yamllint disable rule:line-length
+###############################################################################
+# Verify
+###############################################################################
 # Forgejo will overwrite invalid tokens/keys with auto-generated valid ones,
 # which requires rendering a config file with only those options templated;
 # Instead of copy/diff pattern, use template/remote copy/diff pattern.
-#
-# yamllint disable rule:line-length
+
 - name: 'Default | verify'
   hosts: 'forgejo-debian-12-default'
   gather_facts: false
@@ -11,7 +14,7 @@
     - name: 'Default | verify | gather service status'
       ansible.builtin.service_facts:
 
-    # Forgejo will fail if configuration is bad (r_pufky.srv.systemd)
+    # Forgejo will fail if configuration is bad (r_pufky.deb.systemd)
     - name: 'Default | verify | assert Forgejo service active and running'
       ansible.builtin.assert:
         quiet: true
@@ -20,14 +23,14 @@
           - 'ansible_facts["services"]["forgejo.service"]["state"] == "running"'
           - 'ansible_facts["services"]["forgejo.service"]["status"] == "enabled"'
         fail_msg: |
-          Forgejo service should be enabled and running:
+          ✘ Forgejo service should be enabled and running:
 
-            forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
-            forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
+          forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
+          forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
 
     - name: 'Default | verify | app.ini'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'remote_file_diff.yml'
       vars:
         test_name: 'Default | verify | app.ini'
@@ -74,7 +77,7 @@
     - name: 'Default | verify | gather service status'
       ansible.builtin.service_facts:
 
-    # Forgejo will fail if configuration is bad (r_pufky.srv.systemd)
+    # Forgejo will fail if configuration is bad (r_pufky.deb.systemd)
     - name: 'Default | verify | assert Forgejo service active and running'
       ansible.builtin.assert:
         quiet: true
@@ -83,14 +86,14 @@
           - 'ansible_facts["services"]["forgejo.service"]["state"] == "running"'
           - 'ansible_facts["services"]["forgejo.service"]["status"] == "enabled"'
         fail_msg: |
-          Forgejo service should be enabled and running:
+          ✘ Forgejo service should be enabled and running:
 
-            forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
-            forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
+          forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
+          forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
 
     - name: 'Default | verify | app.ini'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'remote_file_diff.yml'
       vars:
         test_name: 'Default | verify | app.ini'

@@ -1,19 +1,22 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Certs | converge'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: 'Certs | converge | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
     - name: 'Certs | converge | load cached secrets'
       ansible.builtin.set_fact:
-        _test_oauth2_rsa_pem: '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
+        _test_oauth2_rsa_pem:
+          '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
         _test_oauth2_pkcs8_pem: '{{ _test_cache ~ "/oauth2.pkcs8.pem" }}'
-        _test_security_internal_token: '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
-        _test_lfs_jwt_secret: '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
+        _test_security_internal_token:
+          '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
+        _test_lfs_jwt_secret:
+          '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
         _test_secret_key: '{{ lookup("file", _test_cache ~ "/secret_key") }}'
         _test_cert_pem: '{{ _test_cache ~ "/cert.pem" }}'
         _test_cert_key: '{{ _test_cache ~ "/key.pem" }}'
@@ -22,14 +25,17 @@
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token: '{{ _test_security_internal_token }}'
+        forgejo_config_security_internal_token:
+          '{{ _test_security_internal_token }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_config_oauth2_jwt_signing_private_key_file: '{{ _test_oauth2_pkcs8_pem }}'
+        forgejo_config_oauth2_jwt_signing_private_key_file:
+          '{{ _test_oauth2_pkcs8_pem }}'
         forgejo_config_mailer_client_cert_file: '{{ _test_cert_pem }}'
         forgejo_config_mailer_client_key_file: '{{ _test_cert_key }}'
         forgejo_config_server_acme_ca_root: '{{ _test_cert_pem }}'
         forgejo_config_server_ssh_server_host_keys: '{{ _test_cache }}/ssh'
-        forgejo_config_server_ssh_trusted_user_ca_keys_filename: '{{ _test_cert_pem }}'
+        forgejo_config_server_ssh_trusted_user_ca_keys_filename:
+          '{{ _test_cert_pem }}'
         forgejo_config_server_cert_file: '{{ _test_cert_pem }}'
         forgejo_config_server_key_file: '{{ _test_cert_key }}'

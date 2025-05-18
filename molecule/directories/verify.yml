@@ -1,12 +1,11 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Directories | verify'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: 'Directories | verify | app.ini'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'lineinfile.yml'
       vars:
         test_name: 'Directories | verify | app.ini | {{ item }}'
@@ -33,7 +32,7 @@
 
     - name: 'Directories | verify | permissions'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
         test_name: 'Directories | verify | permissions | {{ item }}'

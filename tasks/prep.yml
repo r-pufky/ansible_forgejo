@@ -35,7 +35,7 @@
 - name: 'Prep | manage users'
   when: forgejo_create_user
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.users'
+    name: 'r_pufky.deb.users'
     tasks_from: 'role_account_add.yml'
   vars:
     users_role_group: '{{ forgejo_role_group }}'
@@ -167,7 +167,10 @@
       ansible.builtin.set_fact:
         _forgejo_parsed_ssh_keys: '{{
             _forgejo_parsed_ssh_keys | default([]) +
-            [item.path | replace(forgejo_config_server_ssh_server_host_keys ~ "/", "")]
+            [
+                item.path |
+                replace(forgejo_config_server_ssh_server_host_keys ~ "/", "")
+            ]
           }}'
       loop: '{{ _forgejo_source_ssh_keys.files }}'
       loop_control:
@@ -280,7 +283,8 @@
       },
       repository.pull-request: {
         WORK_IN_PROGRESS_PREFIXES: '{{
-            forgejo_config_repository_pull_request_work_in_progress_prefixes | join(",")
+            forgejo_config_repository_pull_request_work_in_progress_prefixes |
+            join(",")
           }}',
         CLOSE_KEYWORDS: '{{
             forgejo_config_repository_pull_request_close_keywords | join(",")
@@ -819,8 +823,9 @@
           '{{ forgejo_config_service_allow_dots_in_usernames }}',
         DEFAULT_USER_VISIBILITY:
           '{{ forgejo_config_service_default_user_visibility }}',
-        ALLOWED_USER_VISIBILITY_MODES:
-          '{{ forgejo_config_service_allowed_user_visibility_modes | join(",") }}',
+        ALLOWED_USER_VISIBILITY_MODES: '{{
+            forgejo_config_service_allowed_user_visibility_modes | join(",")
+          }}',
         DEFAULT_ORG_VISIBILITY:
           '{{ forgejo_config_service_default_org_visibility }}',
         DEFAULT_ORG_MEMBER_VISIBLE:

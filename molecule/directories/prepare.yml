@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Directories | prepare'
   hosts: 127.0.0.1
   connection: local
@@ -7,52 +6,56 @@
   tasks:
     - name: 'Directories | prepare | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Directories | prepare | create cache'
-      ansible.builtin.file:
-        path: '{{ _test_cache }}'
-        mode: '0755'
-        state: 'directory'
+    - name: 'Directories | prepare | cache'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'create_cache.yml'
+      vars:
+        test_name: 'Directories | prepare | cache'
 
     - name: 'Directories | prepare | check forgejo v10.0.3'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
-      register: _test_prepare
-
-    - name: 'Directories | prepare | cache forgejo v10.0.3'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
-        mode: '0750'
-      retries: 5
-      delay: 5
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Directories | prepare | check forgejo v10.0.3'
+        test_dest: 'forgejo-10.0.3-linux-amd64'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64"
+          }}'
+        test_mode: '0750'
 
     - name: 'Directories | prepare | check forgejo v10.0.3 checksum'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.sha256'
-      register: _test_prepare
-
-    - name: 'Directories | prepare | cache forgejo v10.0.3 checksum'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64.sha256'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.sha256'
-        mode: '0640'
-      retries: 5
-      delay: 5
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name:
+          'Directories | prepare | check forgejo v10.0.3 checksum'
+        test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64.sha256"
+          }}'
+        test_mode: '0640'
 
     - name: 'Directories | prepare | check forgejo v10.0.3 signature'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.asc'
-      register: _test_prepare
-
-    - name: 'Directories | prepare | cache forgejo v10.0.3 signature'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64.asc'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.asc'
-        mode: '0640'
-      retries: 5
-      delay: 5
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name:
+          'Directories | prepare | check forgejo v10.0.3 signature'
+        test_dest: 'forgejo-10.0.3-linux-amd64.asc'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64.asc"
+          }}'
+        test_mode: '0640'

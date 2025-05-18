@@ -7,7 +7,7 @@
 
 - name: 'Install | packages'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.apt'
+    name: 'r_pufky.deb.apt'
   vars:
     apt_packages:
       - '{{ forgejo_role_packages }}'
@@ -17,7 +17,7 @@
 - name: 'Install | binary {{ forgejo_service_version }}'
   when: not forgejo_service_force_config_only_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.repo'
+    name: 'r_pufky.deb.repo'
   vars:
     repo_host: 'codeberg'
     repo_release_owner: '{{ forgejo_role_repo_release_owner }}'

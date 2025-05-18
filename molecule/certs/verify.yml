@@ -1,5 +1,6 @@
 ---
 # yamllint disable rule:line-length
+
 - name: 'Certs | verify'
   hosts: 'all'
   gather_facts: false
@@ -7,7 +8,7 @@
     - name: 'Certs | verify | gather service status'
       ansible.builtin.service_facts:
 
-    # Forgejo will fail if configuration is bad (r_pufky.srv.systemd)
+    # Forgejo will fail if configuration is bad (r_pufky.deb.systemd)
     - name: 'Certs | verify | assert Forgejo service active and running'
       ansible.builtin.assert:
         quiet: true
@@ -16,18 +17,21 @@
           - 'ansible_facts["services"]["forgejo.service"]["state"] == "running"'
           - 'ansible_facts["services"]["forgejo.service"]["status"] == "enabled"'
         fail_msg: |
-          Forgejo service should be enabled and running:
+          ✘ Forgejo service should be enabled and running:
 
-            forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
-            forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
+          forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
+          forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
 
     - name: 'Certs | verify | jwt/private.pem'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | jwt/private.pem'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/oauth2.pkcs8.pem'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/oauth2.pkcs8.pem"
+          }}'
         test_file: '/var/lib/forgejo/jwt/private.pem'
         test_owner: 'git'
         test_group: 'git'
@@ -36,11 +40,14 @@
 
     - name: 'Certs | verify | mailer/cert.pem'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | mailer/cert.pem'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/cert.pem'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/cert.pem"
+          }}'
         test_file: '/etc/forgejo/mailer/cert.pem'
         test_owner: 'git'
         test_group: 'git'
@@ -49,11 +56,14 @@
 
     - name: 'Certs | verify | mailer/cert.key'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | mailer/cert.key'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/key.pem'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/key.pem"
+          }}'
         test_file: '/etc/forgejo/mailer/cert.key'
         test_owner: 'git'
         test_group: 'git'
@@ -71,11 +81,15 @@
 
     - name: 'Certs | verify | assert server host keys'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | assert server host keys'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/ssh/{{ item.path | basename }}'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/ssh/" ~
+            item.path | basename
+          }}'
         test_file: '{{ item.path }}'
         test_owner: 'git'
         test_group: 'git'
@@ -87,11 +101,14 @@
 
     - name: 'Certs | verify | ca_trust_chain_root.pem'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | ca_trust_chain_root.pem'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/cert.pem'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/cert.pem"
+          }}'
         test_file: '/etc/forgejo/https/ca_trust_chain_root.pem'
         test_owner: 'git'
         test_group: 'git'
@@ -100,11 +117,14 @@
 
     - name: 'Certs | verify | user trust keys'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | user trust keys'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/cert.pem'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/cert.pem"
+          }}'
         test_file: '/data/gitea/.ssh/ca_trust_chain_root.pem'
         test_owner: 'git'
         test_group: 'git'
@@ -113,11 +133,15 @@
 
     - name: 'Certs | verify | server certificates'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.tests'
+        name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: 'Certs | verify | server certificates'
-        test_src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/{{ item.src }}'
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/" ~
+            item.src
+          }}'
         test_file: '{{ item.file }}'
         test_owner: '305'
         test_group: '305'

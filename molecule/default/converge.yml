@@ -1,19 +1,23 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Default | converge'
   hosts: 'forgejo-debian-12-default'
   gather_facts: false
   tasks:
     - name: 'Default | converge | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
     - name: 'Default | converge | load cached secrets'
       ansible.builtin.set_fact:
-        _test_oauth2_rsa_pem: '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
-        _test_oauth2_pkcs8_pem: '{{ lookup("file", _test_cache ~ "/oauth2.pkcs8.pem") }}'
-        _test_security_internal_token: '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
-        _test_lfs_jwt_secret: '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
+        _test_oauth2_rsa_pem:
+          '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
+        _test_oauth2_pkcs8_pem:
+          '{{ lookup("file", _test_cache ~ "/oauth2.pkcs8.pem") }}'
+        _test_security_internal_token:
+          '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
+        _test_lfs_jwt_secret:
+          '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
         _test_secret_key: '{{ lookup("file", _test_cache ~ "/secret_key") }}'
         _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
         _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
@@ -30,7 +34,8 @@
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token: '{{ _test_security_internal_token }}'
+        forgejo_config_security_internal_token:
+          '{{ _test_security_internal_token }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
@@ -41,14 +46,19 @@
   tasks:
     - name: 'Default | converge | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
     - name: 'Default | converge | load cached secrets'
       ansible.builtin.set_fact:
-        _test_oauth2_rsa_pem: '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
-        _test_oauth2_pkcs8_pem: '{{ lookup("file", _test_cache ~ "/oauth2.pkcs8.pem") }}'
-        _test_security_internal_token: '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
-        _test_lfs_jwt_secret: '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
+        _test_oauth2_rsa_pem:
+          '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
+        _test_oauth2_pkcs8_pem:
+          '{{ lookup("file", _test_cache ~ "/oauth2.pkcs8.pem") }}'
+        _test_security_internal_token:
+          '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
+        _test_lfs_jwt_secret:
+          '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
         _test_secret_key: '{{ lookup("file", _test_cache ~ "/secret_key") }}'
         _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
         _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
@@ -65,7 +75,8 @@
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token: '{{ _test_security_internal_token }}'
+        forgejo_config_security_internal_token:
+          '{{ _test_security_internal_token }}'
         forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
         forgejo_config_security_secret_key: '{{ _test_secret_key }}'
         forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'

@@ -32,11 +32,11 @@
 #   _forgejo_config: list of dict - sanitized forgejo_tasks
 #   _forgejo_local_users: list of dict - Local user accounts to manage.
 
-- name: 'Local users | poll service'
+- name: 'Local users | poll service 🗘'
   when: forgejo_service_poll_enable
   ansible.builtin.debug:
     msg: >
-      Waiting until port becomes available
+      🗘 Waiting until port becomes available
       (max {{ forgejo_role_poll_timeout }}s) ...
 
 - name: 'Local users | poll service'

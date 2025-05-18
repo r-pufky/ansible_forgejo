@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Assert requirements | prepare'
   hosts: 127.0.0.1
   connection: local
@@ -7,62 +6,76 @@
   tasks:
     - name: 'Assert requirements | prepare | generate cache location'
       ansible.builtin.set_fact:
-        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        _test_cache:
+          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Assert requirements | prepare | create cache'
-      ansible.builtin.file:
-        path: '{{ _test_cache }}'
-        mode: '0755'
-        state: 'directory'
+    - name: 'Assert requirements | prepare | cache'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'create_cache.yml'
+      vars:
+        test_name: 'Assert requirements | prepare | cache'
 
     - name: 'Assert requirements | prepare | check forgejo v10.0.3'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
-      register: _test_prepare
-
-    - name: 'Assert requirements | prepare | cache forgejo v10.0.3'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
-        mode: '0750'
-      retries: 5
-      delay: 5
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Assert requirements | prepare | check forgejo v10.0.3'
+        test_dest: 'forgejo-10.0.3-linux-amd64'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64"
+          }}'
+        test_mode: '0750'
 
     - name: 'Assert requirements | prepare | check forgejo v10.0.3 checksum'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.sha256'
-      register: _test_prepare
-
-    - name: 'Assert requirements | prepare | cache forgejo v10.0.3 checksum'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64.sha256'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.sha256'
-        mode: '0640'
-      retries: 5
-      delay: 5
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name:
+          'Assert requirements | prepare | check forgejo v10.0.3 checksum'
+        test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64.sha256"
+          }}'
+        test_mode: '0640'
 
     - name: 'Assert requirements | prepare | check forgejo v10.0.3 signature'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.asc'
-      register: _test_prepare
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name:
+          'Assert requirements | prepare | check forgejo v10.0.3 signature'
+        test_dest: 'forgejo-10.0.3-linux-amd64.asc'
+        test_url: '{{
+            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
+            "v10.0.3/" ~
+            "forgejo-10.0.3-linux-amd64.asc"
+          }}'
+        test_mode: '0640'
 
-    - name: 'Assert requirements | prepare | cache forgejo v10.0.3 signature'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url: 'https://codeberg.org/forgejo/forgejo/releases/download/v10.0.3/forgejo-10.0.3-linux-amd64.asc'
-        dest: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.asc'
-        mode: '0640'
-      retries: 5
-      delay: 5
-
-    - name: 'Assert requirements | prepare | cache forgejo_config_server_lfs_jwt_secret'
-      ansible.builtin.shell: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64 generate secret JWT_SECRET > {{ _test_cache }}/lfs_jwt_secret'
+    - name: >
+        Assert requirements | prepare |
+        cache forgejo_config_server_lfs_jwt_secret
+      ansible.builtin.shell: >-
+          {{ _test_cache }}/forgejo-10.0.3-linux-amd64
+          generate secret JWT_SECRET
+          > {{ _test_cache }}/lfs_jwt_secret
       args:
         creates: '{{ _test_cache }}/lfs_jwt_secret'
 
-    - name: 'Assert requirements | prepare | cache forgejo_config_security_secret_key'
-      ansible.builtin.shell: '{{ _test_cache }}/forgejo-10.0.3-linux-amd64 generate secret SECRET_KEY > {{ _test_cache }}/secret_key'
+    - name: >
+        Assert requirements | prepare |
+        cache forgejo_config_security_secret_key
+      ansible.builtin.shell: >-
+          {{ _test_cache }}/forgejo-10.0.3-linux-amd64
+          generate secret SECRET_KEY
+          > {{ _test_cache }}/secret_key
       args:
         creates: '{{ _test_cache }}/secret_key'

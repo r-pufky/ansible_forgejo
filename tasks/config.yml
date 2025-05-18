@@ -22,6 +22,7 @@
 # Reference:
 # * https://forgejo.org/docs/latest/admin/installation-binary/
 # * https://codeberg.org/forgejo/forgejo/src/branch/forgejo/contrib/systemd/forgejo.service
+# yamllint enable rule:line-length
 
 - name: 'Config | stop Forgejo'
   ansible.builtin.systemd:
@@ -50,7 +51,7 @@
 - name: 'Config | manage required directories'
   when: forgejo_media_set_perms_file_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.utils'
+    name: 'r_pufky.lib.utils'
     tasks_from: 'remote_file.yml'
   vars:
     file_path: '{{ item }}'
@@ -86,7 +87,7 @@
     forgejo_config_server_ssh_key_test_path != '/tmp' and
     forgejo_media_set_perms_file_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.utils'
+    name: 'r_pufky.lib.utils'
     tasks_from: 'remote_file.yml'
   vars:
     file_path: '{{ forgejo_config_server_ssh_key_test_path }}'
@@ -102,7 +103,7 @@
     forgejo_config_storage_path != '' and
     forgejo_media_set_perms_file_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.utils'
+    name: 'r_pufky.lib.utils'
     tasks_from: 'remote_file.yml'
   vars:
     file_path: '{{ forgejo_config_storage_path }}'
@@ -114,7 +115,7 @@
 
 - name: 'Config | set restricted directories'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.utils'
+    name: 'r_pufky.lib.utils'
     tasks_from: 'remote_file.yml'
   vars:
     file_path: '{{ item }}'
@@ -129,7 +130,7 @@
 
 - name: 'Config | Forgejo service'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.systemd'
+    name: 'r_pufky.deb.systemd'
   vars:
     systemd_daemon_reload_enable: true
     systemd_services:
@@ -172,7 +173,7 @@
 - name: 'Config | set service hardening drop-in'
   when: forgejo_service_harden_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.systemd'
+    name: 'r_pufky.deb.systemd'
   vars:
     systemd_daemon_reload_enable: true
     systemd_services:
@@ -208,7 +209,7 @@
 - name: 'Config | remove service hardening drop-in'
   when: not forgejo_service_harden_enable
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.systemd'
+    name: 'r_pufky.deb.systemd'
   vars:
     systemd_daemon_reload_enable: true
     systemd_services:

@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: 'forgejo'
   author: 'r_pufky'
   description: 'Forgejo GIT Service'
   company: 'N/A'

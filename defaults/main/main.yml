@@ -14,7 +14,7 @@
 # releases without differentiating.
 #
 # Version is always validated against repository checksum and signature. Set
-# repo_host_access_token if codeberg API is rate limited. See r_pufky.srv.repo.
+# repo_host_access_token if codeberg API is rate limited. See r_pufky.deb.repo.
 #
 # Values:
 #   {VERSION}: Tagged release to use ('v10.0.3').
@@ -168,7 +168,7 @@ forgejo_group: 'git'
 
 # Create forgejo_user, forgejo_group if not detected?
 #
-# Applied via r_pufky.srv.users, see vars/main.yml for default user attributes.
+# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
 #
 # Default: True.
 forgejo_create_user: true

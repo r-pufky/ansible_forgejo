@@ -14,4 +14,4 @@
 #
 # Reference:
 # * https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-forgejo_config_time_default_ui_location: ''
+forgejo_cfg_time_default_ui_location: ''

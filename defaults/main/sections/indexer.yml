@@ -16,45 +16,45 @@
 # Reference:
 # * https://blevesearch.com
 # * https://www.meilisearch.com
-forgejo_config_indexer_issue_indexer_type: 'bleve'
+forgejo_cfg_indexer_issue_indexer_type: 'bleve'
 
 # Issue indexer storage path.
 #
-# Requires forgejo_config_indexer_issue_indexer_type=bleve.
+# Requires forgejo_cfg_indexer_issue_indexer_type=bleve.
 #
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}/indexers/issues.bleve'.
-forgejo_config_indexer_issue_indexer_path:
-  '{{ forgejo_config_work_path }}/indexers/issues.bleve'
+# Default: '{{ forgejo_cfg_work_path }}/indexers/issues.bleve'.
+forgejo_cfg_indexer_issue_indexer_path:
+  '{{ forgejo_cfg_work_path }}/indexers/issues.bleve'
 
 # Issue indexer URI connection string.
 #
-# Requires forgejo_config_indexer_issue_indexer_type=elasticsearch|meilisearch.
+# Requires forgejo_cfg_indexer_issue_indexer_type=elasticsearch|meilisearch.
 #
 # Full URI connection string, e.g. http://elastic:password@localhost:9200 for
 # elasticsearch or http://:apikey@localhost:7700 meilisearch.
 #
 # Default: ''.
-forgejo_config_indexer_issue_indexer_conn_str: ''
+forgejo_cfg_indexer_issue_indexer_conn_str: ''
 
 # Issue indexer name.
 #
-# Requires forgejo_config_indexer_issue_indexer_type=elasticsearch|meilisearch.
+# Requires forgejo_cfg_indexer_issue_indexer_type=elasticsearch|meilisearch.
 #
 # Default: 'gitea_issues'.
-forgejo_config_indexer_issue_indexer_name: 'gitea_issues'
+forgejo_cfg_indexer_issue_indexer_name: 'gitea_issues'
 
 # Indexer startup timeout (-1 disables) (TIME format). Default: 30s.
-forgejo_config_indexer_startup_timeout: '30s'
+forgejo_cfg_indexer_startup_timeout: '30s'
 
 ###############################################################################
 # Repository Indexer Settings
 ###############################################################################
 
 # Enable repository indexer? Default: False.
-forgejo_config_indexer_repo_indexer_enabled: false
+forgejo_cfg_indexer_repo_indexer_enabled: false
 
 # List of repository indexer units.
 #
@@ -69,7 +69,7 @@ forgejo_config_indexer_repo_indexer_enabled: false
 #   - 'forks'
 #   - 'mirrors'
 #   - 'templates'
-forgejo_config_indexer_repo_indexer_repo_types:
+forgejo_cfg_indexer_repo_indexer_repo_types:
   - 'sources'
   - 'forks'
   - 'mirrors'
@@ -82,34 +82,34 @@ forgejo_config_indexer_repo_indexer_repo_types:
 #   elasticsearch: Elastic search.
 #
 # Default: 'bleve'
-forgejo_config_indexer_repo_indexer_type: 'bleve'
+forgejo_cfg_indexer_repo_indexer_type: 'bleve'
 
 # Index file used for code search.
 #
-# Requires forgejo_config_indexer_type=bleve.
+# Requires forgejo_cfg_indexer_type=bleve.
 #
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}/indexers/repos.bleve'.
-forgejo_config_indexer_repo_indexer_path:
-  '{{ forgejo_config_work_path }}/indexers/repos.bleve'
+# Default: '{{ forgejo_cfg_work_path }}/indexers/repos.bleve'.
+forgejo_cfg_indexer_repo_indexer_path:
+  '{{ forgejo_cfg_work_path }}/indexers/repos.bleve'
 
 # Code indexer URI connection string.
 #
-# Requires forgejo_config_indexer_type=elasticsearch.
+# Requires forgejo_cfg_indexer_type=elasticsearch.
 #
 # Full URI connection string, e.g. http://elastic:password@localhost:9200.
 #
 # Default: ''.
-forgejo_config_indexer_repo_indexer_conn_str: ''
+forgejo_cfg_indexer_repo_indexer_conn_str: ''
 
 # Code indexer name.
 #
-# Requires forgejo_config_indexer_type=elasticsearch.
+# Requires forgejo_cfg_indexer_type=elasticsearch.
 #
 # Default: 'gitea_codes'.
-forgejo_config_indexer_repo_indexer_name: 'gitea_codes'
+forgejo_cfg_indexer_repo_indexer_name: 'gitea_codes'
 
 # List of glob patterns to include in indexer.
 #
@@ -117,7 +117,7 @@ forgejo_config_indexer_repo_indexer_name: 'gitea_codes'
 #
 # Reference:
 # * https://github.com/gobwas/glob
-forgejo_config_indexer_repo_indexer_include: []
+forgejo_cfg_indexer_repo_indexer_include: []
 
 # List of glob patterns to exclude in indexer.
 #
@@ -125,7 +125,7 @@ forgejo_config_indexer_repo_indexer_include: []
 #
 # Reference:
 # * https://github.com/gobwas/glob
-forgejo_config_indexer_repo_indexer_exclude: []
+forgejo_cfg_indexer_repo_indexer_exclude: []
 
 # Enable exclusion of vendored files?
 #
@@ -133,7 +133,7 @@ forgejo_config_indexer_repo_indexer_exclude: []
 #
 # Reference:
 # * https://github.com/go-enry/go-enry
-forgejo_config_indexer_repo_indexer_exclude_vendored: true
+forgejo_cfg_indexer_repo_indexer_exclude_vendored: true
 
 # Maximum file size to include for indexing (Bytes). Default 1048576 (1MB).
-forgejo_config_indexer_max_file_size: 1048576
+forgejo_cfg_indexer_max_file_size: 1048576

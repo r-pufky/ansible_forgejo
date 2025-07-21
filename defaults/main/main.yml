@@ -1,29 +1,37 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Forgejo Service Configuration
 ###############################################################################
 # Skeleton database must be setup before role is applied (except SQLite).
 # Database backend migrations (SQLite/Postgres/MySQL) must be done manually.
+#
+# Install size: ~162MB
+#    Forgejo: ~102MB.
+#   Packages: ~60MB.
 
-# Version.
+# Forgejo Release.
 #
 # Existing databases are migrated automatically when new versions are
 # installed but may not support backward compatibility. Always read release
-# notes before updating versions. Forgejo releases LTS, stable, and old-stable
-# releases without differentiating.
+# notes before updating versions. Role is only developed for LTS releases.
 #
-# Version is always validated against repository checksum and signature. Set
-# repo_host_access_token if codeberg API is rate limited. See r_pufky.deb.repo.
+# Versions (Schematic):
+#       MAJOR: Unsafe - requires major role changes; only default MAJOR LTS
+#              version is supported. See other branches if they exist.
+#       MINOR: Unsafe - New functionality may not be properly supported in
+#              configuration.
+#       PATCH: Safe - Usually requires no role updates.
+#   RECOMMEND: Only increment PATCH. Never use 'latest'.
 #
 # Values:
 #   {VERSION}: Tagged release to use ('v10.0.3').
+#      latest: Use latest stable release.
 #
 # Default: 'v.10.0.3'.
 #
 # Reference:
 # * https://forgejo.org/releases
-forgejo_service_version: 'v10.0.3'
+forgejo_srv_version: 'v10.0.3'
 
 # Forgejo GPG key ID.
 #
@@ -33,7 +41,7 @@ forgejo_service_version: 'v10.0.3'
 # Reference:
 # * https://keys.openpgp.org/search
 # * https://forgejo.org/download
-forgejo_service_gpg_key_id: 'EB114F5E6C0DC2BCDD183550A4B61A2DC5923710'
+forgejo_srv_gpg_key_id: 'EB114F5E6C0DC2BCDD183550A4B61A2DC5923710'
 
 # Enable installation of Redis memcache server?
 #
@@ -42,11 +50,11 @@ forgejo_service_gpg_key_id: 'EB114F5E6C0DC2BCDD183550A4B61A2DC5923710'
 # externally.
 #
 # Default: True.
-forgejo_service_redis_enable: true
+forgejo_srv_redis_enable: true
 
 # Manage local Forgejo users.
 #
-# forgejo_local_users:
+# forgejo_srv_local_users:
 #     list of dict - User accounts to manage.
 #   - username: str - Username.
 #     password: str - Password.
@@ -63,7 +71,7 @@ forgejo_service_redis_enable: true
 #            absent: Delete user.
 #         Default: 'present'.
 #
-# forgejo_local_users:
+# forgejo_srv_local_users:
 #   - username: 'admin_user'
 #     password: 'admin'
 #     email: 'admin@example.com'
@@ -75,20 +83,20 @@ forgejo_service_redis_enable: true
 #   - username: 'old_admin'
 #     state: 'absent'
 #
-# Default: [] ().
-forgejo_local_users: []
+# Default: [] (No local users).
+forgejo_srv_local_users: []
 
 # Enable backup dump of database and config on upgrade?
 #
 # If the service is running and a new version is installed, dump a backup of
 # the existing configuration and database before performing any operations.
 #
-# Backups are stored in {{ forgejo_config_data_path }}/backup.
+# Backups are stored in {{ forgejo_cfg_data_path }}/backup.
 #
 # Default: True.
-forgejo_service_backup_dump: true
+forgejo_srv_backup_dump: true
 
-# Enable polling for forgejo_config_server_http_port?
+# Enable polling for forgejo_cfg_server_http_port?
 #
 # Forgejo will report service is active and running but may not be ready to
 # accept API requests for user modifications. Wait until the webserver is
@@ -100,10 +108,10 @@ forgejo_service_backup_dump: true
 #   Command error: database is locked
 #
 # Default: True (poll).
-forgejo_service_poll_enable: true
+forgejo_srv_poll_enable: true
 
 # Remove old installs on upgrade success? Default: True.
-forgejo_service_delete_old_versions_enable: true
+forgejo_srv_delete_old_versions_enable: true
 
 # Force overwrite existing install?
 #
@@ -113,25 +121,27 @@ forgejo_service_delete_old_versions_enable: true
 # directories (if any). Any user data in these directories are DESTROYED.
 #
 # Default: False.
-forgejo_service_force_overwrite: false
+forgejo_srv_force_overwrite: false
 
 # Automatically restart Forgejo daily? Default: False.
-forgejo_service_restart_daily_enable: false
+forgejo_srv_restart_daily_enable: false
 
 # Only apply configuration?
 #
 # Reduces role application time by ONLY applying configuration changes. Does
-# NOT affect forgejo_media_set_perms_file_enable.
+# NOT affect forgejo_srv_media_set_perms_file_enable.
 #
 # This should ONLY be used after the role has been fully run once.
 #
 # Useful when adding a change without reconfiguring the whole system or
 # checking and installing a new version. Suggest applying with extra options:
 #
-#   ansible-playbook site.yml --tags Forgejo -e 'forgejo_service_force_config_only_enable=true'
+#   ansible-playbook site.yml
+#       --tags Forgejo
+#       -e 'forgejo_srv_force_config_only_enable=true'
 #
 # Default: False.
-forgejo_service_force_config_only_enable: false
+forgejo_srv_force_config_only_enable: false
 
 # Is this role applied to a container?
 #
@@ -140,13 +150,13 @@ forgejo_service_force_config_only_enable: false
 #     container outside of common cases.
 #
 # Hosts marked as containers will automatically disable changes:
-#   * ProtectHostname if forgejo_service_harden_enable=true.
+#   * ProtectHostname if forgejo_srv_harden_enable=true.
 #
 # Special Case:
-#   * deb_container_enable=true forces forgejo_container_enable=true.
+#   * deb_container_enable=true forces forgejo_srv_container_enable=true.
 #
 # Default: False.
-forgejo_container_enable: false
+forgejo_srv_container_enable: false
 
 ###############################################################################
 # Forgejo User
@@ -154,24 +164,46 @@ forgejo_container_enable: false
 
 # User that Forgejo will run under.
 #
-# Enable forgejo_create_user if this account is not externally managed.
+# Enable forgejo_srv_create_user if this account is not externally managed.
 #
 # Default: 'git'.
-forgejo_user: 'git'
+forgejo_srv_user: 'git'
 
 # Group that Forgejo will run under.
 #
-# Enable forgejo_create_user if this group is not externally managed.
+# Enable forgejo_srv_create_user if this group is not externally managed.
 #
 # Default: 'git'.
-forgejo_group: 'git'
+forgejo_srv_group: 'git'
 
-# Create forgejo_user, forgejo_group if not detected?
+# Create forgejo_srv_user, forgejo_srv_group if not detected?
 #
 # Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
 #
 # Default: True.
-forgejo_create_user: true
+forgejo_srv_create_user: true
+
+# Enable user management of data/media files?
+#
+# Use forgejo_srv_user to execute data/media management commands. Role
+# applies media permissions using 'root' by default. For mounted data locations
+# (NFS with squashed mounts, mapped container mounts, etc) the local root user
+# will not have sufficient privileges to modify these files.
+#
+# Applies to:
+# * forgejo_cfg_data_path
+# * {{ forgejo_cfg_data_path }}/backup
+# * {{ forgejo_srv_user (home) }}/.ssh
+# * forgejo_cfg_repository_root
+# * forgejo_cfg_database_path
+# * forgejo_cfg_queue_datadir
+# * forgejo_cfg_attachment_path
+# * forgejo_cfg_git_home_path
+# * forgejo_cfg_packages_chunked_upload_path
+# * forgejo_cfg_packages_path
+#
+# Default: False.
+forgejo_srv_user_data_manage_enable: false
 
 ###############################################################################
 # Media Permissions
@@ -184,36 +216,38 @@ forgejo_create_user: true
 # excessively slow.
 #
 # Default: False.
-forgejo_media_perms_recursive_enable: false
+forgejo_srv_media_perms_recursive_enable: false
 
 # Media folder permissions octal.
 #
-# Media folders always set using forgejo_media_perms_folder, forgejo_user, and
-# forgejo_group.
+# Media folders always set using forgejo_srv_media_perms_folder,
+# forgejo_srv_user, and forgejo_srv_group.
 #
 # Default: '0755'.
-forgejo_media_perms_folder: '0755'
+forgejo_srv_media_perms_folder: '0755'
 
 # Enable setting of media file permissions?
 #
-# Set file permissions use forgejo_media_perms_file, forgejo_user, and
-# forgejo_group. Large sets of files may be slow to set permissions.
+# Set file permissions use forgejo_srv_media_perms_file, forgejo_srv_user, and
+# forgejo_srv_group. Large sets of files may be slow to set permissions.
 #
 # Useful when first configuring to ensure service has access to all specified
 # media locations. Suggest applying with extra options:
 #
-#   ansible-playbook site.yml --tags Forgejo -e 'forgejo_media_set_perms_file_enable=true'
+#   ansible-playbook site.yml
+#       --tags Forgejo
+#       -e 'forgejo_srv_media_set_perms_file_enable=true'
 #
 # Default: False.
-forgejo_media_set_perms_file_enable: true
+forgejo_srv_media_set_perms_file_enable: true
 
 # Media file permissions octal.
 #
-# Media folders always set using forgejo_media_perms_folder, forgejo_user, and
-# forgejo_group.
+# Media folders always set using forgejo_srv_media_perms_folder,
+# forgejo_srv_user, and forgejo_srv_group.
 #
 # Default: '0644'.
-forgejo_media_perms_file: '0644'
+forgejo_srv_media_perms_file: '0644'
 
 ###############################################################################
 # Forgejo Service Hardening
@@ -245,4 +279,4 @@ forgejo_media_perms_file: '0644'
 # * IpAccounting=true
 #
 # Default: True.
-forgejo_service_harden_enable: true
+forgejo_srv_harden_enable: true

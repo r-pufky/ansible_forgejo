@@ -4,16 +4,16 @@
 ###############################################################################
 
 # Enable API documentation endpoints. Default: True.
-forgejo_config_api_enable_swagger: true
+forgejo_cfg_api_enable_swagger: true
 
 # Max items in a page. Default: 50.
-forgejo_config_api_max_response_items: 50
+forgejo_cfg_api_max_response_items: 50
 
 # API paging default number. Default: 30.
-forgejo_config_api_default_paging_num: 30
+forgejo_cfg_api_default_paging_num: 30
 
 # Default and max items per page for GIT trees API. Default: 1000.
-forgejo_config_api_default_git_trees_per_page: 1000
+forgejo_cfg_api_default_git_trees_per_page: 1000
 
 # Default max size of blob returned byte blobs API (bytes). Default: 10485760.
-forgejo_config_api_default_max_blob_size: 10485760
+forgejo_cfg_api_default_max_blob_size: 10485760

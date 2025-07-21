@@ -1,17 +1,18 @@
 ---
-- name: 'Database | verify'
+- name: 'Verify'
   hosts: 'forgejo-debian-12-database_postgres'
   gather_facts: false
   tasks:
-    - name: 'Database | verify | assert Postgres app.ini'
+    - name: 'Verify | assert Postgres app.ini'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'lineinfile.yml'
       vars:
-        test_name: 'Database | verify | assert Postgres app.ini | {{ item }}'
+        test_name: 'Verify | assert Postgres app.ini | {{ item }}'
         test_file: '/etc/forgejo/app.ini'
         test_line: '{{ item }}'
         test_state: 'present'
+        test_diff: true
       loop:
         - 'DB_TYPE = postgres'
         - 'HOST = 127.0.0.1'
@@ -19,19 +20,20 @@
         - 'USER = root'
         - 'PASSWD = `test`'
 
-- name: 'Database | verify'
+- name: 'Verify'
   hosts: 'forgejo-debian-12-database_mysql'
   gather_facts: false
   tasks:
-    - name: 'Database | verify | assert MySQL app.ini'
+    - name: 'Verify | assert MySQL app.ini'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'lineinfile.yml'
       vars:
-        test_name: 'Database | verify | assert MySQL app.ini {{ item }}'
+        test_name: 'Verify | assert MySQL app.ini {{ item }}'
         test_file: '/etc/forgejo/app.ini'
         test_line: '{{ item }}'
         test_state: 'present'
+        test_diff: true
       loop:
         - 'DB_TYPE = mysql'
         - 'HOST = 127.0.0.1'

@@ -10,7 +10,7 @@
 #    0: Disables.
 #
 # Default: 5000.
-forgejo_config_markup_mermaid_max_source_characters: 5000
+forgejo_cfg_markup_mermaid_max_source_characters: 5000
 
 # Maximum number of lines allowed for a filepreview.
 #
@@ -19,7 +19,7 @@ forgejo_config_markup_mermaid_max_source_characters: 5000
 #    0: Disables.
 #
 # Default: 50.
-forgejo_config_markup_filepreview_max_lines: 50
+forgejo_cfg_markup_filepreview_max_lines: 50
 
 ###############################################################################
 # Markup External Tools & Sanitizers [markup.*]
@@ -27,12 +27,12 @@ forgejo_config_markup_filepreview_max_lines: 50
 
 # List of external markup tools and sanitizers to configure.
 #
-# forgejo_config_markup_external:
-#     dict - External markup tool configuration.
+# forgejo_cfg_markup_external:
+#     dict of dict - External markup tool configuration.
 #   {NAME}: str - Markup tool name.
 #     {KEY}: {VALUE} - External tool options.
 #
-# forgejo_config_markup_external:
+# forgejo_cfg_markup_external:
 #   markup.asciidoc:
 #     ENABLED: true
 #     NEED_POSTPROCESS: true
@@ -56,4 +56,4 @@ forgejo_config_markup_filepreview_max_lines: 50
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#markup-markup
-forgejo_config_markup_external: {}
+forgejo_cfg_markup_external: {}

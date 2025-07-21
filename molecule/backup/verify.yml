@@ -1,9 +1,9 @@
 ---
-- name: 'Backup | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Backup | verify | enumerate backups'
+    - name: 'Verify | enumerate backups'
       ansible.builtin.find:
         paths: '/srv/git/data/backup'
         follow: true
@@ -11,7 +11,7 @@
         file_type: 'file'
       register: _forgejo_test_backups
 
-    - name: 'Backup | verify | assert backups'
+    - name: 'Verify | assert backups'
       ansible.builtin.assert:
         quiet: true
         that: _forgejo_test_backups.files | length > 0

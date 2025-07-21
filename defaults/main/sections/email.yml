@@ -4,7 +4,7 @@
 ###############################################################################
 
 # Enable handling of incoming emails? Default: False.
-forgejo_config_email_incoming_enabled: false
+forgejo_cfg_email_incoming_enabled: false
 
 # Reply-to email address template.
 #
@@ -16,31 +16,31 @@ forgejo_config_email_incoming_enabled: false
 #             be replaced with the specific user/action.
 #
 # Default: ''.
-forgejo_config_email_incoming_reply_to_address: ''
+forgejo_cfg_email_incoming_reply_to_address: ''
 
 # IMAP server host. Default: ''.
-forgejo_config_email_incoming_host: ''
+forgejo_cfg_email_incoming_host: ''
 
 # IMAP server port. Default: ''.
-forgejo_config_email_incoming_port: ''
+forgejo_cfg_email_incoming_port: ''
 
 # Username of the receiving account. Default: ''.
-forgejo_config_email_incoming_username: ''
+forgejo_cfg_email_incoming_username: ''
 
 # Password of the receiving account. Default: ''.
-forgejo_config_email_incoming_password: ''
+forgejo_cfg_email_incoming_password: ''
 
 # Enable TLS use for IMAP server? Default: False.
-forgejo_config_email_incoming_use_tls: false
+forgejo_cfg_email_incoming_use_tls: false
 
 # Enable TLS verification skip (unsafe)? Default: True.
-forgejo_config_email_incoming_skip_tls_verify: true
+forgejo_cfg_email_incoming_skip_tls_verify: true
 
 # Incoming mail delivery mailbox. Default: 'INBOX'.
-forgejo_config_email_incoming_mailbox: 'INBOX'
+forgejo_cfg_email_incoming_mailbox: 'INBOX'
 
 # Enable deletion of handled messages? Default: True.
-forgejo_config_email_incoming_delete_handled_message: true
+forgejo_cfg_email_incoming_delete_handled_message: true
 
 # Maximum size of a message to handle (Bytes).
 #
@@ -50,4 +50,4 @@ forgejo_config_email_incoming_delete_handled_message: true
 #   0: Allow all sizes.
 #
 # Default: 10485760 (10 MB).
-forgejo_config_email_incoming_maximum_message_size: 10485760
+forgejo_cfg_email_incoming_maximum_message_size: 10485760

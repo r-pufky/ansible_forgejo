@@ -1,27 +1,27 @@
 ---
-- name: 'Database | prepare'
+- name: 'Pepare'
   hosts: 127.0.0.1
   connection: local
   gather_facts: false
   tasks:
-    - name: 'Database | prepare | generate cache location'
+    - name: 'Pepare | generate cache location'
       ansible.builtin.set_fact:
         _test_cache:
           '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Database | prepare | cache'
+    - name: 'Pepare | cache'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'create_cache.yml'
       vars:
-        test_name: 'Database | prepare | cache'
+        test_name: 'Pepare | cache'
 
-    - name: 'Database | prepare | check forgejo v10.0.3'
+    - name: 'Pepare | check forgejo v10.0.3'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
-        test_name: 'Database | prepare | check forgejo v10.0.3'
+        test_name: 'Pepare | check forgejo v10.0.3'
         test_dest: 'forgejo-10.0.3-linux-amd64'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
@@ -30,13 +30,13 @@
           }}'
         test_mode: '0750'
 
-    - name: 'Database | prepare | check forgejo v10.0.3 checksum'
+    - name: 'Pepare | check forgejo v10.0.3 checksum'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Database | prepare | check forgejo v10.0.3 checksum'
+          'Pepare | check forgejo v10.0.3 checksum'
         test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
@@ -45,13 +45,13 @@
           }}'
         test_mode: '0640'
 
-    - name: 'Database | prepare | check forgejo v10.0.3 signature'
+    - name: 'Pepare | check forgejo v10.0.3 signature'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Database | prepare | check forgejo v10.0.3 signature'
+          'Pepare | check forgejo v10.0.3 signature'
         test_dest: 'forgejo-10.0.3-linux-amd64.asc'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~

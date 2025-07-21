@@ -1,14 +1,14 @@
 ---
-- name: 'Backup | converge'
+- name: 'Converge'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Backup | converge | generate cache location'
+    - name: 'Converge | generate cache location'
       ansible.builtin.set_fact:
         _test_cache:
           '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Backup | converge | load cached secrets'
+    - name: 'Converge | load cached secrets'
       ansible.builtin.set_fact:
         _test_oauth2_rsa_pem:
           '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
@@ -22,22 +22,22 @@
         _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
         _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
 
-    - name: 'Backup | converge | apply r_pufky.srv.forgejo (initial)'
+    - name: 'Converge | apply r_pufky.srv.forgejo (initial)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token:
+        forgejo_cfg_security_internal_token:
           '{{ _test_security_internal_token }}'
-        forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
+        forgejo_cfg_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
 
-    - name: 'Backup | converge | apply r_pufky.srv.forgejo (backup)'
+    - name: 'Converge | apply r_pufky.srv.forgejo (backup)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token:
+        forgejo_cfg_security_internal_token:
           '{{ _test_security_internal_token }}'
-        forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
+        forgejo_cfg_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'

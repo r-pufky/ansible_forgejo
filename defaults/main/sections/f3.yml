@@ -4,4 +4,4 @@
 ###############################################################################
 
 # Enable F3 (Friendly Forge Format)? Default: False.
-forgejo_config_f3_enabled: false
+forgejo_cfg_f3_enabled: false

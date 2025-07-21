@@ -4,15 +4,15 @@
 ###############################################################################
 
 # Enable actions capabilities? Default: True.
-forgejo_config_actions_enabled: true
+forgejo_cfg_actions_enabled: true
 
 # Default address to get action plugins (base URL).
 #
 # Default: 'https://code.forgejo.org'.
-forgejo_config_actions_default_actions_url: 'https://code.forgejo.org'
+forgejo_cfg_actions_default_actions_url: 'https://code.forgejo.org'
 
 # Action log retention (days). Default: 365.
-forgejo_config_actions_log_retention_days: 365
+forgejo_cfg_actions_log_retention_days: 365
 
 # Log compression type.
 #
@@ -28,7 +28,7 @@ forgejo_config_actions_log_retention_days: 365
 #   zstd: zstd compression (default).
 #
 # Default: 'zstd'.
-forgejo_config_actions_log_compression: 'zstd'
+forgejo_cfg_actions_log_compression: 'zstd'
 
 # Default artifact retention (days).
 #
@@ -36,18 +36,18 @@ forgejo_config_actions_log_compression: 'zstd'
 # in 'actions/upload-artifact' step.
 #
 # Default: 90.
-forgejo_config_actions_artifact_retention_days: 90
+forgejo_cfg_actions_artifact_retention_days: 90
 
 # Timeout for running actions without updates (TIME format). Default: '10m'.
-forgejo_config_actions_zombie_task_timeout: '10m'
+forgejo_cfg_actions_zombie_task_timeout: '10m'
 
 # Timeout for long running actions with updates (TIME format). Default: '3h'.
-forgejo_config_actions_endless_task_timeout: '3h'
+forgejo_cfg_actions_endless_task_timeout: '3h'
 
 # Timeout for waiting actions that have not been picked up (TIME format).
 #
 # Default: '24h'.
-forgejo_config_actions_abandoned_job_timeout: '24h'
+forgejo_cfg_actions_abandoned_job_timeout: '24h'
 
 # Action skip strings.
 #
@@ -60,7 +60,7 @@ forgejo_config_actions_abandoned_job_timeout: '24h'
 #   - '[no ci]'
 #   - '[skip actions]'
 #   - '[actions skip]'
-forgejo_config_actions_skip_workflow_strings:
+forgejo_cfg_actions_skip_workflow_strings:
   - '[skip ci]'
   - '[ci skip]'
   - '[no ci]'
@@ -68,4 +68,4 @@ forgejo_config_actions_skip_workflow_strings:
   - '[actions skip]'
 
 # Limit on inputs for manual, workflow_dispatch triggers. Default: 10.
-forgejo_config_actions_limit_dispatch_inputs: 10
+forgejo_cfg_actions_limit_dispatch_inputs: 10

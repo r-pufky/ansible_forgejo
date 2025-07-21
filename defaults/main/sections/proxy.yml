@@ -4,10 +4,10 @@
 ###############################################################################
 
 # Enable proxy? Default: False.
-forgejo_config_proxy_proxy_enabled: false
+forgejo_cfg_proxy_proxy_enabled: false
 
 # Proxy server URL. Default: '' (Use environment).
-forgejo_config_proxy_proxy_url: ''
+forgejo_cfg_proxy_proxy_url: ''
 
 # List of host names requiring proxy.
 #
@@ -16,4 +16,4 @@ forgejo_config_proxy_proxy_url: ''
 #   **: Match all hosts.
 #
 # Default: [] (no hosts).
-forgejo_config_proxy_proxy_hosts: []
+forgejo_cfg_proxy_proxy_hosts: []

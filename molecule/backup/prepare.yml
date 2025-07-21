@@ -1,28 +1,28 @@
 ---
-- name: 'Backup | prepare'
+- name: 'Prepare'
   hosts: 127.0.0.1
   connection: local
   gather_facts: false
   tasks:
-    - name: 'Backup | prepare | generate cache location'
+    - name: 'Prepare | generate cache location'
       ansible.builtin.set_fact:
         _test_cache:
           '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Backup | prepare | cache'
+    - name: 'Prepare | cache'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'create_cache.yml'
       vars:
-        test_name: 'Backup | prepare | cache'
+        test_name: 'Prepare | cache'
         test_cache: '{{ _test_cache }}/ssh'
 
-    - name: 'Backup | prepare | check forgejo v10.0.3'
+    - name: 'Prepare | check forgejo v10.0.3'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
-        test_name: 'Backup | prepare | check forgejo v10.0.3'
+        test_name: 'Prepare | check forgejo v10.0.3'
         test_dest: 'forgejo-10.0.3-linux-amd64'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
@@ -31,13 +31,13 @@
           }}'
         test_mode: '0750'
 
-    - name: 'Backup | prepare | check forgejo v10.0.3 checksum'
+    - name: 'Prepare | check forgejo v10.0.3 checksum'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Backup | prepare | check forgejo v10.0.3 checksum'
+          'Prepare | check forgejo v10.0.3 checksum'
         test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
@@ -46,13 +46,13 @@
           }}'
         test_mode: '0640'
 
-    - name: 'Backup | prepare | check forgejo v10.0.3 signature'
+    - name: 'Prepare | check forgejo v10.0.3 signature'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Backup | prepare | check forgejo v10.0.3 signature'
+          'Prepare | check forgejo v10.0.3 signature'
         test_dest: 'forgejo-10.0.3-linux-amd64.asc'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
@@ -61,7 +61,7 @@
           }}'
         test_mode: '0640'
 
-    - name: 'Backup | prepare | cache forgejo v10.0.4'
+    - name: 'Prepare | cache forgejo v10.0.4'
       ansible.builtin.command:
         argv:
           - 'cp'
@@ -69,7 +69,7 @@
           - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64'
         creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64'
 
-    - name: 'Backup | prepare | cache forgejo v10.0.4 checksum'
+    - name: 'Prepare | cache forgejo v10.0.4 checksum'
       ansible.builtin.command:
         argv:
           - 'cp'
@@ -78,7 +78,7 @@
         creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.sha256'
       register: _test_prepare
 
-    - name: 'Backup | prepare | update forgejo v10.0.4 checksum'
+    - name: 'Prepare | update forgejo v10.0.4 checksum'
       when: _test_prepare.changed  # noqa no-handler
       ansible.builtin.command:
         argv:
@@ -88,7 +88,7 @@
           - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.sha256'
       changed_when: true
 
-    - name: 'Backup | prepare | cache forgejo v10.0.4 signature'
+    - name: 'Prepare | cache forgejo v10.0.4 signature'
       ansible.builtin.command:
         argv:
           - 'cp'
@@ -96,7 +96,7 @@
           - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.asc'
         creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.asc'
 
-    - name: 'Backup | prepare | cache PKCS8 RSA private key'
+    - name: 'Prepare | cache PKCS8 RSA private key'
       ansible.builtin.command:
         argv:
           - 'openssl'
@@ -106,7 +106,7 @@
           - '4096'
         creates: '{{ _test_cache }}/oauth2.rsa.pem'
 
-    - name: 'Backup | prepare | cache PKCS8 RSA private key'
+    - name: 'Prepare | cache PKCS8 RSA private key'
       ansible.builtin.command:
         argv:
           - 'openssl'
@@ -121,7 +121,7 @@
           - '{{ _test_cache }}/oauth2.pkcs8.pem'
         creates: '{{ _test_cache }}/oauth2.pkcs8.pem'
 
-    - name: 'Backup | prepare | cache forgejo_config_security_internal_token'
+    - name: 'Prepare | cache forgejo_cfg_security_internal_token'
       ansible.builtin.shell: >-
         {{ _test_cache }}/forgejo-10.0.3-linux-amd64
         generate secret INTERNAL_TOKEN
@@ -129,7 +129,7 @@
       args:
         creates: '{{ _test_cache }}/security_internal_token'
 
-    - name: 'Backup | prepare | cache forgejo_config_server_lfs_jwt_secret'
+    - name: 'Prepare | cache forgejo_cfg_server_lfs_jwt_secret'
       ansible.builtin.shell: >-
         {{ _test_cache }}/forgejo-10.0.3-linux-amd64
         generate secret JWT_SECRET
@@ -137,7 +137,7 @@
       args:
         creates: '{{ _test_cache }}/lfs_jwt_secret'
 
-    - name: 'Backup | prepare | cache forgejo_config_security_secret_key'
+    - name: 'Prepare | cache forgejo_cfg_security_secret_key'
       ansible.builtin.shell: >-
         {{ _test_cache }}/forgejo-10.0.3-linux-amd64
         generate secret SECRET_KEY
@@ -145,7 +145,7 @@
       args:
         creates: '{{ _test_cache }}/secret_key'
 
-    - name: 'Backup | prepare | cache forgejo_config_server_cert_file'
+    - name: 'Prepare | cache forgejo_cfg_server_cert_file'
       ansible.builtin.command:
         argv:
           - '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
@@ -156,7 +156,7 @@
         chdir: '{{ _test_cache }}'
         creates: '{{ _test_cache }}/cert.pem'
 
-    - name: 'Backup | prepare | generate testing host key'
+    - name: 'Prepare | generate testing host key'
       ansible.builtin.command:
         argv:
           - 'ssh-keygen'
@@ -170,4 +170,4 @@
           - ''
           - '-N'
           - ''
-        creates: '{{ _test_cache }}/ssh/host_key'  # and host_key.pub
+        creates: '{{ _test_cache }}/ssh/host_key'  # and host_key.pub.

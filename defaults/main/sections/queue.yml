@@ -28,7 +28,7 @@
 #     dummy: Dummy channel.
 #
 # Default: 'redis'.
-forgejo_config_queue_type: 'redis'
+forgejo_cfg_queue_type: 'redis'
 
 # Channel and level queue data directory.
 #
@@ -36,14 +36,14 @@ forgejo_config_queue_type: 'redis'
 #   * Relative paths are anchored to AppDataPath.
 #   * Individual queues will default to 'queues/common' (shared queue).
 #
-# Default: '{{ forgejo_config_data_path }}/queues/common'.
-forgejo_config_queue_datadir: '{{ forgejo_config_data_path }}/queues/common'
+# Default: '{{ forgejo_cfg_data_path }}/queues/common'.
+forgejo_cfg_queue_datadir: '{{ forgejo_cfg_data_path }}/queues/common'
 
 # Default queue length before a channel queue will block. Default: 100000.
-forgejo_config_queue_length: 100000
+forgejo_cfg_queue_length: 100000
 
 # Batch size to send for batched queues. Default: 20.
-forgejo_config_queue_batch_length: 20
+forgejo_cfg_queue_batch_length: 20
 
 # Connection string for redis queues.
 #
@@ -55,21 +55,21 @@ forgejo_config_queue_batch_length: 20
 #                        'leveldb://path/to/db?option=value&....'.
 #
 # Default: 'redis://127.0.0.1:6379/0'
-forgejo_config_queue_conn_str: 'redis://127.0.0.1:6379/0'
+forgejo_cfg_queue_conn_str: 'redis://127.0.0.1:6379/0'
 
 # Suffix of default redis/disk queue name.
 #
 # Specific queues can be overridden within in their [queue.name] sections.
 #
 # Default: '_queue'.
-forgejo_config_queue_queue_name: '_queue'
+forgejo_cfg_queue_queue_name: '_queue'
 
 # Suffix of default redis/disk unique queue set name.
 #
 # Specific queues can be overridden within in their [queue.name] sections.
 #
 # Default: '_unique'.
-forgejo_config_queue_set_name: '_unique'
+forgejo_cfg_queue_set_name: '_unique'
 
 # Maximum number of worker go-routines for the queue.
 #
@@ -77,7 +77,7 @@ forgejo_config_queue_set_name: '_unique'
 #   -1: Autodetect workers (# of CPUs/2) restricted to 1-10.
 #
 # Default: -1 (autodetect).
-forgejo_config_queue_max_workers: -1
+forgejo_cfg_queue_max_workers: -1
 
 ###############################################################################
 # Queue Individual [queue.*]
@@ -86,12 +86,12 @@ forgejo_config_queue_max_workers: -1
 
 # List of individual queue override configurations.
 #
-# forgejo_config_queue_individual:
-#     dict - Individual queue override configurations.
+# forgejo_cfg_queue_individual:
+#     dict of dict - Individual queue override configurations.
 #   {NAME}: str - Queue name.
 #     {KEY}: {VALUE} - Queue options.
 #
-# forgejo_config_queue_individual:
+# forgejo_cfg_queue_individual:
 #   queue.mail:
 #     SET_NAME: '_mail'
 #
@@ -99,4 +99,4 @@ forgejo_config_queue_max_workers: -1
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#queue-queue-and-queue
-forgejo_config_queue_individual: {}
+forgejo_cfg_queue_individual: {}

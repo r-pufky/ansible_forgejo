@@ -19,14 +19,14 @@
 # * https://en.wikipedia.org/wiki/OpenID
 
 # Enable signin in via OpenID? Default: True.
-forgejo_config_openid_enable_openid_signin: true
+forgejo_cfg_openid_enable_openid_signin: true
 
 # Enable registration via OpenID?
 #
-# Disable to rely on forgejo_config_service_disable_registration.
+# Disable to rely on forgejo_cfg_service_disable_registration.
 #
 # Default: True.
-forgejo_config_openid_enable_openid_signup: true
+forgejo_cfg_openid_enable_openid_signup: true
 
 # Allowed URI patterns (POSIX regexp).
 #
@@ -34,14 +34,14 @@ forgejo_config_openid_enable_openid_signup: true
 #   []: Allow all (default).
 #
 # Default: [] (allow all).
-forgejo_config_openid_whitelisted_uris: []
+forgejo_cfg_openid_whitelisted_uris: []
 
 # Forbidden URI patterns (POSIX regexp).
 #
-# Requires forgejo_config_openid_whitelisted_uris=[].
+# Requires forgejo_cfg_openid_whitelisted_uris=[].
 #
 # Values:
 #   []: Allow all (default).
 #
 # Default: [] (allow all).
-forgejo_config_openid_blacklisted_uris: []
+forgejo_cfg_openid_blacklisted_uris: []

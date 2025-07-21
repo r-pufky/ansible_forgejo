@@ -13,18 +13,18 @@
 #   twoqueue: Size limited LRU cache.
 #
 # Default: 'memory'.
-forgejo_config_cache_adapter: 'memory'
+forgejo_cfg_cache_adapter: 'memory'
 
 # GC interval (seconds).
 #
-# Requires forgejo_config_cache_adapter=memory.
+# Requires forgejo_cfg_cache_adapter=memory.
 #
 # Default: 60.
-forgejo_config_cache_interval: 60
+forgejo_cfg_cache_interval: 60
 
 # Full cache host URI string.
 #
-# Requires forgejo_config_cache_adapter=redis|memcache.
+# Requires forgejo_cfg_cache_adapter=redis|memcache.
 #
 # Full URI string to cache host including any parameters.
 #
@@ -36,17 +36,17 @@ forgejo_config_cache_interval: 60
 #         twoqueue: '{"size":50000,"recent_ratio":0.25,"ghost_ratio":0.5}'
 #
 # Default: '' (disabled).
-forgejo_config_cache_host: ''
+forgejo_cfg_cache_host: ''
 
 # Cache Time to Live (-1 disables) (TIME format). Default: '16h'.
-forgejo_config_cache_item_ttl: '16h'
+forgejo_cfg_cache_item_ttl: '16h'
 
 ###############################################################################
 # Cache Last Commit [commit.last_commit]
 ###############################################################################
 
 # Cache unused last commit items (-1 disables) (TIME format). Default: '8760h'.
-forgejo_config_cache_last_commit_item_ttl: '8760h'
+forgejo_cfg_cache_last_commit_item_ttl: '8760h'
 
 # Enable last commit cache above commit count. Default: 1000.
-forgejo_config_cache_last_commit_commits_count: 1000
+forgejo_cfg_cache_last_commit_commits_count: 1000

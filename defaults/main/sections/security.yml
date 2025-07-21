@@ -7,12 +7,12 @@
 # Enable install lock (disable initial installer page)?
 #
 # Installer pages manually walks through the creation of an initial user or
-# sets up user registration; if forgejo_local_users is NOT set or there are NO
+# sets up user registration; if forgejo_srv_local_users is NOT set or there are NO
 # pre-existing users in the database, this should remain disabled until an
 # admin user is added.
 #
 # Default: False.
-forgejo_config_security_install_lock: false
+forgejo_cfg_security_install_lock: false
 
 # Global secret key.
 #
@@ -32,7 +32,7 @@ forgejo_config_security_install_lock: false
 # * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
 # * https://codeberg.org/forgejo/forgejo/src/commit/2570be93a60c6a413a002ac0b5f2149be336d0fe/modules/setting/security.go#L112
 # * https://github.com/go-gitea/gitea/issues/16832
-forgejo_config_security_secret_key: ''
+forgejo_cfg_security_secret_key: ''
 
 # Internal token secret used to validate communication within binary.
 #
@@ -44,22 +44,22 @@ forgejo_config_security_secret_key: ''
 #   '': Randomly generate on startup (default).
 #
 # Default: '' (random).
-forgejo_config_security_internal_token: ''
+forgejo_cfg_security_internal_token: ''
 
 # Require uses to re-login after number of days. Default: 31.
-forgejo_config_security_login_remember_days: 31
+forgejo_cfg_security_login_remember_days: 31
 
 # Cookie name to store authentication information. Default: 'gitea_incredible'.
-forgejo_config_security_cookie_remember_name: 'gitea_incredible'
+forgejo_cfg_security_cookie_remember_name: 'gitea_incredible'
 
 # User reverse proxy authentication header. Default: 'X-WEBAUTH-USER'.
-forgejo_config_security_reverse_proxy_authentication_user: 'X-WEBAUTH-USER'
+forgejo_cfg_security_reverse_proxy_authentication_user: 'X-WEBAUTH-USER'
 
 # Email reverse proxy authentication header. Default: 'X-WEBAUTH-EMAIL'.
-forgejo_config_security_reverse_proxy_authentication_email: 'X-WEBAUTH-EMAIL'
+forgejo_cfg_security_reverse_proxy_authentication_email: 'X-WEBAUTH-EMAIL'
 
 # Full name reverse proxy authentication header. Default: 'X-WEBAUTH-FULLNAME'.
-forgejo_config_security_reverse_proxy_authentication_full_name:
+forgejo_cfg_security_reverse_proxy_authentication_full_name:
   'X-WEBAUTH-FULLNAME'
 
 # Proxy forwarding limit for requests.
@@ -69,7 +69,7 @@ forgejo_config_security_reverse_proxy_authentication_full_name:
 #      IP for request.
 #
 # Default: 1.
-forgejo_config_security_reverse_proxy_limit: 1
+forgejo_cfg_security_reverse_proxy_limit: 1
 
 # List of trusted proxy servers.
 #
@@ -81,15 +81,15 @@ forgejo_config_security_reverse_proxy_limit: 1
 # Default:
 #   - '127.0.0.0/8'
 #   - '::1/128'
-forgejo_config_security_reverse_proxy_trusted_proxies:
+forgejo_cfg_security_reverse_proxy_trusted_proxies:
   - '127.0.0.0/8'
   - '::1/128'
 
 # Minimum user password length. Default: 8.
-forgejo_config_security_min_password_length: 8
+forgejo_cfg_security_min_password_length: 8
 
 # Enable users to import local server paths? Default: False.
-forgejo_config_security_import_local_paths: false
+forgejo_cfg_security_import_local_paths: false
 
 # Disable custom git hook creation for users with git hook privileges?
 #
@@ -107,13 +107,13 @@ forgejo_config_security_import_local_paths: false
 # in the name of the service OS user.
 #
 # Default: True (disable custom git hooks).
-forgejo_config_security_disable_git_hooks: true
+forgejo_cfg_security_disable_git_hooks: true
 
 # Disable webhooks feature? Default: False.
-forgejo_config_security_disable_webhooks: false
+forgejo_cfg_security_disable_webhooks: false
 
 # Enable pushes to repos only with full environment? Default: True.
-forgejo_config_security_only_allow_push_if_gitea_environment_set: true
+forgejo_cfg_security_only_allow_push_if_gitea_environment_set: true
 
 # list of character classes required to pass minimum password complexity.
 #
@@ -127,7 +127,7 @@ forgejo_config_security_only_allow_push_if_gitea_environment_set: true
 #
 # Default:
 #   - 'off'
-forgejo_config_security_password_complexity:
+forgejo_cfg_security_password_complexity:
   - 'off'
 
 # Password Hash algorithm.
@@ -137,7 +137,7 @@ forgejo_config_security_password_complexity:
 #   bcrypt: bcrypt[${COST}] custom setting.
 #   pbkdf2: pbkdf2[${ITERATIONS}${KEY-LENGTH}] custom setting.
 #   scrypt: scrypt[${N}${R}${P}${KEY-LENGTH}] custom setting.
-
+#
 # Values:
 #      {ALGO}: Custom algorithm specification.
 #      argon2: argon2$2$65536$8$50.
@@ -148,10 +148,10 @@ forgejo_config_security_password_complexity:
 #      bcrypt: bcrypt$10.
 #
 # Default: 'pbkdf2_hi'.
-forgejo_config_security_password_hash_algo: 'pbkdf2_hi'
+forgejo_cfg_security_password_hash_algo: 'pbkdf2_hi'
 
 # Enable CSRF http cookie only (prevent javascript access)? Default: True.
-forgejo_config_security_csrf_cookie_http_only: true
+forgejo_cfg_security_csrf_cookie_http_only: true
 
 # Check passwords hashes against haveibeenpwned.com?
 #
@@ -159,7 +159,7 @@ forgejo_config_security_csrf_cookie_http_only: true
 #
 # Reference:
 # * https://haveibeenpwned.com/Passwords
-forgejo_config_security_password_check_pwn: false
+forgejo_cfg_security_password_check_pwn: false
 
 # Number of successful token hashes to cache.
 #
@@ -169,7 +169,7 @@ forgejo_config_security_password_check_pwn: false
 # cache as a balance between performance and security.
 #
 # Default: 20.
-forgejo_config_security_successful_tokens_cache_size: 20
+forgejo_cfg_security_successful_tokens_cache_size: 20
 
 # Enable Header-based API tokens only?
 #
@@ -179,4 +179,4 @@ forgejo_config_security_successful_tokens_cache_size: 20
 # behavior.
 #
 # Default: True (Disable query and header tokens).
-forgejo_config_security_disable_query_auth_token: true
+forgejo_cfg_security_disable_query_auth_token: true

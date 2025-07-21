@@ -4,13 +4,13 @@
 ###############################################################################
 
 # Enable metrics endpoint? Default: False.
-forgejo_config_metrics_enabled: false
+forgejo_cfg_metrics_enabled: false
 
 # Metrics authorization token. Default: ''.
-forgejo_config_metrics_token: ''
+forgejo_cfg_metrics_token: ''
 
 # Enable issue by label metrics? Default: False.
-forgejo_config_metrics_enabled_issue_by_label: false
+forgejo_cfg_metrics_enabled_issue_by_label: false
 
 # Enable issue by repository metrics? Default: False.
-forgejo_config_metrics_enabled_issue_by_repository: false
+forgejo_cfg_metrics_enabled_issue_by_repository: false

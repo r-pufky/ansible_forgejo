@@ -6,22 +6,22 @@
 # Enable Camo?
 #
 # Requires:
-#   * forgejo_config_camo_server_url set.
-#   * forgejo_config_camo_hmac_key set.
+#   * forgejo_cfg_camo_server_url set.
+#   * forgejo_cfg_camo_hmac_key set.
 #
 # Default: False.
-forgejo_config_camo_enabled: false
+forgejo_cfg_camo_enabled: false
 
 # Camo image proxy URL.
 #
-# Requires forgejo_config_camo_enabled=true.
+# Requires forgejo_cfg_camo_enabled=true.
 #
 # Default: ''.
-forgejo_config_camo_server_url: ''
+forgejo_cfg_camo_server_url: ''
 
 # URL HMAC.
 #
-# Requires forgejo_config_camo_enabled=true.
+# Requires forgejo_cfg_camo_enabled=true.
 #
 # Default: ''.
-forgejo_config_camo_hmac_key: ''
+forgejo_cfg_camo_hmac_key: ''

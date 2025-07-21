@@ -7,8 +7,9 @@
 # Tests:
 # * service is active and running (default).
 # * Default configuration is syntactically correct.
-# * Configuration extensions are syntactically correct.
+# * Configuration (user_data) dict and dict of dicts are syntactically correct.
 # * Hardened drop-in works.
+# * permissions propagated to all user data directories.
 
 dependency:
   name: 'galaxy'
@@ -41,12 +42,12 @@ provisioner:
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
                 "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
               }}'
-        forgejo_container_enable: true
-        forgejo_service_harden_enable: true
+        forgejo_srv_container_enable: true
+        forgejo_srv_harden_enable: true
     host_vars:
       forgejo-debian-12-default:
-        forgejo_config_security_install_lock: true
-        forgejo_local_users:
+        forgejo_cfg_security_install_lock: true
+        forgejo_srv_local_users:
           - username: 'admin_test'
             password: 'admin'
             email: 'admin@example.com'
@@ -56,25 +57,26 @@ provisioner:
             email: 'user@example.com'
           - username: 'user_test'
             state: 'absent'
-      forgejo-debian-12-default_extensions:
-        forgejo_config_repository_mimetype_mapping:
+      forgejo-debian-12-user_data:
+        forgejo_srv_user_data_manage_enable: true
+        forgejo_cfg_repository_mimetype_mapping:
           '.apk': 'application/vnd.android.package-archive'
-        forgejo_config_mailer_override_header:
+        forgejo_cfg_mailer_override_header:
           Reply-To: 'test@example.com, test2@example.com'
           Content-Type: 'text/html; charset=utf-8'
           In-Reply-To: ''
-        forgejo_config_git_config: {}
-        forgejo_config_i18n_languages:
+        forgejo_cfg_git_config: {}
+        forgejo_cfg_i18n_languages:
           - lang: 'en-US'
             name: 'English'
           - lang: 'zh-CN'
             name: '简体中文'
-        forgejo_config_highlight_mapping:
+        forgejo_cfg_highlight_mapping:
           '.toml': 'ini'
-        forgejo_config_queue_individual:
+        forgejo_cfg_queue_individual:
           queue.mail:
             SET_NAME: '_mail'
-        forgejo_config_log_writers:
+        forgejo_cfg_log_writers:
           log.console:
             MODE: 'console'
             LEVEL: 'Info'
@@ -91,7 +93,7 @@ provisioner:
             RECONNECT_ON_MSG: false
             RECONNECT: false
             PROTOCOL: 'tcp'
-        forgejo_config_markup_external:
+        forgejo_cfg_markup_external:
           markup.asciidoc:
             ENABLED: true
             NEED_POSTPROCESS: true
@@ -111,7 +113,7 @@ provisioner:
             RENDER_CONTENT_MODE: 'sanitized'
           markup.sanitizer.asciidoc.rule-1:
             ENABLED: true
-        forgejo_config_storage_sub_system:
+        forgejo_cfg_storage_sub_system:
           repo-archive:
             STORAGE_TYPE: 'local'
             PATH: 'data/repo-archive'
@@ -139,9 +141,6 @@ provisioner:
             MINIO_BASE_PATH: 'repo-archive/'
             MINIO_USE_SSL: false
             MINIO_INSECURE_SKIP_VERIFY: false
-        forgejo_config_extensions:
-          server:
-            ROOT_URL: 'http://127.0.0.1:3000/'
 platforms:
   - name: 'forgejo-debian-12-default'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
@@ -152,7 +151,7 @@ platforms:
     pre_build_image: true
     published_ports:
       - '3000/tcp'
-  - name: 'forgejo-debian-12-default_extensions'
+  - name: 'forgejo-debian-12-user_data'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:

@@ -31,16 +31,16 @@ releases. Media permissions will be set to ensure Forgejo can read files.
   roles:
      - 'r_pufky.srv.forgejo'
   vars:
-    forgejo_service_version: 'v10.0.3'
-    forgejo_local_users:
+    forgejo_srv_version: 'v10.0.3'
+    forgejo_srv_local_users:
       - username: 'admin_user'
         password: 'admin'
         email: 'admin@example.com'
         admin: true
-    forgejo_config_custom_path: '/etc/forgejo'
-    forgejo_config_work_path: '/var/lib/forgejo'
-    forgejo_config_data_path: '/srv/git/data'
-    forgejo_config_security_install_lock: true
+    forgejo_cfg_custom_path: '/etc/forgejo'
+    forgejo_cfg_work_path: '/opt/forgejo'
+    forgejo_cfg_data_path: '/srv/git/data'
+    forgejo_cfg_security_install_lock: true
 ```
 
 ## Development

@@ -9,9 +9,9 @@
 # Special Case:
 #   * Relative paths anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}/gitea-repositories'.
-forgejo_config_repository_root:
-  '{{ forgejo_config_work_path }}/gitea-repositories'
+# Default: '{{ forgejo_cfg_work_path }}/gitea-repositories'.
+forgejo_cfg_repository_root:
+  '{{ forgejo_cfg_work_path }}/gitea-repositories'
 
 # Script type this server supports.
 #
@@ -20,7 +20,7 @@ forgejo_config_repository_root:
 #     sh: Dash scripts.
 #
 # Default: 'bash'.
-forgejo_config_repository_script_type: 'bash'
+forgejo_cfg_repository_script_type: 'bash'
 
 # List of preference order for detected charsets.
 #
@@ -64,7 +64,7 @@ forgejo_config_repository_script_type: 'bash'
 #   - 'IBM424_ltr'
 #   - 'IBM420_rtl'
 #   - 'IBM420_ltr'
-forgejo_config_repository_detected_charsets_order:
+forgejo_cfg_repository_detected_charsets_order:
   - 'UTF-8'
   - 'UTF-16BE'
   - 'UTF-16LE'
@@ -100,10 +100,10 @@ forgejo_config_repository_detected_charsets_order:
   - 'IBM420_ltr'
 
 # Default ANSI charset to override non-UTF-8 charsets. Default: ''.
-forgejo_config_repository_ansi_charset: ''
+forgejo_cfg_repository_ansi_charset: ''
 
 # Enable new repository force private? Default: False.
-forgejo_config_repository_force_private: false
+forgejo_cfg_repository_force_private: false
 
 # Default privacy setting when creating a new repository.
 #
@@ -113,13 +113,13 @@ forgejo_config_repository_force_private: false
 #    public: Public repository.
 #
 # Default: 'last'.
-forgejo_config_repository_default_private: 'last'
+forgejo_cfg_repository_default_private: 'last'
 
 # Enable default private when using push-to-create? Default: True.
-forgejo_config_repository_default_push_create_private: true
+forgejo_cfg_repository_default_push_create_private: true
 
 # Global limit of repositories per user. Default: -1 (no limit).
-forgejo_config_repository_max_creation_limit: -1
+forgejo_cfg_repository_max_creation_limit: -1
 
 # List of preferred Licenses to place at the top of license list.
 #
@@ -129,18 +129,18 @@ forgejo_config_repository_max_creation_limit: -1
 # Default:
 #   - 'Apache-2.0'
 #   - 'MIT'
-forgejo_config_repository_preferred_licenses:
+forgejo_cfg_repository_preferred_licenses:
   - 'Apache-2.0'
   - 'MIT'
 
 # Disable HTTP interaction with repositories? Default: False.
-forgejo_config_repository_disable_http_git: false
+forgejo_cfg_repository_disable_http_git: false
 
 # Access-Control-Allow-Origin header value. Default: '' (no header).
-forgejo_config_repository_access_control_allow_origin: ''
+forgejo_cfg_repository_access_control_allow_origin: ''
 
 # Enable ssh:// clone URL instead of scp-style URI. Default: True.
-forgejo_config_repository_use_compat_ssh_uri: true
+forgejo_cfg_repository_use_compat_ssh_uri: true
 
 # "go get" request repository URL protocol.
 #
@@ -149,16 +149,16 @@ forgejo_config_repository_use_compat_ssh_uri: true
 #     ssh: SSH.
 #
 # Default: 'https'.
-forgejo_config_repository_go_get_clone_url_protocol: 'https'
+forgejo_cfg_repository_go_get_clone_url_protocol: 'https'
 
 # Enable issue closing if commit marks it fixed? Default: False.
-forgejo_config_repository_default_close_issues_via_commits_in_any_branch: false
+forgejo_cfg_repository_default_close_issues_via_commits_in_any_branch: false
 
 # Enable local repo push to auto-create repo for a user? Default: False.
-forgejo_config_repository_enable_push_create_user: false
+forgejo_cfg_repository_enable_push_create_user: false
 
 # Enable local repo push to auto-create repo for a org? Default: False.
-forgejo_config_repository_enable_push_create_org: false
+forgejo_cfg_repository_enable_push_create_org: false
 
 # List of globally disabled repo units.
 #
@@ -173,7 +173,7 @@ forgejo_config_repository_enable_push_create_org: false
 #      repo.actions: Actions.
 #
 # Default: [] (no disabled units).
-forgejo_config_repository_disabled_repo_units: []
+forgejo_cfg_repository_disabled_repo_units: []
 
 # List of default new repo units.
 #
@@ -200,7 +200,7 @@ forgejo_config_repository_disabled_repo_units: []
 #   - 'repo.projects'
 #   - 'repo.packages'
 #   - 'repo.actions'
-forgejo_config_repository_default_repo_units:
+forgejo_cfg_repository_default_repo_units:
   - 'repo.code'
   - 'repo.releases'
   - 'repo.issues'
@@ -219,36 +219,36 @@ forgejo_config_repository_default_repo_units:
 # Default:
 #   - 'repo.code'
 #   - 'repo.pulls'
-forgejo_config_repository_default_fork_repo_units:
+forgejo_cfg_repository_default_fork_repo_units:
   - 'repo.code'
   - 'repo.pulls'
 
 # Enable directory prefix archive based on repository name? Default: True.
-forgejo_config_repository_prefix_archive_files: true
+forgejo_cfg_repository_prefix_archive_files: true
 
 # Disable migrations feature? Default: False.
-forgejo_config_repository_disable_migrations: false
+forgejo_cfg_repository_disable_migrations: false
 
 # Disable stars feature? Default: False.
-forgejo_config_repository_disable_stars: false
+forgejo_cfg_repository_disable_stars: false
 
 # Disable repository forking? Default: False.
-forgejo_config_repository_disable_forks: false
+forgejo_cfg_repository_disable_forks: false
 
 # Default branch name of new repositories? Default: 'main'.
-forgejo_config_repository_default_branch: 'main'
+forgejo_cfg_repository_default_branch: 'main'
 
 # Enable adoption of unadopted repositories? Default: False.
-forgejo_config_repository_allow_adoption_of_unadopted_repositories: false
+forgejo_cfg_repository_allow_adoption_of_unadopted_repositories: false
 
 # Enable deletion of unadopted repositories? Default: False.
-forgejo_config_repository_allow_deletion_of_unadopted_repositories: false
+forgejo_cfg_repository_allow_deletion_of_unadopted_repositories: false
 
 # Disable download source archive files from UI? Default: False.
-forgejo_config_repository_disable_download_source_archives: false
+forgejo_cfg_repository_disable_download_source_archives: false
 
 # Enable fork repositories without maximum number limit? Default: True.
-forgejo_config_repository_allow_fork_without_maximum_limit: true
+forgejo_cfg_repository_allow_fork_without_maximum_limit: true
 
 ###############################################################################
 # Repository Editor [repository.editor]
@@ -266,7 +266,7 @@ forgejo_config_repository_allow_fork_without_maximum_limit: true
 #   - '.mdown'
 #   - '.mkd'
 #   - '.livemd'
-forgejo_config_repository_editor_line_wrap_extensions:
+forgejo_cfg_repository_editor_line_wrap_extensions:
   - '.txt'
   - '.md'
   - '.markdown'
@@ -278,7 +278,7 @@ forgejo_config_repository_editor_line_wrap_extensions:
 #
 # Default:
 #   - 'markdown'
-forgejo_config_repository_editor_previewable_file_modes:
+forgejo_cfg_repository_editor_previewable_file_modes:
   - 'markdown'
 
 ###############################################################################
@@ -292,16 +292,16 @@ forgejo_config_repository_editor_previewable_file_modes:
 # Special Case:
 #   * Relative paths are anchored to AppDataPath.
 #
-# Default: '{{ forgejo_config_server_app_data_path }}/tmp/local-repo'.
-forgejo_config_repository_local_local_copy_path:
-  '{{ forgejo_config_server_app_data_path }}/tmp/local-repo'
+# Default: '{{ forgejo_cfg_server_app_data_path }}/tmp/local-repo'.
+forgejo_cfg_repository_local_local_copy_path:
+  '{{ forgejo_cfg_server_app_data_path }}/tmp/local-repo'
 
 ###############################################################################
 # Repository Upload [repository.upload]
 ###############################################################################
 
 # Enable repository file uploads? Default: True.
-forgejo_config_repository_upload_enabled: true
+forgejo_cfg_repository_upload_enabled: true
 
 # Path for uploads.
 #
@@ -310,9 +310,9 @@ forgejo_config_repository_upload_enabled: true
 # Special Case:
 #   * Relative paths are anchored to AppDataPath.
 #
-# Defaults: '{{ forgejo_config_server_app_data_path }}/data/tmp/uploads'.
-forgejo_config_repository_upload_temp_path:
-  '{{ forgejo_config_server_app_data_path }}/data/tmp/uploads'
+# Defaults: '{{ forgejo_cfg_server_app_data_path }}/data/tmp/uploads'.
+forgejo_cfg_repository_upload_temp_path:
+  '{{ forgejo_cfg_server_app_data_path }}/data/tmp/uploads'
 
 # List of allowed file extensions.
 #
@@ -324,13 +324,13 @@ forgejo_config_repository_upload_temp_path:
 #       '': Allow all types.
 #
 # Default: [].
-forgejo_config_repository_upload_allowed_types: []
+forgejo_cfg_repository_upload_allowed_types: []
 
 # Max size of each file (Megabytes). Default: 50.
-forgejo_config_repository_upload_file_max_size: 50
+forgejo_cfg_repository_upload_file_max_size: 50
 
 # Max number of files per upload. Default: 5.
-forgejo_config_repository_upload_max_files: 5
+forgejo_cfg_repository_upload_max_files: 5
 
 ###############################################################################
 # Repository Pull Request [repository.pull-request]
@@ -344,7 +344,7 @@ forgejo_config_repository_upload_max_files: 5
 # Default:
 #   - 'WIP:'
 #   - '[WIP]'
-forgejo_config_repository_pull_request_work_in_progress_prefixes:
+forgejo_cfg_repository_pull_request_work_in_progress_prefixes:
   - 'WIP:'
   - '[WIP]'
 
@@ -360,7 +360,7 @@ forgejo_config_repository_pull_request_work_in_progress_prefixes:
 #   - 'resolve'
 #   - 'resolves'
 #   - 'resolved'
-forgejo_config_repository_pull_request_close_keywords:
+forgejo_cfg_repository_pull_request_close_keywords:
   - 'close'
   - 'closes'
   - 'closed'
@@ -377,7 +377,7 @@ forgejo_config_repository_pull_request_close_keywords:
 #   - 'reopen'
 #   - 'reopens'
 #   - 'reopened'
-forgejo_config_repository_pull_request_reopen_keywords:
+forgejo_cfg_repository_pull_request_reopen_keywords:
   - 'reopen'
   - 'reopens'
   - 'reopened'
@@ -392,24 +392,24 @@ forgejo_config_repository_pull_request_reopen_keywords:
 #   fast-forward-only: Fast-forward-only.
 #
 # Default: 'merge'.
-forgejo_config_repository_pull_request_default_merge_style: 'merge'
+forgejo_cfg_repository_pull_request_default_merge_style: 'merge'
 
 # Limit default commit messages for squash commits. Default: 50.
-forgejo_config_repository_pull_request_default_merge_message_commits_limit: 50
+forgejo_cfg_repository_pull_request_default_merge_message_commits_limit: 50
 
 # Limit default commit messages size for squash commits. Default: 5120.
-forgejo_config_repository_pull_request_default_merge_message_size: 5120
+forgejo_cfg_repository_pull_request_default_merge_message_size: 5120
 
 # Include all authors in default commit message for squash commits?
 #
 # Default: False.
-forgejo_config_repository_pull_request_default_merge_message_all_authors: false
+forgejo_cfg_repository_pull_request_default_merge_message_all_authors: false
 
 # Limit approvers (Reviewed-by:) for default commit message. Default: 10.
-forgejo_config_repository_pull_request_default_merge_message_max_approvers: 10
+forgejo_cfg_repository_pull_request_default_merge_message_max_approvers: 10
 
 # Only include official approvers in default merge messages? Default: True.
-forgejo_config_repository_pull_request_default_merge_message_official_approvers_only: true
+forgejo_cfg_repository_pull_request_default_merge_message_official_approvers_only: true
 
 # Default repository create PR branch update style.
 #
@@ -418,27 +418,27 @@ forgejo_config_repository_pull_request_default_merge_message_official_approvers_
 #   rebase: Rebase branch updates.
 #
 # Default: 'merge'
-forgejo_config_repository_pull_request_default_update_style: 'merge'
+forgejo_cfg_repository_pull_request_default_update_style: 'merge'
 
 # Include all commit messages in squash commit comment? Default: False.
-forgejo_config_repository_pull_request_populate_squash_comment_with_commit_messages: false
+forgejo_cfg_repository_pull_request_populate_squash_comment_with_commit_messages: false
 
 # Add co-committed-by trailers if committer does not match author?
 #
 # Includes co-authored-by, co-committed-by trailers.
 #
 # Default: True.
-forgejo_config_repository_pull_request_add_co_committer_trailers: true
+forgejo_cfg_repository_pull_request_add_co_committer_trailers: true
 
 # Retest conflicting patches with git apply? Default: False.
-forgejo_config_repository_pull_request_test_conflicting_patches_with_git_apply: false
+forgejo_cfg_repository_pull_request_test_conflicting_patches_with_git_apply: false
 
 # Retarget child pull requests to the parent pull request?
 #
 # Only works on merged PRs where the head and base branch target the same repo.
 #
 # Default: True.
-forgejo_config_repository_pull_request_retarget_children_on_merge: true
+forgejo_cfg_repository_pull_request_retarget_children_on_merge: true
 
 ###############################################################################
 # Repository Issue [repository.issue]
@@ -451,14 +451,14 @@ forgejo_config_repository_pull_request_retarget_children_on_merge: true
 #   - 'Off-topic'
 #   - 'Spam'
 #   - 'Resolved'
-forgejo_config_repository_issue_lock_reasons:
+forgejo_cfg_repository_issue_lock_reasons:
   - 'Too heated'
   - 'Off-topic'
   - 'Spam'
   - 'Resolved'
 
 # Maximum number of pinned Issues per repo )0 disables). Default: 3.
-forgejo_config_repository_issue_max_pinned: 3
+forgejo_cfg_repository_issue_max_pinned: 3
 
 ###############################################################################
 # Repository Release [repository.release]
@@ -474,10 +474,10 @@ forgejo_config_repository_issue_max_pinned: 3
 #       '': Allow all types.
 #
 # Default: [].
-forgejo_config_repository_release_allowed_types: []
+forgejo_cfg_repository_release_allowed_types: []
 
 # Number of releases to show per page. Default: 10.
-forgejo_config_repository_release_default_paging_num: 10
+forgejo_cfg_repository_release_default_paging_num: 10
 
 ###############################################################################
 # Repository Signing [repository.signing]
@@ -490,37 +490,37 @@ forgejo_config_repository_release_default_paging_num: 10
 #       ssh: Use OpenSSH.
 #
 # Default: 'openpgp'.
-forgejo_config_repository_signing_signing_format: 'openpgp'
+forgejo_cfg_repository_signing_signing_format: 'openpgp'
 
 # GPG key to use to sign commits.
 #
 # Values:
 #        '': Disabled signing.
-#   default: Use forgejo_config_run_user
+#   default: Use forgejo_cfg_run_user
 #            (git config --get user.signingkey) value (default).
-#    {PATH}: Absolute path to public OpenSSH key.
-#            Requires forgejo_config_repository_signing_signing_format=ssh.
+#    {PATH}: Absolute path to public OpenSSH key; managed externally.
+#            Requires forgejo_cfg_repository_signing_signing_format=ssh.
 #
 # Default: 'default'.
-forgejo_config_repository_signing_signing_key: 'default'
+forgejo_cfg_repository_signing_signing_key: 'default'
 
 # Use provided name for signer name.
 #
-# Requires forgejo_config_repository_signing_signing_key!=default.
+# Requires forgejo_cfg_repository_signing_signing_key!=default.
 #
 # Should match a publicized name for the key.
 #
 # Default: '' (disabled).
-forgejo_config_repository_signing_signing_name: ''
+forgejo_cfg_repository_signing_signing_name: ''
 
 # Use provided name for signer email.
 #
-# Requires forgejo_config_repository_signing_signing_key!=default.
+# Requires forgejo_cfg_repository_signing_signing_key!=default.
 #
 # Should match a publicized email address for the key.
 #
 # Default: '' (disabled).
-forgejo_config_repository_signing_signing_email: ''
+forgejo_cfg_repository_signing_signing_email: ''
 
 # Default trust model for repositories.
 #
@@ -534,7 +534,7 @@ forgejo_config_repository_signing_signing_email: ''
 #                          which match the committer.
 #
 # Default: 'collaborator'.
-forgejo_config_repository_signing_default_trust_model: 'collaborator'
+forgejo_cfg_repository_signing_default_trust_model: 'collaborator'
 
 # List of initial commit signing options when creating a repository.
 #
@@ -546,7 +546,7 @@ forgejo_config_repository_signing_default_trust_model: 'collaborator'
 #
 # Default:
 #   - 'always'
-forgejo_config_repository_signing_initial_commit:
+forgejo_cfg_repository_signing_initial_commit:
   - 'always'
 
 # List of signing options for CRUD actions.
@@ -562,7 +562,7 @@ forgejo_config_repository_signing_initial_commit:
 #   - 'pubkey'
 #   - 'twofa'
 #   - 'parentsigned'
-forgejo_config_repository_signing_crud_actions:
+forgejo_cfg_repository_signing_crud_actions:
   - 'pubkey'
   - 'twofa'
   - 'parentsigned'
@@ -578,7 +578,7 @@ forgejo_config_repository_signing_crud_actions:
 #
 # Default:
 #   - 'never'
-forgejo_config_repository_signing_wiki:
+forgejo_cfg_repository_signing_wiki:
   - 'never'
 
 # List of signing options for merges.
@@ -598,7 +598,7 @@ forgejo_config_repository_signing_wiki:
 #   - 'twofa'
 #   - 'basesigned'
 #   - 'commitssigned'
-forgejo_config_repository_signing_merges:
+forgejo_cfg_repository_signing_merges:
   - 'pubkey'
   - 'twofa'
   - 'basesigned'
@@ -610,13 +610,13 @@ forgejo_config_repository_signing_merges:
 
 # Custom MIME type mapping for downloadable files.
 #
-# forgejo_config_repository_mimetype_mapping:
+# forgejo_cfg_repository_mimetype_mapping:
 #       dict - Extension to MIMEtype mapping.
 #   {EXT}: str - MIMEtype.
 #
-# forgejo_config_repository_mimetype_mapping:
+# forgejo_cfg_repository_mimetype_mapping:
 #   '.apk': 'application/vnd.android.package-archive'
 #
 # Default: {} (disabled).
-forgejo_config_repository_mimetype_mapping:
+forgejo_cfg_repository_mimetype_mapping:
   '.apk': 'application/vnd.android.package-archive'

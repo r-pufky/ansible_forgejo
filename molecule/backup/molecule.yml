@@ -52,10 +52,10 @@ provisioner:
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
                 "/molecule/cache/forgejo-10.0.4-linux-amd64.asc"
               }}'
-        forgejo_container_enable: true
-        forgejo_service_harden_enable: true
-        forgejo_config_security_install_lock: true
-        forgejo_local_users:
+        forgejo_srv_container_enable: true
+        forgejo_srv_harden_enable: true
+        forgejo_cfg_security_install_lock: true
+        forgejo_srv_local_users:
           - username: 'admin_test'
             password: 'admin'
             email: 'admin@example.com'

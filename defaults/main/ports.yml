@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Ports Configuration
 ###############################################################################
@@ -8,6 +7,14 @@
 # Reference:
 # * https://github.com/r-pufky/ansible_ufw
 
-forgejo_ports:
-  - {proto: 'tcp', from_ip: 'any', to_port: 3000, direction: 'in', comment: 'Forgejo http'}
-  - {proto: 'tcp', from_ip: 'any', to_port: 22, direction: 'in', comment: 'Forgejo SSH'}
+forgejo_srv_ports:
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 3000
+    direction: 'in'
+    comment: 'Forgejo HTTP'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 22
+    direction: 'in'
+    comment: 'Forgejo SSH'

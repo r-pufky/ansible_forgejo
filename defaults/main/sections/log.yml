@@ -10,12 +10,12 @@
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}/log' (AppWorkPath/log).
-forgejo_config_log_root_path: '{{ forgejo_config_work_path }}/log'
+# Default: '{{ forgejo_cfg_work_path }}/log' (AppWorkPath/log).
+forgejo_cfg_log_root_path: '{{ forgejo_cfg_work_path }}/log'
 
 # List of main Logging modes.
 #
-# Manage each writer individually with forgejo_config_log_writers.
+# Manage each writer individually with forgejo_cfg_log_writers.
 #
 # Values:
 #   console: Log to console (default).
@@ -23,7 +23,7 @@ forgejo_config_log_root_path: '{{ forgejo_config_work_path }}/log'
 #      conn: Log to connection.
 #
 # Default: ['console'].
-forgejo_config_log_mode:
+forgejo_cfg_log_mode:
   - 'console'
 
 # Logging level (up to severity level).
@@ -37,7 +37,7 @@ forgejo_config_log_mode:
 #    none: None.
 #
 # Default: 'info'.
-forgejo_config_log_level: 'info'
+forgejo_cfg_log_level: 'info'
 
 # Stacktrace logging level (events at or above).
 #
@@ -50,16 +50,16 @@ forgejo_config_log_level: 'info'
 #   none: None (default).
 #
 # Default: 'none'.
-forgejo_config_log_stacktrace_level: 'none'
+forgejo_cfg_log_stacktrace_level: 'none'
 
 # Log buffer length. Default: 10000.
-forgejo_config_log_buffer_len: 10000
+forgejo_cfg_log_buffer_len: 10000
 
 # Default sub logger mode.
 #
 # Special Case:
 #   '': Disable.
-#    ,: Use forgejo_config_log_mode.
+#    ,: Use forgejo_cfg_log_mode.
 #
 # Values:
 #   console: Log to console (default).
@@ -67,13 +67,13 @@ forgejo_config_log_buffer_len: 10000
 #      conn: Log to connection.
 #
 # Default: '' (disabled).
-forgejo_config_log_logger_default_mode: ','
+forgejo_cfg_log_logger_default_mode: ','
 
 # Access sub logger mode.
 #
 # Special Case:
 #   '': Disable.
-#    ,: Use forgejo_config_log_mode.
+#    ,: Use forgejo_cfg_log_mode.
 #
 # Values:
 #   console: Log to console (default).
@@ -81,61 +81,61 @@ forgejo_config_log_logger_default_mode: ','
 #      conn: Log to connection.
 #
 # Default: '' (disabled).
-forgejo_config_log_logger_access_mode: ''
+forgejo_cfg_log_logger_access_mode: ''
 
 # Router sub logger mode.
 #
 # Special Case:
 #   '': Disable.
-#    ,: Use forgejo_config_log_mode.
+#    ,: Use forgejo_cfg_log_mode.
 #
 # Values:
 #   console: Log to console (default).
 #      file: Log to file.
 #      conn: Log to connection.
 #
-# Default: ',' (forgejo_config_log_mode).
-forgejo_config_log_logger_router_mode: ','
+# Default: ',' (forgejo_cfg_log_mode).
+forgejo_cfg_log_logger_router_mode: ','
 
 # Xorm sub logger mode.
 #
-# Requires forgejo_config_database_log_sql=true.
+# Requires forgejo_cfg_database_log_sql=true.
 #
 # Special Case:
 #   '': Disable.
-#    ,: Use forgejo_config_log_mode.
+#    ,: Use forgejo_cfg_log_mode.
 #
 # Values:
 #   console: Log to console (default).
 #      file: Log to file.
 #      conn: Log to connection.
 #
-# Default: ',' (forgejo_config_log_mode).
-forgejo_config_log_logger_xorm_mode: ','
+# Default: ',' (forgejo_cfg_log_mode).
+forgejo_cfg_log_logger_xorm_mode: ','
 
 # Enable SSH GIT request logging? Default: False.
-forgejo_config_log_enable_ssh_log: false
+forgejo_cfg_log_enable_ssh_log: false
 
 # List of request headers to log in access log.
 #
-# Requires forgejo_config_log_logger_access_mode.
+# Requires forgejo_cfg_log_logger_access_mode.
 #
 # Creates log in NCSA common log format for matched headers. First match in
 # order of configuration will be logged.
 #
 # X-Request-ID: test-id-123
-# forgejo_config_log_request_id_headers: ['X-Request-ID']
+# forgejo_cfg_log_request_id_headers: ['X-Request-ID']
 # log: 127.0.0.1:58384 - - [14/Feb/2023:16:33:51 +0800] "test-id-123"
 #
 # X-Trace-ID: trace-id-1q2w3e4r
-# forgejo_config_log_request_id_headers:
+# forgejo_cfg_log_request_id_headers:
 #   - 'X-Request-ID'
 #   - 'X-Trace-ID'
 #   - 'X-Req-ID'
 # log: 127.0.0.1:58384 - - [14/Feb/2023:16:33:51 +0800] "trace-id-1q2w3e4r"
 #
 # Default: [] (disabled).
-forgejo_config_log_request_id_headers: []
+forgejo_cfg_log_request_id_headers: []
 
 # Template used to create access log.
 #
@@ -153,18 +153,18 @@ forgejo_config_log_request_id_headers: []
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet/#access-log-log
-forgejo_config_log_access_log_template: !unsafe ''
+forgejo_cfg_log_access_log_template: !unsafe ''
 
 ###############################################################################
 # Log Modes (Writers) [log.%(WriterMode)]
 ###############################################################################
 
-# forgejo_config_log_writers:
-#     dict - Custom writer configuration.
+# forgejo_cfg_log_writers:
+#     dict of dict - Custom writer configuration.
 #   {NAME}: str - Log Writer name.
 #     {KEY}: {VALUE} - Log Writer options.
 #
-# forgejo_config_log_writers:
+# forgejo_cfg_log_writers:
 #   log.console:
 #     MODE: 'console'
 #     LEVEL: 'Info'
@@ -202,4 +202,4 @@ forgejo_config_log_access_log_template: !unsafe ''
 # PROTOCOL = tcp
 #
 # Default: {}.
-forgejo_config_log_writers: {}
+forgejo_cfg_log_writers: {}

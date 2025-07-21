@@ -7,21 +7,21 @@
 #
 # Section             | location           | Configure
 # attachment          | attachments/       | attachment.yml
-# lfs                 | lfs/               | forgejo_config_storage_sub_system
-# avatar              | avatars/           | forgejo_config_storage_sub_system
-# repo-avatar         | repo-avatars/      | forgejo_config_storage_sub_system
-# repo-archive        | repo-archive/      | forgejo_config_storage_sub_system
+# lfs                 | lfs/               | forgejo_cfg_storage_sub_system
+# avatar              | avatars/           | forgejo_cfg_storage_sub_system
+# repo-avatar         | repo-avatars/      | forgejo_cfg_storage_sub_system
+# repo-archive        | repo-archive/      | forgejo_cfg_storage_sub_system
 # packages            | packages/          | packages.yml
-# storage.actions_log | actions_log/       | forgejo_config_storage_sub_system
-# actions.artifacts   | actions_artifacts/ | forgejo_config_storage_sub_system
-# {ADDITIONAL}        | no default         | forgejo_config_storage_sub_system
+# storage.actions_log | actions_log/       | forgejo_cfg_storage_sub_system
+# actions.artifacts   | actions_artifacts/ | forgejo_cfg_storage_sub_system
+# {ADDITIONAL}        | no default         | forgejo_cfg_storage_sub_system
 #
 # Examples:
 #   * STORAGE_TYPE=local, APP_DATA_PATH=/appdata; path is '/appdata/{DIR}'.
 #   * STORAGE_TYPE=minio; bucket is 'attachments/'.
 #
 # Configure sections without additional options in
-# forgejo_config_storage_sub_system.
+# forgejo_cfg_storage_sub_system.
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/storage/
@@ -33,29 +33,30 @@
 #   minio: Use S3 bucket.
 #
 # Default: 'local'.
-forgejo_config_storage_storage_type: 'local'
+### forgejo_cfg_storage_storage_type: 'local'
+forgejo_cfg_storage_storage_type: 'local'
 
 # Absolute path to local storage location.
 #
-# Requires forgejo_config_storage_storage_type=local.
+# Requires forgejo_cfg_storage_storage_type=local.
 #
-# Default: '' (forgejo_config_server_app_data_path).
-forgejo_config_storage_path: ''
+# Default: '' (forgejo_cfg_server_app_data_path).
+forgejo_cfg_storage_path: ''
 
 ###############################################################################
 # Minio Options
 ###############################################################################
-# All options require forgejo_config_storage_config_storage_type=minio.
+# All options require forgejo_cfg_storage_config_storage_type=minio.
 
 # Enable direct file serving via redirect to authenticated URLs.
 #
 # Only supported via signed URLs.
 #
 # Default: False.
-forgejo_config_storage_serve_direct: false
+forgejo_cfg_storage_serve_direct: false
 
 # Minio endpoint to connect to. Default: 'localhost:9000'.
-forgejo_config_storage_config_minio_endpoint: 'localhost:9000'
+forgejo_cfg_storage_config_minio_endpoint: 'localhost:9000'
 
 # Minio accessKeyID to connect to.
 #
@@ -66,13 +67,13 @@ forgejo_config_storage_config_minio_endpoint: 'localhost:9000'
 #       (default).
 #
 # Default: '' (search).
-forgejo_config_storage_config_minio_access_key_id: ''
+forgejo_cfg_storage_config_minio_access_key_id: ''
 
 # Minio secretAccessKey. Default: ''.
-forgejo_config_storage_config_minio_secret_access_key: ''
+forgejo_cfg_storage_config_minio_secret_access_key: ''
 
 # Minio attachment storage bucket. Default: 'forgejo'.
-forgejo_config_storage_config_minio_bucket: 'forgejo'
+forgejo_cfg_storage_config_minio_bucket: 'forgejo'
 
 # Minio URL storage backup lookup.
 #
@@ -83,16 +84,16 @@ forgejo_config_storage_config_minio_bucket: 'forgejo'
 #     '': auto (default).
 #
 # Default: '' (auto).
-forgejo_config_storage_config_minio_bucket_lookup: ''
+forgejo_cfg_storage_config_minio_bucket_lookup: ''
 
 # Minio create bucket location. Default: 'us-east-1'.
-forgejo_config_storage_config_minio_location: 'us-east-1'
+forgejo_cfg_storage_config_minio_location: 'us-east-1'
 
 # Minio enable SSL? Default: False.
-forgejo_config_storage_config_minio_use_ssl: false
+forgejo_cfg_storage_config_minio_use_ssl: false
 
 # Minio skip SSL verification? Default: False.
-forgejo_config_storage_config_minio_insecure_skip_verify: false
+forgejo_cfg_storage_config_minio_insecure_skip_verify: false
 
 # Minio checksum algorithm.
 #
@@ -101,7 +102,7 @@ forgejo_config_storage_config_minio_insecure_skip_verify: false
 #       md5: Cloudflare or Backblaze.
 #
 # Default: 'default'.
-forgejo_config_storage_minio_checksum_algorithm: 'default'
+forgejo_cfg_storage_minio_checksum_algorithm: 'default'
 
 ###############################################################################
 # Subsystem Storage Options
@@ -121,12 +122,12 @@ forgejo_config_storage_minio_checksum_algorithm: 'default'
 # Storage-only sections - sections with config options have statically defined
 # storage variables.
 #
-# forgejo_config_storage_sub_system:
-#     dict - Additional storage sub-system configuration.
+# forgejo_cfg_storage_sub_system:
+#     dict of dict - Additional storage sub-system configuration.
 #   {NAME}: str - Subsystem storage name (section header).
 #     {VAR}: {VALUE} - Storage option.
 #
-# forgejo_config_storage_sub_system:
+# forgejo_cfg_storage_sub_system:
 #   repo-archive:
 #     STORAGE_TYPE: 'local'
 #     PATH: 'data/repo-archive'
@@ -159,4 +160,4 @@ forgejo_config_storage_minio_checksum_algorithm: 'default'
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/storage/
-forgejo_config_storage_sub_system: {}
+forgejo_cfg_storage_sub_system: {}

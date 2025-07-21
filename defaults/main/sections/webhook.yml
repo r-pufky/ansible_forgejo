@@ -4,10 +4,10 @@
 ###############################################################################
 
 # Webhook task queue length. Default: 1000.
-forgejo_config_webhook_queue_length: 1000
+forgejo_cfg_webhook_queue_length: 1000
 
 # Deliver timeout in seconds. Default: 5.
-forgejo_config_webhook_deliver_timeout: 5
+forgejo_cfg_webhook_deliver_timeout: 5
 
 # List of allowed hosts for webhook calls.
 #
@@ -25,25 +25,25 @@ forgejo_config_webhook_deliver_timeout: 5
 #
 # Default:
 #   - 'external'
-forgejo_config_webhook_allowed_host_list:
+forgejo_cfg_webhook_allowed_host_list:
   - 'external'
 
 # Enable TLS certification verification skip? Default: False.
 # Allow insecure certification
-forgejo_config_webhook_skip_tls_verify: false
+forgejo_cfg_webhook_skip_tls_verify: false
 
 # Number of history items in each page. Default: 10.
-forgejo_config_webhook_paging_num: 10
+forgejo_cfg_webhook_paging_num: 10
 
 # Maximum number of commits sent in payload for a push webhook event.
 #
 # If there are more commits only the most recent ones are sent.
 #
 # Default: 15.
-forgejo_config_webhook_payload_commit_limit: 15
+forgejo_cfg_webhook_payload_commit_limit: 15
 
 # Proxy server URL. Default: '' (use environment setting).
-forgejo_config_webhook_proxy_url: ''
+forgejo_cfg_webhook_proxy_url: ''
 
 # List of host names requiring proxy.
 #
@@ -52,4 +52,4 @@ forgejo_config_webhook_proxy_url: ''
 #   **: Match all hosts.
 #
 # Default: [] (no required hosts).
-forgejo_config_webhook_proxy_hosts: []
+forgejo_cfg_webhook_proxy_hosts: []

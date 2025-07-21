@@ -4,7 +4,7 @@
 ###############################################################################
 
 # Enable issue and pull request attachments? Default: True.
-forgejo_config_attachment_enabled: true
+forgejo_cfg_attachment_enabled: true
 
 # Allowed file extensions.
 #
@@ -16,7 +16,7 @@ forgejo_config_attachment_enabled: true
 #       '': Allow all types.
 #
 # Default: (see below).
-forgejo_config_attachment_allowed_types:
+forgejo_cfg_attachment_allowed_types:
   - '.avif'
   - '.cpuprofile'
   - '.csv'
@@ -55,10 +55,10 @@ forgejo_config_attachment_allowed_types:
   - '.zip'
 
 # Max file size (MB). Default: 2048.
-forgejo_config_attachment_max_size: 2048
+forgejo_cfg_attachment_max_size: 2048
 
 # Max files per upload. Default: 5.
-forgejo_config_attachment_max_files: 5
+forgejo_cfg_attachment_max_files: 5
 
 ###############################################################################
 # Storage Options
@@ -73,31 +73,31 @@ forgejo_config_attachment_max_files: 5
 #   minio: S3 compatible object storage service.
 #
 # Default: 'local'.
-forgejo_config_attachment_storage_type: 'local'
+forgejo_cfg_attachment_storage_type: 'local'
 
 # Attachment path.
 #
-# Requires forgejo_config_attachment_storage_type=local.
+# Requires forgejo_cfg_attachment_storage_type=local.
 #
 # Special Case:
 #   * Relative paths anchored to AppDataPath.
 #
-# Default: '{{ forgejo_config_data_path }}/attachments'.
-forgejo_config_attachment_path: '{{ forgejo_config_data_path }}/attachments'
+# Default: '{{ forgejo_cfg_data_path }}/attachments'.
+forgejo_cfg_attachment_path: '{{ forgejo_cfg_data_path }}/attachments'
 
 ###############################################################################
 # Minio Storage Options
 ###############################################################################
-# All options require forgejo_config_attachment_storage_type=minio.
+# All options require forgejo_cfg_attachment_storage_type=minio.
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/storage/#using-minio-1
 
 # Enable redirect to authenticated URL to serve files directly? Default: False.
-forgejo_config_attachment_serve_direct: false
+forgejo_cfg_attachment_serve_direct: false
 
 # Minio endpoint. Default: 'localhost:9000'.
-forgejo_config_attachment_minio_endpoint: 'localhost:9000'
+forgejo_cfg_attachment_minio_endpoint: 'localhost:9000'
 
 # Minio accessKeyID.
 #
@@ -108,13 +108,13 @@ forgejo_config_attachment_minio_endpoint: 'localhost:9000'
 #       (default).
 #
 # Default: '' (search).
-forgejo_config_attachment_minio_access_key_id: ''
+forgejo_cfg_attachment_minio_access_key_id: ''
 
 # Minio secretAccessKey. Default: ''.
-forgejo_config_attachment_minio_secret_access_key: ''
+forgejo_cfg_attachment_minio_secret_access_key: ''
 
 # Minio attachment storage bucket. Default: 'forgejo'.
-forgejo_config_attachment_minio_bucket: 'forgejo'
+forgejo_cfg_attachment_minio_bucket: 'forgejo'
 
 # Minio URL storage bucket lookup.
 #
@@ -125,19 +125,19 @@ forgejo_config_attachment_minio_bucket: 'forgejo'
 #     '': auto (default).
 #
 # Default: '' (auto).
-forgejo_config_attachment_minio_bucket_lookup: ''
+forgejo_cfg_attachment_minio_bucket_lookup: ''
 
 # Minio create bucket location. Default: 'us-east-1'.
-forgejo_config_attachment_minio_location: 'us-east-1'
+forgejo_cfg_attachment_minio_location: 'us-east-1'
 
 # Minio bucket base path. Default: 'attachments/'.
-forgejo_config_attachment_minio_base_path: 'attachments/'
+forgejo_cfg_attachment_minio_base_path: 'attachments/'
 
 # Enable Minio SSL? Default: False.
-forgejo_config_attachment_minio_use_ssl: false
+forgejo_cfg_attachment_minio_use_ssl: false
 
 # Minio skip SSL verification? Default: False.
-forgejo_config_attachment_minio_insecure_skip_verify: false
+forgejo_cfg_attachment_minio_insecure_skip_verify: false
 
 # Minio checksum algorithm.
 #
@@ -146,4 +146,4 @@ forgejo_config_attachment_minio_insecure_skip_verify: false
 #       md5: Cloudflare or Backblaze.
 #
 # Default: 'default'.
-forgejo_config_attachment_minio_checksum_algorithm: 'default'
+forgejo_cfg_attachment_minio_checksum_algorithm: 'default'

@@ -4,16 +4,16 @@
 ###############################################################################
 
 # Enable version information in footer? Default: True.
-forgejo_config_other_show_footer_version: true
+forgejo_cfg_other_show_footer_version: true
 
 # Enable template execution time in footer? Default: True.
-forgejo_config_other_show_footer_template_load_time: true
+forgejo_cfg_other_show_footer_template_load_time: true
 
 # Enable "powered by" text in footer? Default: True.
-forgejo_config_other_show_footer_powered_by: true
+forgejo_cfg_other_show_footer_powered_by: true
 
 # Enable sitemap generation. Default: True.
-forgejo_config_other_enable_sitemap: true
+forgejo_cfg_other_enable_sitemap: true
 
 # Enable RSS/Atom feed? Default: True.
-forgejo_config_other_enable_feed: true
+forgejo_cfg_other_enable_feed: true

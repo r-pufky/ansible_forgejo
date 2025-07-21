@@ -4,47 +4,47 @@
 ###############################################################################
 
 # Number of repos that are displayed on one explore page. Default: 20.
-forgejo_config_ui_config_ui_explore_paging_num: 20
+forgejo_cfg_ui_config_ui_explore_paging_num: 20
 
 # Number of issues that are displayed on one page. Default: 20.
-forgejo_config_ui_issue_paging_num: 20
+forgejo_cfg_ui_issue_paging_num: 20
 
 # Number of repos that are displayed on one page when searching. Default: 20.
-forgejo_config_ui_repo_search_paging_num: 20
+forgejo_cfg_ui_repo_search_paging_num: 20
 
 # Number of members that are displayed on one page. Default: 20.
-forgejo_config_ui_members_paging_num: 20
+forgejo_cfg_ui_members_paging_num: 20
 
 # Number of maximum commits displayed in one activity feed. Default: 5.
-forgejo_config_ui_feed_max_commit_num: 5
+forgejo_cfg_ui_feed_max_commit_num: 5
 
 # Number of items that are displayed in home feed. Default: 20.
-forgejo_config_ui_feed_paging_num: 20
+forgejo_cfg_ui_feed_paging_num: 20
 
 # Number of items that are displayed in a single subsite map. Default: 20.
-forgejo_config_ui_sitemap_paging_num: 20
+forgejo_cfg_ui_sitemap_paging_num: 20
 
 # Number of packages that are displayed on one page. Default: 20.
-forgejo_config_ui_packages_paging_num: 20
+forgejo_cfg_ui_packages_paging_num: 20
 
 # Number of maximum commits displayed in commit graph. Default: 100.
-forgejo_config_ui_graph_max_commit_num: 100
+forgejo_cfg_ui_graph_max_commit_num: 100
 
 # Number of line of codes shown for a code comment. Default: 4.
-forgejo_config_ui_code_comment_lines: 4
+forgejo_cfg_ui_code_comment_lines: 4
 
 # Max size of files to be displayed (bytes). Default: 8388608 (8MiB).
-forgejo_config_ui_max_display_file_size: 8388608
+forgejo_cfg_ui_max_display_file_size: 8388608
 
 # Enable detection of ambiguous unicode characters in file contents?
 #
 # Warnings will be shown in the UI.
 #
 # Default: True.
-forgejo_config_ui_ambiguous_unicode_detection: true
+forgejo_cfg_ui_ambiguous_unicode_detection: true
 
 # Enable showing user's email in Explore Users page? Default: True.
-forgejo_config_ui_show_user_email: true
+forgejo_cfg_ui_show_user_email: true
 
 # Set the default theme for install.
 #
@@ -63,7 +63,7 @@ forgejo_config_ui_show_user_email: true
 #                forgejo-dark-tritanopia: Dark tritanopia theme.
 #
 # Default: 'forgejo-auto'.
-forgejo_config_ui_default_theme: 'forgejo-auto'
+forgejo_cfg_ui_default_theme: 'forgejo-auto'
 
 # List of all available themes for users.
 #
@@ -94,7 +94,7 @@ forgejo_config_ui_default_theme: 'forgejo-auto'
 #   - 'forgejo-auto-tritanopia'
 #   - 'forgejo-light-tritanopia'
 #   - 'forgejo-dark-tritanopia'
-forgejo_config_ui_themes:
+forgejo_cfg_ui_themes:
   - 'forgejo-auto'
   - 'forgejo-light'
   - 'forgejo-dark'
@@ -116,7 +116,7 @@ forgejo_config_ui_themes:
 #    {NAME}: Custom asset name in public/assets/img/emoji/{NAME}.png.
 #
 # Default: see below.
-forgejo_config_ui_reactions:
+forgejo_cfg_ui_reactions:
   - '+1'
   - '-1'
   - 'laugh'
@@ -127,7 +127,7 @@ forgejo_config_ui_reactions:
   - 'eyes'
 
 # Number of users displayed in reactions tooltip. Default: 10.
-forgejo_config_ui_reaction_max_user_num: 10
+forgejo_cfg_ui_reaction_max_user_num: 10
 
 # Additional Emojis not defined in the utf8 standard.
 #
@@ -144,7 +144,7 @@ forgejo_config_ui_reaction_max_user_num: 10
 #   - 'github'
 #   - 'gogs'
 #   - 'forgejo'
-forgejo_config_ui_custom_emojis:
+forgejo_cfg_ui_custom_emojis:
   - 'gitea'
   - 'codeberg'
   - 'gitlab'
@@ -158,12 +158,12 @@ forgejo_config_ui_custom_emojis:
 # If the full name isn't set, the username will be used.
 #
 # Default: False.
-forgejo_config_ui_default_show_full_name: false
+forgejo_cfg_ui_default_show_full_name: false
 
 # Enable searches within description at repo search on explore page?
 #
 # Default: True.
-forgejo_config_ui_search_repo_description: true
+forgejo_cfg_ui_search_repo_description: true
 
 # Enable display of relevant repos on the explore page?
 #
@@ -172,7 +172,7 @@ forgejo_config_ui_search_repo_description: true
 # description, no icon, no topic).
 #
 # Default: False.
-forgejo_config_ui_only_show_relevant_repos: false
+forgejo_cfg_ui_only_show_relevant_repos: false
 
 # Sort type of the explore pages.
 #
@@ -184,7 +184,7 @@ forgejo_config_ui_only_show_relevant_repos: false
 #             oldest: Oldest first.
 #
 # Default: 'recentupdate' (recent updates).
-forgejo_config_ui_explore_paging_default_sort: 'recentupdate'
+forgejo_cfg_ui_explore_paging_default_sort: 'recentupdate'
 
 # List of escape context ambiguous unicode detection should not be run in.
 #
@@ -194,7 +194,7 @@ forgejo_config_ui_explore_paging_default_sort: 'recentupdate'
 #       diff: Diff of an commit and pull request.
 #
 # Default: [] (run in all cases).
-forgejo_config_ui_skip_escape_contexts: []
+forgejo_cfg_ui_skip_escape_contexts: []
 
 # The tense all timestamps should be rendered in.
 #
@@ -203,45 +203,45 @@ forgejo_config_ui_skip_escape_contexts: []
 #      mixed: Timestamps are rendered in relative time (2 days ago) (default).
 #
 # Default: 'mixed'.
-forgejo_config_ui_preferred_timestamp_tense: 'mixed'
+forgejo_cfg_ui_preferred_timestamp_tense: 'mixed'
 
 ###############################################################################
 # UI Admin [ui.admin]
 ###############################################################################
 
 # Number of users that are displayed on one page. Default: 50.
-forgejo_config_ui_admin_user_paging_num: 50
+forgejo_cfg_ui_admin_user_paging_num: 50
 
 # Number of repos that are displayed on one page. Default: 50.
-forgejo_config_ui_admin_repo_paging_num: 50
+forgejo_cfg_ui_admin_repo_paging_num: 50
 
 # Number of notices that are displayed on one page. Default: 25.
-forgejo_config_ui_admin_notice_paging_num: 25
+forgejo_cfg_ui_admin_notice_paging_num: 25
 
 # Number of organizations that are displayed on one page. Default: 50.
-forgejo_config_ui_admin_org_paging_num: 50
+forgejo_cfg_ui_admin_org_paging_num: 50
 
 ###############################################################################
 # UI User [ui.user]
 ###############################################################################
 
 # Number of repos that are displayed on one page. Default: 15.
-forgejo_config_ui_user_repo_paging_num: 15
+forgejo_cfg_ui_user_repo_paging_num: 15
 
 ###############################################################################
 # UI Meta [ui.meta]
 ###############################################################################
 
 # Author meta tag for homepage.
-forgejo_config_ui_meta_author: 'Forgejo - Beyond coding. We forge.'
+forgejo_cfg_ui_meta_author: 'Forgejo - Beyond coding. We forge.'
 
 # Description meta tag for homepage.
-forgejo_config_ui_meta_description: >-
+forgejo_cfg_ui_meta_description: >-
   Forgejo is a self-hosted lightweight software forge.
   Easy to install and low maintenance, it just does the job.
 
 # Keywords meta tag for homepage.
-forgejo_config_ui_meta_keywords:
+forgejo_cfg_ui_meta_keywords:
   - 'git'
   - 'forge'
   - 'forgejo'
@@ -252,21 +252,21 @@ forgejo_config_ui_meta_keywords:
 
 # How often notification endpoint is polled to update (TIME format).
 #
-# The timeout will increase to forgejo_config_ui_notification_max_timeout in
-# forgejo_config_ui_notification_timeout_step if the notification count is
+# The timeout will increase to forgejo_cfg_ui_notification_max_timeout in
+# forgejo_cfg_ui_notification_timeout_step if the notification count is
 # unchanged.
 #
 # Special Case:
 #   -1: Disables.
 #
 # Default: '10s'.
-forgejo_config_ui_notification_min_timeout: '10s'
+forgejo_cfg_ui_notification_min_timeout: '10s'
 
 # Maximum notification polling timeout (TIME format). Default: '60s'.
-forgejo_config_ui_notification_max_timeout: '60s'
+forgejo_cfg_ui_notification_max_timeout: '60s'
 
 # Notification polling timeout step (TIME format). Default: '10s'.
-forgejo_config_ui_notification_timeout_step: '10s'
+forgejo_cfg_ui_notification_timeout_step: '10s'
 
 # How often db is queried to get the latest notification counts (TIME format).
 #
@@ -277,7 +277,7 @@ forgejo_config_ui_notification_timeout_step: '10s'
 #   -1: Disable EventSource.
 #
 # Default: '10s',
-forgejo_config_ui_notification_event_source_update_time: '10s'
+forgejo_cfg_ui_notification_event_source_update_time: '10s'
 
 ###############################################################################
 # UI SVG [ui.svg]
@@ -289,7 +289,7 @@ forgejo_config_ui_notification_event_source_update_time: '10s'
 # embedded in markdown files as images.
 #
 # Default: True.
-forgejo_config_ui_svg_enable_render: true
+forgejo_cfg_ui_svg_enable_render: true
 
 ###############################################################################
 # UI CSV [ui.csv]
@@ -301,7 +301,7 @@ forgejo_config_ui_svg_enable_render: true
 #   0: no limit.
 #
 # Default: 524288 (524KB).
-forgejo_config_ui_csv_max_file_size: 524288
+forgejo_cfg_ui_csv_max_file_size: 524288
 
 # Maximum allowed rows to render CSV files (0 disables). Default: 2500.
-forgejo_config_ui_max_rows: 2500
+forgejo_cfg_ui_max_rows: 2500

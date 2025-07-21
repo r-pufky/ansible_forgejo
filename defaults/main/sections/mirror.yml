@@ -11,7 +11,7 @@
 #    True: Enable mirror functionality (default).
 #
 # Default: True.
-forgejo_config_mirrors_enabled: true
+forgejo_cfg_mirrors_enabled: true
 
 # Disable creation of new pull mirrors?
 #
@@ -20,7 +20,7 @@ forgejo_config_mirrors_enabled: true
 #    True: Enable new pull mirror functionality (default).
 #
 # Default: False.
-forgejo_config_mirrors_disable_new_pull: false
+forgejo_cfg_mirrors_disable_new_pull: false
 
 # Disable creation of new push mirrors?
 #
@@ -29,10 +29,10 @@ forgejo_config_mirrors_disable_new_pull: false
 #    True: Enable new push mirror functionality (default).
 #
 # Default: False.
-forgejo_config_mirrors_disable_new_push: false
+forgejo_cfg_mirrors_disable_new_push: false
 
 # Default interval between each check (TIME format). Default: '8h'.
-forgejo_config_mirrors_default_interval: '8h'
+forgejo_cfg_mirrors_default_interval: '8h'
 
 # Minimum interval between each check (TIME format).
 #
@@ -40,4 +40,4 @@ forgejo_config_mirrors_default_interval: '8h'
 #   >1: Must be greater than 1.
 #
 # Default: 10.
-forgejo_config_mirrors_min_interval: '10m'
+forgejo_cfg_mirrors_min_interval: '10m'

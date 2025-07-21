@@ -1,14 +1,14 @@
 ---
-- name: 'Default | converge'
+- name: 'Converge'
   hosts: 'forgejo-debian-12-default'
   gather_facts: false
   tasks:
-    - name: 'Default | converge | generate cache location'
+    - name: 'Converge | generate cache location'
       ansible.builtin.set_fact:
         _test_cache:
           '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Default | converge | load cached secrets'
+    - name: 'Converge | load cached secrets'
       ansible.builtin.set_fact:
         _test_oauth2_rsa_pem:
           '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
@@ -22,7 +22,7 @@
         _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
         _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
 
-    - name: 'Default | converge | render expected app.ini'
+    - name: 'Converge | render expected app.ini'
       ansible.builtin.template:
         src: 'templates/app.default.ini.j2'
         dest: '/tmp/app.ini'
@@ -30,26 +30,26 @@
         group: '305'
         mode: '0640'
 
-    - name: 'Default | converge | apply r_pufky.srv.forgejo'
+    - name: 'Converge | apply r_pufky.srv.forgejo'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token:
+        forgejo_cfg_security_internal_token:
           '{{ _test_security_internal_token }}'
-        forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
+        forgejo_cfg_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
 
-- name: 'Default | converge'
-  hosts: 'forgejo-debian-12-default_extensions'
+- name: 'Converge'
+  hosts: 'forgejo-debian-12-user_data'
   gather_facts: false
   tasks:
-    - name: 'Default | converge | generate cache location'
+    - name: 'Converge | generate cache location'
       ansible.builtin.set_fact:
         _test_cache:
           '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
 
-    - name: 'Default | converge | load cached secrets'
+    - name: 'Converge | load cached secrets'
       ansible.builtin.set_fact:
         _test_oauth2_rsa_pem:
           '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
@@ -63,20 +63,20 @@
         _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
         _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
 
-    - name: 'Default | converge | render expected app.ini'
+    - name: 'Converge | render expected app.ini'
       ansible.builtin.template:
-        src: 'templates/app.extensions.ini.j2'
+        src: 'templates/app.user_data.ini.j2'
         dest: '/tmp/app.ini'
         owner: '305'
         group: '305'
         mode: '0640'
 
-    - name: 'Default | converge | apply r_pufky.srv.forgejo'
+    - name: 'Converge | apply r_pufky.srv.forgejo'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_config_security_internal_token:
+        forgejo_cfg_security_internal_token:
           '{{ _test_security_internal_token }}'
-        forgejo_config_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_config_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_config_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
+        forgejo_cfg_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'

@@ -4,7 +4,7 @@
 ###############################################################################
 
 # Batch request pointer limit. Default: 20.
-forgejo_config_lfs_client_batch_size: 20
+forgejo_cfg_lfs_client_batch_size: 20
 
 # Batch concurrent upload/download operation limit. Default: 8.
-forgejo_config_lfs_client_batch_operation_concurrency: 8
+forgejo_cfg_lfs_client_batch_operation_concurrency: 8

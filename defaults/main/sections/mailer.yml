@@ -6,15 +6,15 @@
 # * https://forgejo.org/docs/latest/admin/email-setup
 
 # Enable mailer? Default: False.
-forgejo_config_mailer_enabled: false
+forgejo_cfg_mailer_enabled: false
 
 # Prefix displayed before subject in mail. Default: ''.
-forgejo_config_mailer_subject_prefix: ''
+forgejo_cfg_mailer_subject_prefix: ''
 
 # Mail server protocol.
 #
 # If your provider does not explicitly say which protocol it uses but does
-# provide a port, you can set forgejo_config_mailer_smtp_port instead and this
+# provide a port, you can set forgejo_cfg_mailer_smtp_port instead and this
 # will be inferred.
 #
 # Values:
@@ -26,7 +26,7 @@ forgejo_config_mailer_subject_prefix: ''
 #           dummy: Send email messages to the log as a testing phase.
 #
 # Default: '' (disabled).
-forgejo_config_mailer_protocol: ''
+forgejo_cfg_mailer_protocol: ''
 
 # Mail server address.
 #
@@ -34,7 +34,7 @@ forgejo_config_mailer_protocol: ''
 #   smtp+unix: Use unix socket.
 #
 # Default: ''.
-forgejo_config_mailer_smtp_addr: ''
+forgejo_cfg_mailer_smtp_addr: ''
 
 # Mail server port.
 #
@@ -46,10 +46,10 @@ forgejo_config_mailer_smtp_addr: ''
 #    '': Disabled (default).
 #
 # Default: '' (disabled).
-forgejo_config_mailer_smtp_port: ''
+forgejo_cfg_mailer_smtp_port: ''
 
 # Enable HELO operation? Default: True.
-forgejo_config_mailer_enable_helo: true
+forgejo_cfg_mailer_enable_helo: true
 
 # Hostname for HELO operation.
 #
@@ -57,39 +57,39 @@ forgejo_config_mailer_enable_helo: true
 #   '': Use system hostname (default).
 #
 # Default: ''.
-forgejo_config_mailer_helo_hostname: ''
+forgejo_cfg_mailer_helo_hostname: ''
 
 # Enable force trust of server certificates (unsafe)? Default: False.
-forgejo_config_mailer_force_trust_server_cert: false
+forgejo_cfg_mailer_force_trust_server_cert: false
 
 # Enable client certificate use in connection? Default: False.
-forgejo_config_mailer_use_client_cert: false
+forgejo_cfg_mailer_use_client_cert: false
 
 # Client public certificate file.
 #
-# Requires forgejo_config_mailer_use_client_cert=true.
+# Requires forgejo_cfg_mailer_use_client_cert=true.
 #
 # Sourced from ansible controller; automatically placed in
 # CustomPath/mailer/cert.pem with correct permissions.
 #
-# forgejo_config_mailer_client_cert_file:
+# forgejo_cfg_mailer_client_cert_file:
 #   'host_vars/forgejo.example.com/data/mail_cert.pem'
 #
 # Default: '' (disabled).
-forgejo_config_mailer_client_cert_file: ''
+forgejo_cfg_mailer_client_cert_file: ''
 
 # Client certificate private key file.
 #
-# Requires forgejo_config_mailer_use_client_cert=true.
+# Requires forgejo_cfg_mailer_use_client_cert=true.
 #
 # Sourced from ansible controller; automatically placed in
 # CustomPath/mailer/cert.key with correct permissions.
 #
-# forgejo_config_mailer_client_cert_file:
+# forgejo_cfg_mailer_client_cert_file:
 #   'host_vars/forgejo.example.com/data/mail_key.pem'
 #
 # Default: '' (disabled).
-forgejo_config_mailer_client_key_file: ''
+forgejo_cfg_mailer_client_key_file: ''
 
 # Mail from address (RFC 5322).
 #
@@ -98,7 +98,7 @@ forgejo_config_mailer_client_key_file: ''
 #   '"{NAME}" <{EMAIL}>': Human friendly name with email.
 #
 # Default: ''.
-forgejo_config_mailer_from: ''
+forgejo_cfg_mailer_from: ''
 
 # Send with different envelope from address.
 #
@@ -107,7 +107,7 @@ forgejo_config_mailer_from: ''
 #   '': Use account address (default).
 #
 # Default: '' (account address).
-forgejo_config_mailer_envelope_from: ''
+forgejo_cfg_mailer_envelope_from: ''
 
 # WebUI mail display format.
 #
@@ -119,19 +119,19 @@ forgejo_config_mailer_envelope_from: ''
 #        Domain: Applicaiton domain.
 #
 # Default: !unsafe '{{ .DisplayName }}'.
-forgejo_config_mailer_from_display_name_format: !unsafe '{{ .DisplayName }}'
+forgejo_cfg_mailer_from_display_name_format: !unsafe '{{ .DisplayName }}'
 
 # Mailer user name. Default: ''.
-forgejo_config_mailer_user: ''
+forgejo_cfg_mailer_user: ''
 
 # Mailer user password (automatically quoted). Default: ''.
-forgejo_config_mailer_passwd: !unsafe ''
+forgejo_cfg_mailer_passwd: !unsafe ''
 
 # Enable plain text only emails without HTML alternative. Default: False.
-forgejo_config_mailer_send_as_plain_text: false
+forgejo_cfg_mailer_send_as_plain_text: false
 
 # Path to sendmail utility. Default: 'sendmail'.
-forgejo_config_mailer_sendmail_path: 'sendmail'
+forgejo_cfg_mailer_sendmail_path: 'sendmail'
 
 # List of sendmail arguments.
 #
@@ -139,13 +139,13 @@ forgejo_config_mailer_sendmail_path: 'sendmail'
 # terminate these args with "--".
 #
 # Default: [].
-forgejo_config_mailer_sendmail_args: []
+forgejo_cfg_mailer_sendmail_args: []
 
 # Sendmail timeout (TIME format). Default: '5m'.
-forgejo_config_mailer_sendmail_timeout: '5m'
+forgejo_cfg_mailer_sendmail_timeout: '5m'
 
 # Enable conversion of \r\n to \n for Sendmail? Default: True.
-forgejo_config_mailer_sendmail_convert_crlf: true
+forgejo_cfg_mailer_sendmail_convert_crlf: true
 
 ###############################################################################
 # Mailer Override Headers [mailer.override_header]
@@ -153,14 +153,14 @@ forgejo_config_mailer_sendmail_convert_crlf: true
 
 # Override mailer headers.
 #
-# forgejo_config_mailer_override_header:
+# forgejo_cfg_mailer_override_header:
 #     dict - Mail headers to override.
 #   {HEADER}: {VALUE} - Value to replace in mail header.
 #
-# forgejo_config_mailer_override_header:
+# forgejo_cfg_mailer_override_header:
 #   Reply-To: 'test@example.com, test2@example.com'
 #   Content-Type: 'text/html; charset=utf-8'
 #   In-Reply-To: ''
 #
 # Default: {}.
-forgejo_config_mailer_override_header: {}
+forgejo_cfg_mailer_override_header: {}

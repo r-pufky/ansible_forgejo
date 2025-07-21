@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Cron [cron]
 ###############################################################################
@@ -10,48 +9,48 @@
 # * https://en.wikipedia.org/wiki/Cron
 
 # Enable all cron tasks? Default: True.
-forgejo_config_cron_enabled: false
+forgejo_cfg_cron_enabled: false
 
 # Enable running all cron tasks on start? Default: False.
-forgejo_config_cron_run_at_start: false
+forgejo_cfg_cron_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_notice_on_success: false
+forgejo_cfg_cron_notice_on_success: false
 
 ###############################################################################
 # Archive Cleanup [cron.archive_cleanup]
 ###############################################################################
 
 # Enable archive cleanup? Default: True
-forgejo_config_cron_archive_cleanup_enabled: true
+forgejo_cfg_cron_archive_cleanup_enabled: true
 
 # Enable running at least once at start up? Default: True.
-forgejo_config_cron_archive_cleanup_run_at_start: true
+forgejo_cfg_cron_archive_cleanup_run_at_start: true
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_archive_cleanup_notice_on_success: false
+forgejo_cfg_cron_archive_cleanup_notice_on_success: false
 
 # Archive cleanup schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_archive_cleanup_schedule: '@midnight'
+forgejo_cfg_cron_archive_cleanup_schedule: '@midnight'
 
 # Delete archives older than time (TIME format). Default: '24h'.
-forgejo_config_cron_archive_cleanup_older_than: '24h'
+forgejo_cfg_cron_archive_cleanup_older_than: '24h'
 
 ###############################################################################
 # Update Mirrors [cron.update_mirrors]
 ###############################################################################
 
 # Enable update mirrors? Default: True.
-forgejo_config_cron_update_mirrors_enabled: true
+forgejo_cfg_cron_update_mirrors_enabled: true
 
 # Enable running at least once at start up? Default: True.
-forgejo_config_cron_update_mirrors_run_at_start: false
+forgejo_cfg_cron_update_mirrors_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_update_mirrors_notice_on_success: false
+forgejo_cfg_cron_update_mirrors_notice_on_success: false
 
 # Update mirrors schedule (CRON format). Default: '@every 10m'.
-forgejo_config_cron_update_mirrors_schedule: '@every 10m'
+forgejo_cfg_cron_update_mirrors_schedule: '@every 10m'
 
 # Pull mirror queue depth.
 #
@@ -61,7 +60,7 @@ forgejo_config_cron_update_mirrors_schedule: '@every 10m'
 #    #: Queue depth.
 #
 # Default: 50.
-forgejo_config_cron_update_mirrors_pull_limit: 50
+forgejo_cfg_cron_update_mirrors_pull_limit: 50
 
 # Push mirror queue depth.
 #
@@ -71,26 +70,26 @@ forgejo_config_cron_update_mirrors_pull_limit: 50
 #    #: Queue depth.
 #
 # Default: 50.
-forgejo_config_cron_update_mirrors_push_limit: 50
+forgejo_cfg_cron_update_mirrors_push_limit: 50
 
 ###############################################################################
 # Repo Health Check [cron.repo_health_check]
 ###############################################################################
 
 # Enable repository health check? Default: True.
-forgejo_config_cron_repo_health_check_enabled: true
+forgejo_cfg_cron_repo_health_check_enabled: true
 
 # Enable running at least once at start up? Default: True.
-forgejo_config_cron_repo_health_check_run_at_start: false
+forgejo_cfg_cron_repo_health_check_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_repo_health_check_notice_on_success: false
+forgejo_cfg_cron_repo_health_check_notice_on_success: false
 
 # Repository health check schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_repo_health_check_schedule: '@midnight'
+forgejo_cfg_cron_repo_health_check_schedule: '@midnight'
 
 # Repository health check timeout (TIME format). Default: '60s'.
-forgejo_config_cron_repo_health_check_timeout: '60s'
+forgejo_cfg_cron_repo_health_check_timeout: '60s'
 
 # List of git fsck arguments.
 #
@@ -98,59 +97,59 @@ forgejo_config_cron_repo_health_check_timeout: '60s'
 #
 # Reference:
 # * http://git-scm.com/docs/git-fsck
-forgejo_config_cron_repo_health_check_args: []
+forgejo_cfg_cron_repo_health_check_args: []
 
 ###############################################################################
 # Check Repo Stats [cron.check_repo_stats]
 ###############################################################################
 
 # Enable check repository statistics? Default: True.
-forgejo_config_cron_check_repo_stats_enabled: true
+forgejo_cfg_cron_check_repo_stats_enabled: true
 
 # Run check repository statistics at least once at start up? Default: True.
-forgejo_config_cron_check_repo_stats_run_at_start: true
+forgejo_cfg_cron_check_repo_stats_run_at_start: true
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_check_repo_stats_notice_on_success: false
+forgejo_cfg_cron_check_repo_stats_notice_on_success: false
 
 # Repository check repo stats schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_check_repo_stats_schedule: '@midnight'
+forgejo_cfg_cron_check_repo_stats_schedule: '@midnight'
 
 ###############################################################################
 # Update Migration Poster ID [cron.update_migration_poster_id]
 ###############################################################################
 
 # Enable update migration poster ID? Default: True.
-forgejo_config_cron_update_migration_poster_id_enabled: true
+forgejo_cfg_cron_update_migration_poster_id_enabled: true
 
 # Run update migration poster ID at least once at start up? Default: True.
-forgejo_config_cron_update_migration_poster_id_run_at_start: true
+forgejo_cfg_cron_update_migration_poster_id_run_at_start: true
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_update_migration_poster_id_notice_on_success: false
+forgejo_cfg_cron_update_migration_poster_id_notice_on_success: false
 
 # Repository update migration poster ID schedule (CRON format).
 #
 # Default: '@midnight'.
-forgejo_config_cron_update_migration_poster_id_schedule: '@midnight'
+forgejo_cfg_cron_update_migration_poster_id_schedule: '@midnight'
 
 ###############################################################################
 # Sync External Users [cron.sync_external_users]
 ###############################################################################
 
 # Enable sync external users? Default: True.
-forgejo_config_cron_sync_external_users_enabled: true
+forgejo_cfg_cron_sync_external_users_enabled: true
 
 # Run sync external users at least once at start up? Default: False.
-forgejo_config_cron_sync_external_users_run_at_start: false
+forgejo_cfg_cron_sync_external_users_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_sync_external_users_notice_on_success: false
+forgejo_cfg_cron_sync_external_users_notice_on_success: false
 
 # Repository update migration poster ID schedule (CRON format).
 #
 # Default: '@midnight'.
-forgejo_config_cron_sync_external_users_schedule: '@midnight'
+forgejo_cfg_cron_sync_external_users_schedule: '@midnight'
 
 # Enable external source updates to existing users?
 #
@@ -159,159 +158,159 @@ forgejo_config_cron_sync_external_users_schedule: '@midnight'
 #   False: Sync'ed users can only be created.
 #
 # Default: True.
-forgejo_config_cron_sync_external_users_update_existing: true
+forgejo_cfg_cron_sync_external_users_update_existing: true
 
 ###############################################################################
 # Cleanup Actions [cron.cleanup_actions]
 ###############################################################################
 
 # Enable cleanup actions? Default: True.
-forgejo_config_cron_cleanup_actions_enabled: true
+forgejo_cfg_cron_cleanup_actions_enabled: true
 
 # Run cleanup actions at least once at start up? Default: True.
-forgejo_config_cron_cleanup_actions_run_at_start: true
+forgejo_cfg_cron_cleanup_actions_run_at_start: true
 
 # Repository cleanup actions schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_cleanup_actions_schedule: '@midnight'
+forgejo_cfg_cron_cleanup_actions_schedule: '@midnight'
 
 ###############################################################################
 # Deleted Branches Cleanup [cron.deleted_branches_cleanup]
 ###############################################################################
 
 # Enable deleted branches cleanup? Default: True.
-forgejo_config_cron_deleted_branches_cleanup_enabled: true
+forgejo_cfg_cron_deleted_branches_cleanup_enabled: true
 
 # Run deleted branches cleanup at least once at start up? Default: True.
-forgejo_config_cron_deleted_branches_cleanup_run_at_start: true
+forgejo_cfg_cron_deleted_branches_cleanup_run_at_start: true
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_deleted_branches_cleanup_notice_on_success: false
+forgejo_cfg_cron_deleted_branches_cleanup_notice_on_success: false
 
 # Repository deleted branches cleanup schedule (CRON format).
 #
 # Default: '@midnight'.
-forgejo_config_cron_deleted_branches_cleanup_schedule: '@midnight'
+forgejo_cfg_cron_deleted_branches_cleanup_schedule: '@midnight'
 
 # Delete branches older than time (TIME format). Default: '24h'.
-forgejo_config_cron_deleted_branches_cleanup_older_than: '24h'
+forgejo_cfg_cron_deleted_branches_cleanup_older_than: '24h'
 
 ###############################################################################
 # Cleanup Hook Task Table [cron.cleanup_hook_task_table]
 ###############################################################################
 
 # Enable cleanup hook task table? Default: True.
-forgejo_config_cron_cleanup_hook_task_table_enabled: true
+forgejo_cfg_cron_cleanup_hook_task_table_enabled: true
 
 # Run cleanup hook task table at least once at start up? Default: False.
-forgejo_config_cron_cleanup_hook_task_table_run_at_start: false
+forgejo_cfg_cron_cleanup_hook_task_table_run_at_start: false
 
 # Repository cleanup hook task table schedule (CRON format).
 #
 # Default: '@midnight'.
-forgejo_config_cron_cleanup_hook_task_table_schedule: '@midnight'
+forgejo_cfg_cron_cleanup_hook_task_table_schedule: '@midnight'
 
 # How records are removed.
 #
 # Values:
 #    OlderThan: Remove hook_task record after
-#               forgejo_config_cron_cleanup_hook_task_table_older_than
+#               forgejo_cfg_cron_cleanup_hook_task_table_older_than
 #               (default).
 #   PerWebhook: Number of host_task records to keep per webhook (keep most
 #               recent x deliveries per webhook).
 #
 # Default: 'OlderThan'.
-forgejo_config_cron_cleanup_hook_task_table_cleanup_type: 'OlderThan'
+forgejo_cfg_cron_cleanup_hook_task_table_cleanup_type: 'OlderThan'
 
 # Delete hook_task records older than time (TIME format).
 #
-# Requires forgejo_config_cron_cleanup_hook_task_table_cleanup_type=OlderThan.
+# Requires forgejo_cfg_cron_cleanup_hook_task_table_cleanup_type=OlderThan.
 #
 # Default: '168h'.
-forgejo_config_cron_cleanup_hook_task_table_older_than: '168h'
+forgejo_cfg_cron_cleanup_hook_task_table_older_than: '168h'
 
 # Number of hook_task records to keep per workbook.
 #
-# Requires forgejo_config_cron_cleanup_hook_task_table_cleanup_type=PerWebhook.
+# Requires forgejo_cfg_cron_cleanup_hook_task_table_cleanup_type=PerWebhook.
 #
 # Default: '10'.
-forgejo_config_cron_cleanup_hook_task_table_number_to_keep: 10
+forgejo_cfg_cron_cleanup_hook_task_table_number_to_keep: 10
 
 ###############################################################################
 # Cleanup Packages [cron.cleanup_packages]
 ###############################################################################
 
 # Enable cleanup packages? Default: True.
-forgejo_config_cron_cleanup_packages_enabled: true
+forgejo_cfg_cron_cleanup_packages_enabled: true
 
 # Run cleanup packages at least once at start up? Default: False.
-forgejo_config_cron_cleanup_packages_run_at_start: true
+forgejo_cfg_cron_cleanup_packages_run_at_start: true
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_cleanup_packages_notice_on_success: false
+forgejo_cfg_cron_cleanup_packages_notice_on_success: false
 
 # Repository cleanup packages schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_cleanup_packages_schedule: '@midnight'
+forgejo_cfg_cron_cleanup_packages_schedule: '@midnight'
 
 # Delete unreferenced blobs older than time (TIME format). Default: '24h'.
-forgejo_config_cron_cleanup_packages_older_than: '24h'
+forgejo_cfg_cron_cleanup_packages_older_than: '24h'
 
 ###############################################################################
 # Delete Inactive Accounts [cron.delete_inactive_accounts]
 ###############################################################################
 
 # Enable delete inactive accounts? Default: False.
-forgejo_config_cron_delete_inactive_accounts_enabled: false
+forgejo_cfg_cron_delete_inactive_accounts_enabled: false
 
 # Run delete inactive accounts at least once at start up? Default: False.
-forgejo_config_cron_delete_inactive_accounts_run_at_start: false
+forgejo_cfg_cron_delete_inactive_accounts_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_inactive_accounts_notice_on_success: false
+forgejo_cfg_cron_delete_inactive_accounts_notice_on_success: false
 
 # Repository delete inactive accounts schedule (CRON format).
 #
 # Default: '@annually'.
-forgejo_config_cron_delete_inactive_accounts_schedule: '@annually'
+forgejo_cfg_cron_delete_inactive_accounts_schedule: '@annually'
 
 # Delete inactive accounts older than time (TIME format). Default: '168h'.
-forgejo_config_cron_delete_inactive_accounts_older_than: '168h'
+forgejo_cfg_cron_delete_inactive_accounts_older_than: '168h'
 
 ###############################################################################
 # Delete Repo Archives [cron.delete_repo_archives]
 ###############################################################################
 
 # Enable delete repo archives? Default: False.
-forgejo_config_cron_delete_repo_archives_enabled: false
+forgejo_cfg_cron_delete_repo_archives_enabled: false
 
 # Run delete repo archives at least once at start up? Default: False.
-forgejo_config_cron_delete_repo_archives_run_at_start: false
+forgejo_cfg_cron_delete_repo_archives_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_repo_archives_notice_on_success: false
+forgejo_cfg_cron_delete_repo_archives_notice_on_success: false
 
 # Repository delete repo archives schedule (CRON format). Default: '@annually'.
-forgejo_config_cron_delete_repo_archives_schedule: '@annually'
+forgejo_cfg_cron_delete_repo_archives_schedule: '@annually'
 
 ###############################################################################
 # GIT Garbage Collect Repos [cron.git_gc_repos]
 ###############################################################################
 
 # Enable git garbage collect repos? Default: False.
-forgejo_config_cron_git_gc_repos_enabled: false
+forgejo_cfg_cron_git_gc_repos_enabled: false
 
 # Run git garbage collect repos at least once at start up? Default: False.
-forgejo_config_cron_git_gc_repos_run_at_start: false
+forgejo_cfg_cron_git_gc_repos_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_git_gc_repos_notice_on_success: false
+forgejo_cfg_cron_git_gc_repos_notice_on_success: false
 
 # Repository git garbage collect repos schedule (CRON format).
 #
 # Default: '@every 72h'.
-forgejo_config_cron_git_gc_repos_schedule: '@every 72h'
+forgejo_cfg_cron_git_gc_repos_schedule: '@every 72h'
 
 # Garbage collection repo timeout (TIME format). Default: '60s'.
-forgejo_config_cron_git_gc_repos_timeout: '60s'
+forgejo_cfg_cron_git_gc_repos_timeout: '60s'
 
 # List of git gc arguments.
 #
@@ -319,7 +318,7 @@ forgejo_config_cron_git_gc_repos_timeout: '60s'
 #
 # Reference:
 # * http://git-scm.com/docs/git-gc/
-forgejo_config_cron_git_gc_repos_args: []
+forgejo_cfg_cron_git_gc_repos_args: []
 
 ###############################################################################
 # Resync All SSHKeys [cron.resync_all_sshkeys]
@@ -327,16 +326,16 @@ forgejo_config_cron_git_gc_repos_args: []
 # Update '.ssh/authorized_keys' file with Gitea SSH keys.
 
 # Enable resync all sshkeys? Default: False.
-forgejo_config_cron_resync_all_sshkeys_enabled: false
+forgejo_cfg_cron_resync_all_sshkeys_enabled: false
 
 # Run resync all sshkeys at least once at start up? Default: False.
-forgejo_config_cron_resync_all_sshkeys_run_at_start: false
+forgejo_cfg_cron_resync_all_sshkeys_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_resync_all_sshkeys_notice_on_success: false
+forgejo_cfg_cron_resync_all_sshkeys_notice_on_success: false
 
 # Repository resync all sshkeys schedule (CRON format). Default: '@every 72h'.
-forgejo_config_cron_resync_all_sshkeys_schedule: '@every 72h'
+forgejo_cfg_cron_resync_all_sshkeys_schedule: '@every 72h'
 
 ###############################################################################
 # Resync All Hooks [cron.resync_all_hooks]
@@ -344,16 +343,16 @@ forgejo_config_cron_resync_all_sshkeys_schedule: '@every 72h'
 # Resynchronize pre-receive, update and post-receive hooks of all repositories.
 
 # Enable resync all hooks? Default: False.
-forgejo_config_cron_resync_all_hooks_enabled: false
+forgejo_cfg_cron_resync_all_hooks_enabled: false
 
 # Run resync all hooks at least once at start up? Default: False.
-forgejo_config_cron_resync_all_hooks_run_at_start: false
+forgejo_cfg_cron_resync_all_hooks_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_resync_all_hooks_notice_on_success: false
+forgejo_cfg_cron_resync_all_hooks_notice_on_success: false
 
 # Repository resync all hooks schedule (CRON format). Default: '@midnight'.
-forgejo_config_cron_resync_all_hooks_schedule: '@every 72h'
+forgejo_cfg_cron_resync_all_hooks_schedule: '@every 72h'
 
 ###############################################################################
 # Reinit Missing Repos [cron.reinit_missing_repos]
@@ -361,18 +360,18 @@ forgejo_config_cron_resync_all_hooks_schedule: '@every 72h'
 # Reinitialize all missing Git repositories for which records exist.
 
 # Enable reinit missing repos? Default: False.
-forgejo_config_cron_reinit_missing_repos_enabled: false
+forgejo_cfg_cron_reinit_missing_repos_enabled: false
 
 # Run reinit missing repos at least once at start up? Default: False.
-forgejo_config_cron_reinit_missing_repos_run_at_start: false
+forgejo_cfg_cron_reinit_missing_repos_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_reinit_missing_repos_notice_on_success: false
+forgejo_cfg_cron_reinit_missing_repos_notice_on_success: false
 
 # Repository reinit missing repos schedule (CRON format).
 #
 # Default: '@every 72h'.
-forgejo_config_cron_reinit_missing_repos_schedule: '@every 72h'
+forgejo_cfg_cron_reinit_missing_repos_schedule: '@every 72h'
 
 ###############################################################################
 # Delete Missing Repos [cron.delete_missing_repos]
@@ -380,127 +379,128 @@ forgejo_config_cron_reinit_missing_repos_schedule: '@every 72h'
 # Delete all repositories missing their Git files.
 
 # Enable delete missing repos? Default: False.
-forgejo_config_cron_delete_missing_repos_enabled: false
+forgejo_cfg_cron_delete_missing_repos_enabled: false
 
 # Run delete missing repos at least once at start up? Default: False.
-forgejo_config_cron_delete_missing_repos_run_at_start: false
+forgejo_cfg_cron_delete_missing_repos_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_missing_repos_notice_on_success: false
+forgejo_cfg_cron_delete_missing_repos_notice_on_success: false
 
 # Repository delete missing repos schedule (CRON format).
 #
 # Default: '@every 72h'.
-forgejo_config_cron_delete_missing_repos_schedule: '@every 72h'
+forgejo_cfg_cron_delete_missing_repos_schedule: '@every 72h'
 
 ###############################################################################
 # Delete Generated Repository Avatars [cron.delete_generated_repository_avatars]
 ###############################################################################
 
 # Enable delete generated repository avatars? Default: False.
-forgejo_config_cron_delete_generated_repository_avatars_enabled: false
+forgejo_cfg_cron_delete_generated_repository_avatars_enabled: false
 
 # Run delete generated repository avatars at least once at start up?
 #
 # Default: False.
-forgejo_config_cron_delete_generated_repository_avatars_run_at_start: false
+forgejo_cfg_cron_delete_generated_repository_avatars_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_generated_repository_avatars_notice_on_success: false
+forgejo_cfg_cron_delete_generated_repository_avatars_notice_on_success: false
 
 # Repository delete generated repository avatars schedule (CRON format).
 #
 # Default: '@every 72h'.
-forgejo_config_cron_delete_generated_repository_avatars_schedule: '@every 72h'
+forgejo_cfg_cron_delete_generated_repository_avatars_schedule: '@every 72h'
 
 ###############################################################################
 # Delete Old Activities [cron.delete_old_actions]
 ###############################################################################
 
 # Enable delete old actions? Default: False.
-forgejo_config_cron_delete_old_actions_enabled: false
+forgejo_cfg_cron_delete_old_actions_enabled: false
 
 # Run delete old actions at least once at start up? Default: False.
-forgejo_config_cron_delete_old_actions_run_at_start: false
+forgejo_cfg_cron_delete_old_actions_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_old_actions_notice_on_success: false
+forgejo_cfg_cron_delete_old_actions_notice_on_success: false
 
 # Repository delete old actions schedule (CRON format). Default: '@every 168h'.
-forgejo_config_cron_delete_old_actions_schedule: '@every 168h'
+forgejo_cfg_cron_delete_old_actions_schedule: '@every 168h'
 
 # Delete old actions older than time (TIME format). Default: '8760h'.
-forgejo_config_cron_delete_old_actions_older_than: '8760h'
+forgejo_cfg_cron_delete_old_actions_older_than: '8760h'
 
 ###############################################################################
 # Update Checker [cron.update_checker]
 ###############################################################################
 
 # Enable update checker? Default: True.
-forgejo_config_cron_update_checker_enabled: true
+forgejo_cfg_cron_update_checker_enabled: true
 
 # Run update checker at least once at start up? Default: False.
-forgejo_config_cron_update_checker_run_at_start: false
+forgejo_cfg_cron_update_checker_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_update_checker_enable_success_notice: false
+forgejo_cfg_cron_update_checker_enable_success_notice: false
 
 # Repository update checker schedule (CRON format). Default: '@every 168h'.
-forgejo_config_cron_update_checker_schedule: '@every 168h'
+forgejo_cfg_cron_update_checker_schedule: '@every 168h'
 
 # JSON version file URI. Default: 'https://dl.gitea.com/gitea/version.json'.
-forgejo_config_cron_update_checker_http_endpoint: 'https://dl.gitea.com/gitea/version.json'
+forgejo_cfg_cron_update_checker_http_endpoint:
+  'https://dl.gitea.com/gitea/version.json'
 
 # Domain endpoint for version checking. Default: 'release.forgejo.org'.
-forgejo_config_cron_update_checker_domain_endpoint: 'release.forgejo.org'
+forgejo_cfg_cron_update_checker_domain_endpoint: 'release.forgejo.org'
 
 ###############################################################################
 # Delete Old System Notices [cron.delete_old_system_notices]
 ###############################################################################
 
 # Enable delete old system notices? Default: False.
-forgejo_config_cron_delete_old_system_notices_enabled: false
+forgejo_cfg_cron_delete_old_system_notices_enabled: false
 
 # Run delete old system notices at least once at start up? Default: False.
-forgejo_config_cron_delete_old_system_notices_run_at_start: false
+forgejo_cfg_cron_delete_old_system_notices_run_at_start: false
 
 # Enable notice on successful execution? Default: False.
-forgejo_config_cron_delete_old_system_notices_no_success_notice: false
+forgejo_cfg_cron_delete_old_system_notices_no_success_notice: false
 
 # Repository delete old system notices schedule (CRON format).
 #
 # Default: '@midnight'.
-forgejo_config_cron_delete_old_system_notices_schedule: '@every 168h'
+forgejo_cfg_cron_delete_old_system_notices_schedule: '@every 168h'
 
 # Delete delete old system notices older than time (TIME format).
 #
 # Default: '8760h'.
-forgejo_config_cron_delete_old_system_notices_older_than: '8760h'
+forgejo_cfg_cron_delete_old_system_notices_older_than: '8760h'
 
 ###############################################################################
 # Garbage collect LFS pointers [cron.gc_lfs]
 ###############################################################################
 
 # Enable Garbage collect LFS pointers? Default: False.
-forgejo_config_cron_gc_lfs_enabled: false
+forgejo_cfg_cron_gc_lfs_enabled: false
 
 # Run Garbage collect LFS pointers at least once at start up? Default: False.
-forgejo_config_cron_gc_lfs_run_at_start: false
+forgejo_cfg_cron_gc_lfs_run_at_start: false
 
 # Repository Garbage collect LFS pointers schedule (CRON format).
 #
 # Default: '@every 24h'.
-forgejo_config_cron_gc_lfs_schedule: '@every 24h'
+forgejo_cfg_cron_gc_lfs_schedule: '@every 24h'
 
 # Garbage collect LFSMetaObjects older than time (TIME format).
 #
 # Default: '168h'.
-forgejo_config_cron_gc_lfs_older_than: '168h'
+forgejo_cfg_cron_gc_lfs_older_than: '168h'
 
 # Garbage collect new LFSMetaObjects older than time (TIME format).
 #
 # Default: '72h'.
-forgejo_config_cron_gc_lfs_last_updated_more_than_ago: '72h'
+forgejo_cfg_cron_gc_lfs_last_updated_more_than_ago: '72h'
 
 # Minimum number of stale LFSMetaObjects to check per repo.
 #
@@ -508,7 +508,7 @@ forgejo_config_cron_gc_lfs_last_updated_more_than_ago: '72h'
 #   0: Check all.
 #
 # Default: 100.
-forgejo_config_cron_gc_lfs_number_to_check_per_repo: 100
+forgejo_cfg_cron_gc_lfs_number_to_check_per_repo: 100
 
 # Check at least this proportion of LFSMetaObjects per repo. Default: 0.6.
-forgejo_config_cron_gc_lfs_proportion_to_check_per_repo: 0.6
+forgejo_cfg_cron_gc_lfs_proportion_to_check_per_repo: 0.6

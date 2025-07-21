@@ -7,10 +7,10 @@
 # * https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers
 
 # Enable cors headers? Default: False.
-forgejo_config_cors_enabled: false
+forgejo_cfg_cors_enabled: false
 
 # List of allowed request origins. Default: ['*'] (all origins).
-forgejo_config_cors_allow_domain:
+forgejo_cfg_cors_allow_domain:
   - '*'
 
 # List of allowed request methods.
@@ -23,7 +23,7 @@ forgejo_config_cors_allow_domain:
 #   - 'PATCH'
 #   - 'DELETE'
 #   - 'OPTIONS'
-forgejo_config_cors_methods:
+forgejo_cfg_cors_methods:
   - 'GET'
   - 'HEAD'
   - 'POST'
@@ -33,19 +33,19 @@ forgejo_config_cors_methods:
   - 'OPTIONS'
 
 # Max cache response time (TIME format). Default: 10m.
-forgejo_config_cors_max_age: '10m'
+forgejo_cfg_cors_max_age: '10m'
 
 # Allow request with credentials? Default: False.
-forgejo_config_cors_allow_credentials: false
+forgejo_cfg_cors_allow_credentials: false
 
 # List of permitted headers.
 #
 # Default:
 #   - 'Content-Type'
 #   - 'User-Agent'
-forgejo_config_cors_headers:
+forgejo_cfg_cors_headers:
   - 'Content-Type'
   - 'User-Agent'
 
 # X-FRAME-OPTIONS header. Default: 'SAMEORIGIN'.
-forgejo_config_cors_x_frame_options: 'SAMEORIGIN'
+forgejo_cfg_cors_x_frame_options: 'SAMEORIGIN'

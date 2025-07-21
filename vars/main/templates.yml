@@ -8,7 +8,7 @@
 #
 # These should only be changed if new values are added to the config.
 
-# Template default values for forgejo_local_users.
+# Template default values for forgejo_srv_local_users.
 forgejo_role_template_local_users:
   username: ''
   password: ''

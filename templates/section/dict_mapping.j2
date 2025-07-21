@@ -1,0 +1,21 @@
+{% if '.*' in section.value.section %}
+{%   for markup_header, markup_options in section.value.raw.items() %}
+
+[{{ markup_header }}]
+{%     for key, value in markup_options.items() %}
+{%       if value is boolean %}
+{{ key }} = {{ value | lower }}
+{%       elif value %}
+{{ key }} = {{ value }}
+{%       endif %}
+{%     endfor %}
+{%   endfor %}
+{% else %}
+{%   for key, value in section.value.raw.items() %}
+{%     if value is boolean %}
+{{ key }} = {{ value | lower }}
+{%     elif value %}
+{{ key }} = {{ value }}
+{%     endif %}
+{%   endfor %}
+{% endif %}

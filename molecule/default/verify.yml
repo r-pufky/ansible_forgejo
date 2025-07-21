@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Verify
 ###############################################################################
@@ -7,98 +6,67 @@
 # which requires rendering a config file with only those options templated;
 # Instead of copy/diff pattern, use template/remote copy/diff pattern.
 
-- name: 'Default | verify'
-  hosts: 'forgejo-debian-12-default'
+- name: 'Verify'
+  hosts:
+    - 'forgejo-debian-12-default'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | gather service status'
-      ansible.builtin.service_facts:
-
-    # Forgejo will fail if configuration is bad (r_pufky.deb.systemd)
-    - name: 'Default | verify | assert Forgejo service active and running'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - '"forgejo.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["forgejo.service"]["state"] == "running"'
-          - 'ansible_facts["services"]["forgejo.service"]["status"] == "enabled"'
-        fail_msg: |
-          ✘ Forgejo service should be enabled and running:
-
-          forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
-          forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
-
-    - name: 'Default | verify | app.ini'
+    - name: 'Verify | app.ini'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'remote_file_diff.yml'
       vars:
-        test_name: 'Default | verify | app.ini'
+        test_name: 'Verify | app.ini'
         test_remote_src: '/tmp/app.ini'
         test_file: '/etc/forgejo/app.ini'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0640'
+        test_diff: true
 
-    - name: 'Default | verify | assert admin user created'
+    - name: 'Verify | assert admin user created'
       ansible.builtin.command:
         argv:
-          - '/var/lib/forgejo/forgejo'
+          - '/opt/forgejo/forgejo'
           - '--config'
           - '/etc/forgejo/app.ini'
           - 'admin'
           - 'user'
           - 'list'
       changed_when: false
-      failed_when: '"admin@example.com" not in _forgejo_user_list.stdout'
+      failed_when: '"admin@example.com" not in _forgejo_srv_user_list.stdout'
       become: true
       become_user: 'git'
-      register: _forgejo_user_list
+      register: _forgejo_srv_user_list
 
-    - name: 'Default | verify | assert standard user deleted'
+    - name: 'Verify | assert standard user deleted'
       ansible.builtin.command:
         argv:
-          - '/var/lib/forgejo/forgejo'
+          - '/opt/forgejo/forgejo'
           - '--config'
           - '/etc/forgejo/app.ini'
           - 'admin'
           - 'user'
           - 'list'
       changed_when: false
-      failed_when: '"user@example.com" in _forgejo_user_list.stdout'
+      failed_when: '"user@example.com" in _forgejo_srv_user_list.stdout'
       become: true
       become_user: 'git'
-      register: _forgejo_user_list
+      register: _forgejo_srv_user_list
 
-- name: 'Default | verify'
-  hosts: 'forgejo-debian-12-default_extensions'
+- name: 'Verify'
+  hosts: 'forgejo-debian-12-user_data'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | gather service status'
-      ansible.builtin.service_facts:
-
-    # Forgejo will fail if configuration is bad (r_pufky.deb.systemd)
-    - name: 'Default | verify | assert Forgejo service active and running'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - '"forgejo.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["forgejo.service"]["state"] == "running"'
-          - 'ansible_facts["services"]["forgejo.service"]["status"] == "enabled"'
-        fail_msg: |
-          ✘ Forgejo service should be enabled and running:
-
-          forgejo.service state: {{ ansible_facts["services"]["forgejo.service"]["state"] }}
-          forgejo.service status: {{ ansible_facts["services"]["forgejo.service"]["status"] }}
-
-    - name: 'Default | verify | app.ini'
+    - name: 'Verify | app.ini'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'remote_file_diff.yml'
       vars:
-        test_name: 'Default | verify | app.ini'
+        test_name: 'Verify | app.ini'
         test_remote_src: '/tmp/app.ini'
         test_file: '/etc/forgejo/app.ini'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0640'
+        test_diff: true

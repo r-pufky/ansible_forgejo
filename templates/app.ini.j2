@@ -1,21 +1,30 @@
-{% for section in _forgejo_config %}
-{% for header, options in section.items() %}
-{% if header != 'general' %}
-[{{ header }}]
-{% endif %}
-{% for key, value in options.items() %}
-{% if value is boolean %}
-{{ key }} = {{ value | lower }}
-{% elif value is number %}
-{{ key }} = {{ value }}
-{% elif value | length > 0 %}
-{% if key == 'PASSWD' or key == 'PASSWORD' %}
-{{ key }} = `{{ value }}`
-{% else %}
-{{ key }} = {{ value }}
-{% endif %}
-{% endif %}
-{% endfor %}
+{# .* sections (dict of dict) and dict values have special rendering rules. #}
+{# Headers without section key=value pairs are valid. #}
+{# Do not render empty key=values. #}
+{% for header in _forgejo_order %}
+{%   if header != 'general' and '.*' not in header %}
 
-{% endfor %}
+[{{ header }}]
+{%   endif %}
+{%   for section in _forgejo_map | selectattr("value.section", "==", header) | sort(attribute="value.order") %}
+{%     if section.value.hint == 'dict' or section.value.hint == 'dict of dict' %}
+{%       include 'section/dict_mapping.j2' with context %}
+{%     elif section.value.hint == 'bool' %}
+{{ section.value.key }} = {{ section.value.raw | lower }}
+{%     elif not section.value.deprecated and section.value.raw %}
+{%       if section.value.key in ['PASSWD', 'PASSWORD'] %}
+{{ section.value.key }} = `{{ section.value.raw }}`
+{%       elif section.value.key in ['SSH_TRUSTED_USER_CA_KEYS_FILENAME', 'ACME_CA_ROOT', 'CERT_FILE', 'KEY_FILE', 'JWT_SIGNING_PRIVATE_KEY_FILE'] %}
+{{ section.value.key }} = {{ section.value.parsed }}
+{%       elif section.value.key in ['WHITELISTED_URIS', 'BLACKLISTED_URIS', 'OPENID_CONNECT_SCOPES', 'SENDMAIL_ARGS', 'ARGS', 'GC_ARGS'] %}
+{{ section.value.key }} = {{ section.value.raw | join(" ") }}
+{%       elif section.value.key in ['SSH_SERVER_HOST_KEYS'] %}
+{{ section.value.key }} = {{ section.value.parsed | join(",") }}
+{%       elif section.value.hint == 'list of str' %}
+{{ section.value.key }} = {{ section.value.raw | join(",") }}
+{%       else %}
+{{ section.value.key }} = {{ section.value.raw }}
+{%       endif %}
+{%     endif %}
+{%   endfor %}
 {% endfor %}

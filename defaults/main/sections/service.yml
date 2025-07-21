@@ -4,20 +4,20 @@
 ###############################################################################
 
 # Time to confirm account/email registration (minutes). Default: 180.
-forgejo_config_service_active_code_live_minutes: 180
+forgejo_cfg_service_active_code_live_minutes: 180
 
 # Time to perform the reset of a forgotten password (minutes). Default: 180.
-forgejo_config_service_reset_passwd_code_live_minutes: 180
+forgejo_cfg_service_reset_passwd_code_live_minutes: 180
 
 # Enable new user email confirmation when registering? Default: False.
-forgejo_config_service_register_email_confirm: false
+forgejo_cfg_service_register_email_confirm: false
 
 # Enable new user needs manual confirmation after registration?
 #
-# Requires forgejo_config_service_register_email_confirm=false.
+# Requires forgejo_cfg_service_register_email_confirm=false.
 #
 # Default: False.
-forgejo_config_service_register_manual_confirm: false
+forgejo_cfg_service_register_manual_confirm: false
 
 # List of domain names allowed to register on instance.
 #
@@ -25,7 +25,7 @@ forgejo_config_service_register_manual_confirm: false
 #   *: Wildcards are supported (*.mydomain.com).
 #
 # Default: [] (disabled).
-forgejo_config_service_email_domain_allowlist: []
+forgejo_cfg_service_email_domain_allowlist: []
 
 # List of domain names NOT allowed to register on instance.
 #
@@ -33,7 +33,7 @@ forgejo_config_service_email_domain_allowlist: []
 #   *: Wildcards are supported (*.mydomain.com).
 #
 # Default: [] (disabled).
-forgejo_config_service_email_domain_blocklist: []
+forgejo_cfg_service_email_domain_blocklist: []
 
 # Enable list of known temporary/disposable email domains.
 #
@@ -41,30 +41,30 @@ forgejo_config_service_email_domain_blocklist: []
 #
 # Reference:
 # * https://github.com/disposable-email-domains/disposable-email-domains
-forgejo_config_service_email_domain_block_disposable: false
+forgejo_cfg_service_email_domain_block_disposable: false
 
 # Disable registration (only allow admins to create accounts)? Default: False.
-forgejo_config_service_disable_registration: false
+forgejo_cfg_service_disable_registration: false
 
 # Enable registration only using forgejo itself?
 #
-# Requires forgejo_config_service_disable_registration=false.
+# Requires forgejo_cfg_service_disable_registration=false.
 #
 # Default: false.
-forgejo_config_service_allow_only_internal_registration: false
+forgejo_cfg_service_allow_only_internal_registration: false
 
 # Enable registration only using third-party services?
 #
-# Requires forgejo_config_service_disable_registration=false.
+# Requires forgejo_cfg_service_disable_registration=false.
 #
 # Default: false.
-forgejo_config_service_allow_only_external_registration: false
+forgejo_cfg_service_allow_only_external_registration: false
 
 # Enable required sign in for user to view anything? Default: False.
-forgejo_config_service_require_signin_view: false
+forgejo_cfg_service_require_signin_view: false
 
 # Enable mail notifications? Default: False.
-forgejo_config_service_enable_notify_mail: false
+forgejo_cfg_service_enable_notify_mail: false
 
 # Enable HTTP basic authentication?
 #
@@ -75,7 +75,7 @@ forgejo_config_service_enable_notify_mail: false
 # using a token.
 #
 # Default: True.
-forgejo_config_service_enable_basic_authentication: true
+forgejo_cfg_service_enable_basic_authentication: true
 
 # Enable reverse proxy request header authentication?
 #
@@ -83,35 +83,35 @@ forgejo_config_service_enable_basic_authentication: true
 #
 # Reference:
 # * https://github.com/gogits/gogs/issues/165
-forgejo_config_service_enable_reverse_proxy_authentication: false
+forgejo_cfg_service_enable_reverse_proxy_authentication: false
 
 # Enable reverse proxy authentication for API requests?
 #
 # Reverse proxy is responsible for ensuring that no CSRF is possible.
 #
 # Default: False.
-forgejo_config_service_enable_reverse_proxy_authentication_api: false
+forgejo_cfg_service_enable_reverse_proxy_authentication_api: false
 
 # Enable reverse proxy auto registration? Default: False.
-forgejo_config_service_enable_reverse_proxy_auto_registration: false
+forgejo_cfg_service_enable_reverse_proxy_auto_registration: false
 
 # Enable reverse proxy email? Default: False.
-forgejo_config_service_enable_reverse_proxy_email: false
+forgejo_cfg_service_enable_reverse_proxy_email: false
 
 # Enable reverse proxy full name? Default: False.
-forgejo_config_service_enable_reverse_proxy_full_name: false
+forgejo_cfg_service_enable_reverse_proxy_full_name: false
 
 # Enable captcha validation for registration? Default: False.
-forgejo_config_service_enable_captcha: false
+forgejo_cfg_service_enable_captcha: false
 
 # Enable required captcha validation for login? Default: False.
-forgejo_config_service_require_captcha_for_login: false
+forgejo_cfg_service_require_captcha_for_login: false
 
 # Enable required captcha for external registrations? Default: False.
-forgejo_config_service_require_external_registration_captcha: false
+forgejo_cfg_service_require_external_registration_captcha: false
 
 # Enable required password for external registrations? Default: False.
-forgejo_config_service_require_external_registration_password: false
+forgejo_cfg_service_require_external_registration_password: false
 
 # Captcha type.
 #
@@ -123,96 +123,96 @@ forgejo_config_service_require_external_registration_password: false
 #   cfturnstile: Use cfturnsile.
 #
 # Default: 'image'.
-forgejo_config_service_captcha_type: 'image'
+forgejo_cfg_service_captcha_type: 'image'
 
 # Recaptcha service URL. Default: 'https://www.google.com/recaptcha/'.
-forgejo_config_service_recaptcha_url: 'https://www.google.com/recaptcha/'
+forgejo_cfg_service_recaptcha_url: 'https://www.google.com/recaptcha/'
 
 # Google recaptcha service secret.
 #
-# Requires forgejo_config_service_recaptcha_sitekey.
+# Requires forgejo_cfg_service_recaptcha_sitekey.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://www.google.com/recaptcha/admin
-forgejo_config_service_recaptcha_secret: ''
+forgejo_cfg_service_recaptcha_secret: ''
 
 # Google recaptcha service site key.
 #
-# Requires forgejo_config_service_recaptcha_secret.
+# Requires forgejo_cfg_service_recaptcha_secret.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://www.google.com/recaptcha/admin
-forgejo_config_service_recaptcha_sitekey: ''
+forgejo_cfg_service_recaptcha_sitekey: ''
 
 # hCaptcha service secret.
 #
-# Requires forgejo_config_service_hcaptcha_sitekey.
+# Requires forgejo_cfg_service_hcaptcha_sitekey.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://accounts.hcaptcha.com/login
-forgejo_config_service_hcaptcha_secret: ''
+forgejo_cfg_service_hcaptcha_secret: ''
 
 # hCaptcha service site key.
 #
-# Requires forgejo_config_service_hcaptcha_sitekey.
+# Requires forgejo_cfg_service_hcaptcha_sitekey.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://accounts.hcaptcha.com/login
-forgejo_config_service_hcaptcha_sitekey: ''
+forgejo_cfg_service_hcaptcha_sitekey: ''
 
 # mCaptcha service URL. Default: 'https://demo.mcaptcha.org'.
-forgejo_config_service_mcaptcha_url: 'https://demo.mcaptcha.org'
+forgejo_cfg_service_mcaptcha_url: 'https://demo.mcaptcha.org'
 
 # mCaptcha service secret.
 #
-# Requires forgejo_config_service_mcaptcha_sitekey.
+# Requires forgejo_cfg_service_mcaptcha_sitekey.
 #
 # Default: '' (disabled).
-forgejo_config_service_mcaptcha_secret: ''
+forgejo_cfg_service_mcaptcha_secret: ''
 
 # mCaptcha service site key.
 #
-# Requires forgejo_config_service_mcaptcha_secret.
+# Requires forgejo_cfg_service_mcaptcha_secret.
 #
 # Default: '' (disabled).
-forgejo_config_service_mcaptcha_sitekey: ''
+forgejo_cfg_service_mcaptcha_sitekey: ''
 
 # Cloudflare Turnstile service secret.
 #
-# Requires forgejo_config_service_cf_turnstile_sitekey.
+# Requires forgejo_cfg_service_cf_turnstile_sitekey.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://dash.cloudflare.com/?to=/:account/turnstile
-forgejo_config_service_cf_turnstile_secret: ''
+forgejo_cfg_service_cf_turnstile_secret: ''
 
 # Cloudflare Turnstile service site key.
 #
-# Requires forgejo_config_service_cf_turnstile_secret.
+# Requires forgejo_cfg_service_cf_turnstile_secret.
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://dash.cloudflare.com/?to=/:account/turnstile
-forgejo_config_service_cf_turnstile_sitekey: ''
+forgejo_cfg_service_cf_turnstile_sitekey: ''
 
 # Default new user profile keep email private? Default: False.
-forgejo_config_service_default_keep_email_private: false
+forgejo_cfg_service_default_keep_email_private: false
 
 # Default new user profile allow create organization? Default: True.
-forgejo_config_service_default_allow_create_organization: true
+forgejo_cfg_service_default_allow_create_organization: true
 
 # Default new user profile is restricted? Default: False.
-forgejo_config_service_default_user_is_restricted: false
+forgejo_cfg_service_default_user_is_restricted: false
 
 # Enable use of dots when creating usernames?
 #
@@ -220,7 +220,7 @@ forgejo_config_service_default_user_is_restricted: false
 # advanced third-party extensions that use strange regex patterns.
 #
 # Default: True.
-forgejo_config_service_allow_dots_in_usernames: true
+forgejo_cfg_service_allow_dots_in_usernames: true
 
 # Default user visibility.
 #
@@ -230,7 +230,7 @@ forgejo_config_service_allow_dots_in_usernames: true
 #   private: Visible only to members of their organizations.
 #
 # Default: 'public'.
-forgejo_config_service_default_user_visibility: 'public'
+forgejo_cfg_service_default_user_visibility: 'public'
 
 # List of visibility modes a user can have.
 #
@@ -243,7 +243,7 @@ forgejo_config_service_default_user_visibility: 'public'
 #   - 'public'
 #   - 'limited'
 #   - 'private'
-forgejo_config_service_allowed_user_visibility_modes:
+forgejo_cfg_service_allowed_user_visibility_modes:
   - 'public'
   - 'limited'
   - 'private'
@@ -256,16 +256,16 @@ forgejo_config_service_allowed_user_visibility_modes:
 #   private: Visible only to members of their organizations.
 #
 # Default: 'public'.
-forgejo_config_service_default_org_visibility: 'public'
+forgejo_cfg_service_default_org_visibility: 'public'
 
 # Make membership of users visible when added to organization? Default: False.
-forgejo_config_service_default_org_member_visible: false
+forgejo_cfg_service_default_org_member_visible: false
 
 # Enable repository dependencies? Default: True.
-forgejo_config_service_default_enable_dependencies: true
+forgejo_cfg_service_default_enable_dependencies: true
 
 # Enable cross repository dependencies? Default: True.
-forgejo_config_service_allow_cross_repository_dependencies: true
+forgejo_cfg_service_allow_cross_repository_dependencies: true
 
 # Default map service URL.
 #
@@ -282,52 +282,52 @@ forgejo_config_service_allow_cross_repository_dependencies: true
 #                                                parameters.
 #
 # Default: 'https://www.openstreetmap.org/search?query=' (open street maps).
-forgejo_config_service_user_location_map_url:
+forgejo_cfg_service_user_location_map_url:
   'https://www.openstreetmap.org/search?query='
 
 # Enable heatmap on user profiles? Default: True.
-forgejo_config_service_enable_user_heatmap: true
+forgejo_cfg_service_enable_user_heatmap: true
 
 # Enable Time tracking? Default: True.
-forgejo_config_service_enable_timetracking: true
+forgejo_cfg_service_enable_timetracking: true
 
 # Enable repository default time tracking? Default: True.
-forgejo_config_service_default_enable_timetracking: true
+forgejo_cfg_service_default_enable_timetracking: true
 
 # Default allow only contributors to track time? Default: True.
-forgejo_config_service_default_allow_only_contributors_to_track_time: true
+forgejo_cfg_service_default_allow_only_contributors_to_track_time: true
 
 # Keep email private no reply address filter.
 #
 # Value for the domain part of the user's email address in the git log if user
 # has set KeepEmailPrivate to true. The user's email will be replaced with a
 # concatenation of the user name in lower case, "@" and
-# forgejo_config_service_no_reply_address.
+# forgejo_cfg_service_no_reply_address.
 #
 # server.DOMAIN is automatically appended to no reply address.
 #
 # Default: 'noreply.'.
-forgejo_config_service_no_reply_address: 'noreply.'
+forgejo_cfg_service_no_reply_address: 'noreply.'
 
 # Show Registration button? Default: True.
-forgejo_config_service_show_registration_button: true
+forgejo_cfg_service_show_registration_button: true
 
 # Enable internal sign in? Default: True.
-forgejo_config_service_enable_internal_signin: true
+forgejo_cfg_service_enable_internal_signin: true
 
 # Show milestones dashboard page? Default: True.
-forgejo_config_service_show_milestones_dashboard_page: true
+forgejo_cfg_service_show_milestones_dashboard_page: true
 
 # Enable all members watch new repos added to team? Default: True.
-forgejo_config_service_auto_watch_new_repos: true
+forgejo_cfg_service_auto_watch_new_repos: true
 
 # Enable member watch after first commit on repo? Default: False.
-forgejo_config_service_auto_watch_on_changes: false
+forgejo_cfg_service_auto_watch_on_changes: false
 
 # Minimum time user must exist before comments are kept (TIME format).
 #
 # Default: 0 (keep all).
-forgejo_config_service_user_delete_with_comments_max_time: 0
+forgejo_cfg_service_user_delete_with_comments_max_time: 0
 
 # List of valid site url schemes for user profiles.
 #
@@ -338,7 +338,7 @@ forgejo_config_service_user_delete_with_comments_max_time: 0
 # Default:
 #   - 'http'
 #   - 'https'
-forgejo_config_service_valid_site_url_schemes:
+forgejo_cfg_service_valid_site_url_schemes:
   - 'http'
   - 'https'
 
@@ -349,30 +349,30 @@ forgejo_config_service_valid_site_url_schemes:
 #       deactivated and previously used usernames can be claimed immediately.
 #
 # Default: 0.
-forgejo_config_service_username_cooldown_period: 0
+forgejo_cfg_service_username_cooldown_period: 0
 
 # Number of user redirects that a user can keep.
 #
 # The oldest entry is removed when a new user redirection is created.
 #
 # Special Case:
-#   forgejo_config_service_username_cooldown_period>0: Default 5.
+#   forgejo_cfg_service_username_cooldown_period>0: Default 5.
 #
 # Default: 0.
-forgejo_config_service_max_user_redirects: 0
+forgejo_cfg_service_max_user_redirects: 0
 
 ###############################################################################
 # Service Explore [service.explore]
 ###############################################################################
 
 # Require users to sign in to view explore pages? Default: False.
-forgejo_config_service_explore_require_signin_view: false
+forgejo_cfg_service_explore_require_signin_view: false
 
 # Disable users explore page? Default: False.
-forgejo_config_service_explore_disable_users_page: false
+forgejo_cfg_service_explore_disable_users_page: false
 
 # Disable organizations explore page? Default: False.
-forgejo_config_service_explore_disable_organizations_page: false
+forgejo_cfg_service_explore_disable_organizations_page: false
 
 # Disable code explore page? Default: False.
-forgejo_config_service_explore_disable_code_page: false
+forgejo_cfg_service_explore_disable_code_page: false

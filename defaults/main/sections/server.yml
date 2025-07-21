@@ -13,13 +13,13 @@
 #   fcgi+unix: FCGI and Unix socket.
 #
 # Default: 'http'.
-forgejo_config_server_protocol: 'http'
+forgejo_cfg_server_protocol: 'http'
 
 # Enable PROXY protocol headers on connections? Default: False.
-forgejo_config_server_use_proxy_protocol: false
+forgejo_cfg_server_use_proxy_protocol: false
 
 # Enable PROXY protocol in TLS Bridging mode? Default: False.
-forgejo_config_server_proxy_protocol_tls_bridging: false
+forgejo_cfg_server_proxy_protocol_tls_bridging: false
 
 # Timeout to receive PROXY protocol headers (TIME format).
 #
@@ -27,23 +27,23 @@ forgejo_config_server_proxy_protocol_tls_bridging: false
 #   0: disables.
 #
 # Default: '5s'.
-forgejo_config_server_proxy_protocol_header_timeout: '5s'
+forgejo_cfg_server_proxy_protocol_header_timeout: '5s'
 
 # Enable PROXY protocol headers with UNKNOWN types? Default: False.
-forgejo_config_server_proxy_protocol_accept_unknown: false
+forgejo_cfg_server_proxy_protocol_accept_unknown: false
 
 # Server domain name. Default: 'localhost'.
-forgejo_config_server_domain: 'localhost'
+forgejo_cfg_server_domain: 'localhost'
 
 # Root URL.
 #
 # Overwrites automatically generated public URL. Necessary for proxies.
 #
 # Default: '%(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/'.
-forgejo_config_server_root_url: '%(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/'
+forgejo_cfg_server_root_url: '%(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/'
 
-# Static URL Prefix. Default: '' (use forgejo_config_server_root_url).
-forgejo_config_server_static_url_prefix: ''
+# Static URL Prefix. Default: '' (use forgejo_cfg_server_root_url).
+forgejo_cfg_server_static_url_prefix: ''
 
 # Listen address.
 #
@@ -53,11 +53,11 @@ forgejo_config_server_static_url_prefix: ''
 # Values:
 #      {IP}: IPv4 or IPv6.
 #    {PATH}: Absolute path to Unix socket. Use with
-#            forgejo_config_server_protocol=http+unix|fcgi+unix.
+#            forgejo_cfg_server_protocol=http+unix|fcgi+unix.
 #   0.0.0.0: Listen on all interfaces (default).
 #
 # Default: '0.0.0.0' (all interfaces).
-forgejo_config_server_http_addr: '0.0.0.0'
+forgejo_cfg_server_http_addr: '0.0.0.0'
 
 # Listen port.
 #
@@ -65,35 +65,35 @@ forgejo_config_server_http_addr: '0.0.0.0'
 #   '': Use empty string when using a unix socket.
 #
 # Default: 3000.
-forgejo_config_server_http_port: 3000
+forgejo_cfg_server_http_port: 3000
 
 # Enable HTTP request redirection to other ports? Default: False.
-forgejo_config_server_redirect_other_port: false
+forgejo_cfg_server_redirect_other_port: false
 
 # Port to HTTP redirect requests to.
 #
-# Requires forgejo_config_server_redirect_other_port=true.
+# Requires forgejo_cfg_server_redirect_other_port=true.
 #
-# Enables plain HTTP server on forgejo_config_server_port_to_redirect and
-# redirects HTTP requests to forgejo_config_server_root_url on
-# forgejo_config_server_port_to_redirect.
+# Enables plain HTTP server on forgejo_cfg_server_port_to_redirect and
+# redirects HTTP requests to forgejo_cfg_server_root_url on
+# forgejo_cfg_server_port_to_redirect.
 #
 # Default: 80.
-forgejo_config_server_port_to_redirect: 80
+forgejo_cfg_server_port_to_redirect: 80
 
 # HTTPS redirector proxy protocol to use.
 #
 # Default: '%(USE_PROXY_PROTOCOL)s'.
-forgejo_config_server_redirector_use_proxy_protocol: '%(USE_PROXY_PROTOCOL)s'
+forgejo_cfg_server_redirector_use_proxy_protocol: '%(USE_PROXY_PROTOCOL)s'
 
 # Minimum TLS version. Default: 'TLSv1.2'.
-forgejo_config_server_ssl_min_version: 'TLSv1.2'
+forgejo_cfg_server_ssl_min_version: 'TLSv1.2'
 
 # Maximum TLS version. Default: '' (no maximum).
-forgejo_config_server_ssl_max_version: ''
+forgejo_cfg_server_ssl_max_version: ''
 
 # SSL Curve Preferences. Default: ['X25519', 'P256'].
-forgejo_config_server_ssl_curve_preferences:
+forgejo_cfg_server_ssl_curve_preferences:
   - 'X25519'
   - 'P256'
 
@@ -144,7 +144,7 @@ forgejo_config_server_ssl_curve_preferences:
 #   - 'ecdhe_rsa_with_aes_128_gcm_sha256'
 #   - 'ecdhe_ecdsa_with_chacha20_poly1305'
 #   - 'ecdhe_rsa_with_chacha20_poly1305'
-forgejo_config_server_ssl_cipher_suites:
+forgejo_cfg_server_ssl_cipher_suites:
   - 'ecdhe_ecdsa_with_aes_256_gcm_sha384'
   - 'ecdhe_rsa_with_aes_256_gcm_sha384'
   - 'ecdhe_ecdsa_with_aes_128_gcm_sha256'
@@ -158,13 +158,13 @@ forgejo_config_server_ssl_cipher_suites:
 #   -1: disables.
 #
 # Default: '30s'.
-forgejo_config_server_per_write_timeout: '30s'
+forgejo_cfg_server_per_write_timeout: '30s'
 
 # Timeout per Kb written to connections (TIME format).
-forgejo_config_server_per_write_per_kb_timeout: '30s'
+forgejo_cfg_server_per_write_per_kb_timeout: '30s'
 
 # Unix socket permissions. Default: '0666'.
-forgejo_config_server_unix_socket_permission: '0666'
+forgejo_cfg_server_unix_socket_permission: '0666'
 
 # Local (DMZ) URL for workers (such as SSH update) accessing web service.
 #
@@ -180,21 +180,21 @@ forgejo_config_server_unix_socket_permission: '0666'
 #               *: '%(PROTOCOL)s://%(HTTP_ADDR)s:%(HTTP_PORT)s/'.
 #
 # Default: '' (use root URL based on protocol).
-forgejo_config_server_local_root_url: ''
+forgejo_cfg_server_local_root_url: ''
 
 # Enable local connection PROXY protocol header?
 #
 # Default: '%(USE_PROXY_PROTOCOL)s'.
-forgejo_config_server_local_use_proxy_protocol: '%(USE_PROXY_PROTOCOL)s'
+forgejo_cfg_server_local_use_proxy_protocol: '%(USE_PROXY_PROTOCOL)s'
 
 # Disable SSH when not available? Default: False.
-forgejo_config_server_disable_ssh: false
+forgejo_cfg_server_disable_ssh: false
 
 # Enable builtin SSH server? Default: False.
-forgejo_config_server_start_ssh_server: false
+forgejo_cfg_server_start_ssh_server: false
 
 # Enable PROXY protocol header on builtin SSH connections? Default: False.
-forgejo_config_server_ssh_server_use_proxy_protocol: false
+forgejo_cfg_server_ssh_server_use_proxy_protocol: false
 
 # Username for builtin SSH server.
 #
@@ -202,36 +202,36 @@ forgejo_config_server_ssh_server_use_proxy_protocol: false
 #   '': '%(RUN_USER)s'.
 #
 # Default: '%(RUN_USER)s'.
-forgejo_config_server_builtin_ssh_server_user: '%(RUN_USER)s'
+forgejo_cfg_server_builtin_ssh_server_user: '%(RUN_USER)s'
 
 # Domain name exposed in SSH clone URL. Default: '%(DOMAIN)s'.
-forgejo_config_server_ssh_domain: '%(DOMAIN)s'
+forgejo_cfg_server_ssh_domain: '%(DOMAIN)s'
 
 # SSH username displayed in clone URLs.
 #
 # Only for people who configure the SSH server themselves; in most cases, you
 # want to leave this blank and modify
-# forgejo_config_server_builtin_ssh_server_user.
+# forgejo_cfg_server_builtin_ssh_server_user.
 #
 # Default: '%(BUILTIN_SSH_SERVER_USER)s'.
-forgejo_config_server_ssh_user: '%(BUILTIN_SSH_SERVER_USER)s'
+forgejo_cfg_server_ssh_user: '%(BUILTIN_SSH_SERVER_USER)s'
 
 # builtin SSH listen network interface. Default: '' (all interfaces).
-forgejo_config_server_ssh_listen_host: ''
+forgejo_cfg_server_ssh_listen_host: ''
 
 # SSH port number exposed in clone URL. Default: 22.
-forgejo_config_server_ssh_port: 22
+forgejo_cfg_server_ssh_port: 22
 
 # SSH listen port number. Default: '%(SSH_PORT)s'.
-forgejo_config_server_ssh_listen_port: '%(SSH_PORT)s'
+forgejo_cfg_server_ssh_listen_port: '%(SSH_PORT)s'
 
 # SSH root directory.
 #
 # Values:
-#   '': Use home directory '{{ forgejo_user }}/.ssh' (default).
+#   '': Use home directory '{{ forgejo_srv_user }}/.ssh' (default).
 #
 # Default: '' (use home directory).
-forgejo_config_server_ssh_root_path: ''
+forgejo_cfg_server_ssh_root_path: ''
 
 # Enable creation of authorized_keys when not using internal ssh server?
 #
@@ -239,7 +239,7 @@ forgejo_config_server_ssh_root_path: ''
 # this off.
 #
 # Default: True.
-forgejo_config_server_ssh_create_authorized_keys_file: true
+forgejo_cfg_server_ssh_create_authorized_keys_file: true
 
 # Enable creation of authorized_principals when not using internal ssh server?
 #
@@ -247,7 +247,7 @@ forgejo_config_server_ssh_create_authorized_keys_file: true
 # should turn this off.
 #
 # Default: True.
-forgejo_config_server_ssh_create_authorized_principals_file: true
+forgejo_cfg_server_ssh_create_authorized_principals_file: true
 
 # Builtin SSH server supported ciphers.
 #
@@ -264,7 +264,7 @@ forgejo_config_server_ssh_create_authorized_principals_file: true
 #   - 'aes256-ctr'
 #   - 'aes128-gcm@openssh.com'
 #   - 'aes256-gcm@openssh.com'
-forgejo_config_server_ssh_server_ciphers:
+forgejo_cfg_server_ssh_server_ciphers:
   - 'chacha20-poly1305@openssh.com'
   - 'aes128-ctr'
   - 'aes192-ctr'
@@ -287,7 +287,7 @@ forgejo_config_server_ssh_server_ciphers:
 #   - 'ecdh-sha2-nistp521'
 #   - 'diffie-hellman-group14-sha256'
 #   - 'diffie-hellman-group14-sha1'
-forgejo_config_server_ssh_server_key_exchanges:
+forgejo_cfg_server_ssh_server_key_exchanges:
   - 'curve25519-sha256'
   - 'ecdh-sha2-nistp256'
   - 'ecdh-sha2-nistp384'
@@ -307,7 +307,7 @@ forgejo_config_server_ssh_server_key_exchanges:
 #   - 'hmac-sha2-256-etm@openssh.com'
 #   - 'hmac-sha2-256'
 #   - 'hmac-sha1'
-forgejo_config_server_ssh_server_macs:
+forgejo_cfg_server_ssh_server_macs:
   - 'hmac-sha2-256-etm@openssh.com'
   - 'hmac-sha2-256'
   - 'hmac-sha1'
@@ -315,7 +315,7 @@ forgejo_config_server_ssh_server_macs:
 # Builtin SSH host key pairs.
 #
 # Sourced from ansible controller; automatically placed in
-# {{ forgejo_config_server_app_data_path }}/ssh with correct permissions. Files
+# {{ forgejo_cfg_server_app_data_path }}/ssh with correct permissions. Files
 # copied are automatically added to SSH_SERVER_HOST_KEYS configuration.
 #
 # Special Case:
@@ -325,11 +325,11 @@ forgejo_config_server_ssh_server_macs:
 # Values:
 #   '': Do not source files from controller (default).
 #
-# forgejo_config_server_ssh_server_host_keys:
+# forgejo_cfg_server_ssh_server_host_keys:
 #   'host_vars/forgejo.example.com/data/ssh_keys'
 #
 # Default: '' (disabled).
-forgejo_config_server_ssh_server_host_keys: ''
+forgejo_cfg_server_ssh_server_host_keys: ''
 
 # Absolute path to builtin SSH ssh-keygen temporary files location.
 #
@@ -340,20 +340,20 @@ forgejo_config_server_ssh_server_host_keys: ''
 #   '': Use system temporary directory (/tmp) (default).
 #
 # Default: ''.
-forgejo_config_server_ssh_key_test_path: ''
+forgejo_cfg_server_ssh_key_test_path: ''
 
 # Absolute path to external ssh-keygen utility to parse public keys.
 #
 # Default: '' (internal ssh-keygen).
-forgejo_config_server_ssh_keygen_path: ''
+forgejo_cfg_server_ssh_keygen_path: ''
 
 # Enable SSH Authorized Key Backup when rewriting all keys? Default: False.
-forgejo_config_server_ssh_authorized_keys_backup: false
+forgejo_cfg_server_ssh_authorized_keys_backup: false
 
 # Builtin SSH principals to allow.
 #
 # Special Case:
-#   * forgejo_config_server_ssh_trusted_user_ca_keys='' changes default value
+#   * forgejo_cfg_server_ssh_trusted_user_ca_keys='' changes default value
 #     to 'off'.
 #
 # Values:
@@ -365,14 +365,14 @@ forgejo_config_server_ssh_authorized_keys_backup: false
 # Default:
 #   - 'email'
 #   - 'username'
-forgejo_config_server_ssh_authorized_principals_allow:
+forgejo_cfg_server_ssh_authorized_principals_allow:
   - 'email'
   - 'username'
 
 # Enable SSH Authorized Principals Backup when rewriting all keys?
 #
 # Default: True.
-forgejo_config_server_ssh_authorized_principals_backup: true
+forgejo_cfg_server_ssh_authorized_principals_backup: true
 
 # Builtin SSH public CA trusted keys.
 #
@@ -382,13 +382,13 @@ forgejo_config_server_ssh_authorized_principals_backup: true
 #   ssh-{ALGORITHM} {KEY}: CA key to trust.
 #
 # Default: [] (no trust).
-forgejo_config_server_ssh_trusted_user_ca_keys: []
+forgejo_cfg_server_ssh_trusted_user_ca_keys: []
 
 # Trusted user CA keys file.
 #
 # Sourced from ansible controller; automatically placed in
-# {{ forgejo_user }}/.ssh/ca_trust_chain_root.pem home directory with correct
-# permissions.
+# {{ forgejo_srv_user }}/.ssh/ca_trust_chain_root.pem home directory with
+# correct permissions.
 #
 # If you're running your own SSH server and you want to use the forgejo managed
 # file you'll also need to modify your sshd_config to point to this file.
@@ -396,14 +396,14 @@ forgejo_config_server_ssh_trusted_user_ca_keys: []
 # Values:
 #   '': Do not set trusted user CA keys (default).
 #
-# forgejo_config_server_ssh_trusted_user_ca_keys_filename:
+# forgejo_cfg_server_ssh_trusted_user_ca_keys_filename:
 #   'host_vars/forgejo.example.com/data/user_keys.pem'
 #
 # Default: '' (disabled).
-forgejo_config_server_ssh_trusted_user_ca_keys_filename: ''
+forgejo_cfg_server_ssh_trusted_user_ca_keys_filename: ''
 
 # Enable builtin SSH clone URL exposure to anonymous visitors? Default: False.
-forgejo_config_server_ssh_expose_anonymous: false
+forgejo_cfg_server_ssh_expose_anonymous: false
 
 # Command template to passed on authorized keys.
 #
@@ -416,7 +416,7 @@ forgejo_config_server_ssh_expose_anonymous: false
 #
 # Default:
 #   !unsafe '{{.AppPath}} --config={{.CustomConf}} serv key-{{.Key.ID}}'.
-forgejo_config_server_ssh_authorized_keys_command_template:
+forgejo_cfg_server_ssh_authorized_keys_command_template:
   !unsafe '{{.AppPath}} --config={{.CustomConf}} serv key-{{.Key.ID}}'
 
 # Timeout for any write to ssh connections (TIME format).
@@ -426,7 +426,7 @@ forgejo_config_server_ssh_authorized_keys_command_template:
 #   '': Use %(PER_WRITE_TIMEOUT)s.
 #
 # Default: '30s'.
-forgejo_config_server_ssh_per_write_timeout: '30s'
+forgejo_cfg_server_ssh_per_write_timeout: '30s'
 
 # Timeout per Kb written to ssh connections (TIME format).
 #
@@ -434,70 +434,70 @@ forgejo_config_server_ssh_per_write_timeout: '30s'
 #   '': Use %(PER_WRITE_PER_KB_TIMEOUT)s.
 #
 # Default: '30s'.
-forgejo_config_server_ssh_per_write_per_kb_timeout: '30s'
+forgejo_cfg_server_ssh_per_write_per_kb_timeout: '30s'
 
 # Enable minimum key size check with corresponding type? Default: False.
-forgejo_config_server_minimum_key_size_check: false
+forgejo_cfg_server_minimum_key_size_check: false
 
 # Disable CDN for static files and Gravatar profile pictures? Default: True.
-forgejo_config_server_offline_mode: true
+forgejo_cfg_server_offline_mode: true
 
 # Enable automatic certificate management via ACME server?
 #
-# If enabled forgejo_config_server_cert_file and forgejo_config_server_key_file
-# are ignored. CA must resolve forgejo_config_server_domain to this Forgejo
+# If enabled forgejo_cfg_server_cert_file and forgejo_cfg_server_key_file
+# are ignored. CA must resolve forgejo_cfg_server_domain to this Forgejo
 # server. Ensure that DNS records are set and either port 80 or port 443 are
 # accessible by CA server (the public internet by default), and redirected to
-# the appropriate ports forgejo_config_server_port_to_redirect or
-# forgejo_config_server_http_port respectively.
+# the appropriate ports forgejo_cfg_server_port_to_redirect or
+# forgejo_cfg_server_http_port respectively.
 #
 # Default: False.
-forgejo_config_server_enable_acme: false
+forgejo_cfg_server_enable_acme: false
 
 # ACME directory URL.
 #
-# Requires forgejo_config_server_enable_acme=true.
+# Requires forgejo_cfg_server_enable_acme=true.
 #
 # Values:
 #   {URL}: ACME URL.
 #      '': 'https://acme-v02.api.letsencrypt.org/directory' (default).
 #
 # Default: '' (LetsEncrypt).
-forgejo_config_server_acme_url: ''
+forgejo_cfg_server_acme_url: ''
 
 # Accept ACME terms of service? Default: False.
-forgejo_config_server_acme_accepttos: false
+forgejo_cfg_server_acme_accepttos: false
 
 # Custom ACME CA trust chain root certificate.
 #
-# Requires forgejo_config_server_enable_acme=true.
+# Requires forgejo_cfg_server_enable_acme=true.
 #
 # Sourced from ansible controller; automatically placed in
-# CustomPath/{{ forgejo_config_server_acme_directory }}/ca_trust_chain_root.pem
+# CustomPath/{{ forgejo_cfg_server_acme_directory }}/ca_trust_chain_root.pem
 # with correct permissions.
 #
 # Values:
 #   '': Use system CA trust chains (default).
 #
-# forgejo_config_server_acme_ca_root:
+# forgejo_cfg_server_acme_ca_root:
 #   'host_vars/forgejo.example.com/data/chain.pem'
 #
 # Default: '' (use system trust chains).
-forgejo_config_server_acme_ca_root: ''
+forgejo_cfg_server_acme_ca_root: ''
 
 # Email used for ACME registration service.
 #
-# Requires forgejo_config_server_enable_acme=true.
+# Requires forgejo_cfg_server_enable_acme=true.
 #
 # Values:
 #   '': Initialize at first run and use the cached value.
 #
 # Default: ''.
-forgejo_config_server_acme_email: ''
+forgejo_cfg_server_acme_email: ''
 
 # ACME live certificate directory.
 #
-# Requires forgejo_config_server_enable_acme=true.
+# Requires forgejo_cfg_server_enable_acme=true.
 #
 # Special Case:
 #   * Paths are anchored to CustomConf.
@@ -506,14 +506,14 @@ forgejo_config_server_acme_email: ''
 #
 # Reference:
 # * https://github.com/caddyserver/certmagic
-forgejo_config_server_acme_directory: 'https'
+forgejo_cfg_server_acme_directory: 'https'
 
 # Server certificate file.
 #
-# Requires forgejo_config_server_enable_acme=false.
+# Requires forgejo_cfg_server_enable_acme=false.
 #
 # Sourced from ansible controller; automatically placed in
-# CustomPath/{{ forgejo_config_server_acme_directory }}/cert.pem with correct
+# CustomPath/{{ forgejo_cfg_server_acme_directory }}/cert.pem with correct
 # permissions.
 #
 # Server certificate to use. Valid certificates may be used, or snake oil
@@ -528,18 +528,18 @@ forgejo_config_server_acme_directory: 'https'
 #   openssl pkcs12 -in cert.pfx -out cert.pem -nokeys
 #   openssl pkcs12 -in cert.pfx -out key.pem -nocerts -nodes
 #
-# forgejo_config_server_cert_file:
+# forgejo_cfg_server_cert_file:
 #   'host_vars/forgejo.example.com/data/cert.pem'
 #
 # Default: '' (disabled).
-forgejo_config_server_cert_file: ''
+forgejo_cfg_server_cert_file: ''
 
 # Server certificate key.
 #
-# Requires forgejo_config_server_enable_acme=false.
+# Requires forgejo_cfg_server_enable_acme=false.
 #
 # Sourced from ansible controller; automatically placed in
-# CustomPath/{{ forgejo_config_server_acme_directory }}/cert.key with correct
+# CustomPath/{{ forgejo_cfg_server_acme_directory }}/cert.key with correct
 # permissions.
 #
 # Server certificate key to use. Valid certificates may be used, or snake oil
@@ -554,43 +554,43 @@ forgejo_config_server_cert_file: ''
 #   openssl pkcs12 -in cert.pfx -out cert.pem -nokeys
 #   openssl pkcs12 -in cert.pfx -out key.pem -nocerts -nodes
 #
-# forgejo_config_server_cert_file:
+# forgejo_cfg_server_cert_file:
 #   'host_vars/forgejo.example.com/data/cert.key'
 #
 # Default: '' (disabled).
-forgejo_config_server_key_file: ''
+forgejo_cfg_server_key_file: ''
 
 # Absolute path to root directory containing templates and static files.
 #
 # StaticRootPath=AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}' (StaticRootPath).
-forgejo_config_server_static_root_path: '{{ forgejo_config_work_path }}'
+# Default: '{{ forgejo_cfg_work_path }}' (StaticRootPath).
+forgejo_cfg_server_static_root_path: '{{ forgejo_cfg_work_path }}'
 
 # Default path for App data.
 #
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}'
-forgejo_config_server_app_data_path: '{{ forgejo_config_work_path }}'
+# Default: '{{ forgejo_cfg_work_path }}'
+forgejo_cfg_server_app_data_path: '{{ forgejo_cfg_work_path }}'
 
 # Enable gzip compression for runtime-generated content?
 #
 # Static resources excluded.
 #
 # Default: False (disabled).
-forgejo_config_server_enable_gzip: false
+forgejo_cfg_server_enable_gzip: false
 
 # Application profiling (memory and CPU).
 #
 # Special Case:
 #     web: commands listen on localhost:6060.
-#   serve: commands dumps to disk at forgejo_config_server_pprof_data_path as
+#   serve: commands dumps to disk at forgejo_cfg_server_pprof_data_path as
 #          (cpuprofile|memprofile)_<username>_<temporary id>.
 #
 # Default: False (disabled).
-forgejo_config_server_enable_pprof: false
+forgejo_cfg_server_enable_pprof: false
 
 # PPROF_DATA_PATH, use an absolute path when you start gitea as service
 #
@@ -599,9 +599,9 @@ forgejo_config_server_enable_pprof: false
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_config_work_path }}/data/tmp/pprof'.
-forgejo_config_server_pprof_data_path:
-  '{{ forgejo_config_work_path }}/data/tmp/pprof'
+# Default: '{{ forgejo_cfg_work_path }}/data/tmp/pprof'.
+forgejo_cfg_server_pprof_data_path:
+  '{{ forgejo_cfg_work_path }}/data/tmp/pprof'
 
 # Landing page.
 #
@@ -610,16 +610,16 @@ forgejo_config_server_pprof_data_path:
 #         explore: Forgejo explore view.
 #   organizations: Forgejo organizations view.
 #           login: Forgejo login page. NOT a security measure but just a UI
-#                  flow change, use forgejo_config_service_require_signin_view
+#                  flow change, use forgejo_cfg_service_require_signin_view
 #                  to force users to log in.
 #           {URL}: Relative site URL (/org/repo) or Full external URL
 #                  (https://example.com).
 #
 # Default: 'home'.
-forgejo_config_server_landing_page: 'home'
+forgejo_cfg_server_landing_page: 'home'
 
 # Enable git-lfs support? Default: False.
-forgejo_config_server_lfs_start_server: false
+forgejo_cfg_server_lfs_start_server: false
 
 # LFS authentication secret.
 #
@@ -631,28 +631,28 @@ forgejo_config_server_lfs_start_server: false
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
-forgejo_config_server_lfs_jwt_secret: ''
+forgejo_cfg_server_lfs_jwt_secret: ''
 
 # LFS authentication validity period (TIME format)
 #
 # Pushes taking longer than this may fail.
 #
 # Default: '24h'.
-forgejo_config_server_lfs_http_auth_expiry: '24h'
+forgejo_cfg_server_lfs_http_auth_expiry: '24h'
 
 # Maximum allowed LFS file size (bytes). Default: 0 (no limit).
-forgejo_config_server_lfs_max_file_size: 0
+forgejo_cfg_server_lfs_max_file_size: 0
 
 # Maximum number of locks returned per page. Default: 50.
-forgejo_config_server_lfs_locks_paging_num: 50
+forgejo_cfg_server_lfs_locks_paging_num: 50
 
 # Reject LFS batch requests containing pointers over this limit.
 #
 # Default: 0 (unlimited).
-forgejo_config_server_lfs_max_batch_size: 0
+forgejo_cfg_server_lfs_max_batch_size: 0
 
 # Allow graceful restarts using SIGHUP to fork? Default: True.
-forgejo_config_server_allow_graceful_restarts: true
+forgejo_cfg_server_allow_graceful_restarts: true
 
 # Force shutdown for ongoing requests after this delay (TIME format).
 #
@@ -663,7 +663,7 @@ forgejo_config_server_allow_graceful_restarts: true
 #   -1: Disable.
 #
 # Default: '60s'.
-forgejo_config_server_graceful_hammer_time: '60s'
+forgejo_cfg_server_graceful_hammer_time: '60s'
 
 # Shuts down the server if startup takes longer than limt (TIME format).
 #
@@ -675,7 +675,7 @@ forgejo_config_server_graceful_hammer_time: '60s'
 #   0: Disables.
 #
 # Default: 0 (disabled).
-forgejo_config_server_startup_timeout: 0
+forgejo_cfg_server_startup_timeout: 0
 
 # Static resource caching time (TIME format).
 #
@@ -683,7 +683,7 @@ forgejo_config_server_startup_timeout: 0
 # avatars web browser cache time. Note that this cache is disabled when
 #
 # Special Case:
-#   * Disabled when forgejo_config_run_mode=dev.
+#   * Disabled when forgejo_cfg_run_mode=dev.
 #
 # Default: '6h'.
-forgejo_config_server_static_cache_time: '6h'
+forgejo_cfg_server_static_cache_time: '6h'

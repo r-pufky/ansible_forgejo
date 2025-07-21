@@ -9,7 +9,7 @@
 #   - 'To Do'
 #   - 'In Progress'
 #   - 'Done'
-forgejo_config_project_project_board_basic_kanban_type:
+forgejo_cfg_project_project_board_basic_kanban_type:
   - 'To Do'
   - 'In Progress'
   - 'Done'
@@ -21,7 +21,7 @@ forgejo_config_project_project_board_basic_kanban_type:
 #   - 'High Priority'
 #   - 'Low Priority'
 #   - 'Closed'
-forgejo_config_project_project_board_bug_triage_type:
+forgejo_cfg_project_project_board_bug_triage_type:
   - 'Needs Triage'
   - 'High Priority'
   - 'Low Priority'

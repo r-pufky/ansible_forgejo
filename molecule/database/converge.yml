@@ -1,8 +1,8 @@
 ---
-- name: 'Database | converge'
+- name: 'Converge'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Database | converge | apply r_pufky.srv.forgejo'
+    - name: 'Converge | apply r_pufky.srv.forgejo'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'

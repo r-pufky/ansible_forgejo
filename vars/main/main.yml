@@ -2,9 +2,29 @@
 ###############################################################################
 # Forgejo Role Options
 ###############################################################################
+# Updates:
+# * New MAJOR, MINOR releases should hard branch at version before starting
+#   (e.g. 10.0.x branch). Only use LTS releases.
+# * Keep a separate change log as changes are made, you will not remember all
+#   of them.
+# * Use bare-metal docs to validate package/process changes.
+# * Update role defaults (includes updating defaults, tasks):
+#   * Use configuration docs to add new variables:
+#
+#       meld \
+#         <(curl -s https://forgejo.org/docs/v11.0/admin/config-cheat-sheet/)
+#         <(curl -s https://forgejo.org/docs/v10.0/admin/config-cheat-sheet/)
+#
+#   * Use defaults/ to remove any changed/deprecated variables.
+#   * Hidden variables may be discovered after running the service and shutting
+#     down and checking app.ini for differences.
+#   * Diff release documentation for new variable exposure
+# * Update tests for any changes.
+# * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
+# * Tag with MAJOR.MINOR version, with PATCH representing role change.
 
 # Last time Forgejo options were validated against a default configuration.
-forgejo_role_validate_date: '2025-04-04'
+forgejo_role_validate_date: '2025-07-21'
 forgejo_role_validate_release: 'bookworm'
 forgejo_role_validate_version: 'v10.0.3'
 
@@ -37,8 +57,8 @@ forgejo_role_redis:  # Includes redis-server, redis-tools.
 
 forgejo_role_repo_release_owner: 'forgejo'
 forgejo_role_repo_release_repo: 'forgejo'
-forgejo_role_repo_extract_dir: '/var/lib/forgejo'
-forgejo_role_repo_extract_symlink: '/var/lib/forgejo/forgejo'
+forgejo_role_repo_extract_dir: '/opt/forgejo'
+forgejo_role_repo_extract_symlink: '/opt/forgejo/forgejo'
 forgejo_role_repo_release_specifier: 'v'
 forgejo_role_repo_release_asset: 'forgejo-{BARE_VERSION}-linux-amd64'
 

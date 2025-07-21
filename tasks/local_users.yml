@@ -24,25 +24,18 @@
 #
 # Query updated user list before each operation to prevent tool failures due to
 # non-existent or pre-existing users.
-#
-# Args:
-#   _forgejo_uid: int - Forgejo user UID.
-#   _forgejo_gid: int - Forgejo user GID.
-#   _forgejo_home: str - Forgejo user HOME.
-#   _forgejo_config: list of dict - sanitized forgejo_tasks
-#   _forgejo_local_users: list of dict - Local user accounts to manage.
 
 - name: 'Local users | poll service 🗘'
-  when: forgejo_service_poll_enable
+  when: _forgejo_srv_poll_enable.raw
   ansible.builtin.debug:
     msg: >
       🗘 Waiting until port becomes available
       (max {{ forgejo_role_poll_timeout }}s) ...
 
 - name: 'Local users | poll service'
-  when: forgejo_service_poll_enable
+  when: _forgejo_srv_poll_enable.raw
   ansible.builtin.wait_for:
-    port: '{{ forgejo_config_server_http_port | default(3000) }}'
+    port: '{{ forgejo_cfg_server_http_port | default(3000) }}'
     delay: 5
     sleep: '{{ forgejo_role_poll_interval }}'
     timeout: '{{ forgejo_role_poll_timeout }}'
@@ -53,25 +46,25 @@
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
       - '--config'
-      - '{{ forgejo_config_custom_path }}/app.ini'
+      - '{{ _forgejo.app_ini_path }}'
       - 'admin'
       - 'user'
       - 'list'
   changed_when: false
   become: true
-  become_user: '{{ forgejo_user }}'
-  register: _forgejo_user_list
+  become_user: '{{ _forgejo_srv_user.raw }}'
+  register: _forgejo_srv_user_list
 
 - name: 'Local users | create users'
   when: >
     item.state == 'present' and
-    item.username not in _forgejo_user_list.stdout and
-    item.email not in _forgejo_user_list.stdout
+    item.username not in _forgejo_srv_user_list.stdout and
+    item.email not in _forgejo_srv_user_list.stdout
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
       - '--config'
-      - '{{ forgejo_config_custom_path }}/app.ini'
+      - '{{ _forgejo.app_ini_path }}'
       - 'admin'
       - 'user'
       - 'create'
@@ -88,8 +81,8 @@
   failed_when: '"successfully created" not in _forgejo_status.stdout'
   changed_when: '"successfully created" in _forgejo_status.stdout'
   become: true
-  become_user: '{{ forgejo_user }}'
-  loop: '{{ _forgejo_local_users }}'
+  become_user: '{{ _forgejo_srv_user.raw }}'
+  loop: '{{ _forgejo_srv_local_users.parsed }}'
   loop_control:
     label: '{{ item.username }}'
 
@@ -98,24 +91,24 @@
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
       - '--config'
-      - '{{ forgejo_config_custom_path }}/app.ini'
+      - '{{ _forgejo.app_ini_path }}'
       - 'admin'
       - 'user'
       - 'list'
   changed_when: false
   become: true
-  become_user: '{{ forgejo_user }}'
-  register: _forgejo_user_list
+  become_user: '{{ _forgejo_srv_user.raw }}'
+  register: _forgejo_srv_user_list
 
 - name: 'Local users | remove users'
   when: >
     item.state == 'absent' and
-    item.username in _forgejo_user_list.stdout
+    item.username in _forgejo_srv_user_list.stdout
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
       - '--config'
-      - '{{ forgejo_config_custom_path }}/app.ini'
+      - '{{ _forgejo.app_ini_path }}'
       - 'admin'
       - 'user'
       - 'delete'
@@ -125,7 +118,7 @@
   failed_when: '"error" in _forgejo_status.stdout'
   changed_when: 'item.username in _forgejo_status.stdout'
   become: true
-  become_user: '{{ forgejo_user }}'
-  loop: '{{ _forgejo_local_users }}'
+  become_user: '{{ _forgejo_srv_user.raw }}'
+  loop: '{{ _forgejo_srv_local_users.parsed }}'
   loop_control:
     label: '{{ item.username }}'

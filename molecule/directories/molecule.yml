@@ -40,26 +40,26 @@ provisioner:
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
                 "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
               }}'
-        forgejo_container_enable: true
-        forgejo_service_harden_enable: true
-        forgejo_config_security_internal_token: 'test'
-        forgejo_config_server_lfs_jwt_secret: 'test'
-        forgejo_config_security_secret_key: 'test'
-        forgejo_config_repository_root: 'gitea-repositories'
-        forgejo_config_repository_upload_temp_path: 'data/tmp/uploads'
-        forgejo_config_repository_local_local_copy_path: 'tmp/local-repo'
-        forgejo_config_server_pprof_data_path: 'data/tmp/pprof'
-        forgejo_config_database_path: 'forgejo.db'
-        forgejo_config_indexer_issue_indexer_path: 'indexers/issues.bleve'
-        forgejo_config_indexer_repo_indexer_path: 'indexers/repos.bleve'
-        forgejo_config_queue_datadir: 'queues/common'
-        forgejo_config_server_acme_directory: 'https'
-        forgejo_config_session_provider_config: 'data/sessions'
-        forgejo_config_attachment_path: 'attachments'
-        forgejo_config_log_root_path: 'log'
-        forgejo_config_git_home_path: 'home'
-        forgejo_config_packages_chunked_upload_path: 'tmp/package-upload'
-        forgejo_config_packages_path: 'packages'
+        forgejo_srv_container_enable: true
+        forgejo_srv_harden_enable: true
+        forgejo_cfg_security_internal_token: 'test'
+        forgejo_cfg_server_lfs_jwt_secret: 'test'
+        forgejo_cfg_security_secret_key: 'test'
+        forgejo_cfg_repository_root: 'gitea-repositories'
+        forgejo_cfg_repository_upload_temp_path: 'data/tmp/uploads'
+        forgejo_cfg_repository_local_local_copy_path: 'tmp/local-repo'
+        forgejo_cfg_server_pprof_data_path: 'data/tmp/pprof'
+        forgejo_cfg_database_path: 'forgejo.db'
+        forgejo_cfg_indexer_issue_indexer_path: 'indexers/issues.bleve'
+        forgejo_cfg_indexer_repo_indexer_path: 'indexers/repos.bleve'
+        forgejo_cfg_queue_datadir: 'queues/common'
+        forgejo_cfg_server_acme_directory: 'https'
+        forgejo_cfg_session_provider_config: 'data/sessions'
+        forgejo_cfg_attachment_path: 'attachments'
+        forgejo_cfg_log_root_path: 'log'
+        forgejo_cfg_git_home_path: 'home'
+        forgejo_cfg_packages_chunked_upload_path: 'tmp/package-upload'
+        forgejo_cfg_packages_path: 'packages'
 platforms:
   - name: 'forgejo-debian-12-directories'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
@@ -68,8 +68,6 @@ platforms:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
     pre_build_image: true
-    # published_ports:
-    #   - '3000:3000/tcp'
 verifier:
   name: 'ansible'
 lint: |

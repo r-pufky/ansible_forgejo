@@ -1,11 +1,10 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # OAuth2 [oauth2]
 ###############################################################################
 
 # Enable OAuth2 provider? Default: True.
-forgejo_config_oauth2_enabled: true
+forgejo_cfg_oauth2_enabled: true
 
 # Algorithm used to sign OAuth2 tokens.
 #
@@ -22,11 +21,11 @@ forgejo_config_oauth2_enabled: true
 #   EdDSA: EdDSA.
 #
 # Default: 'RS256'.
-forgejo_config_oauth2_jwt_signing_algorithm: 'RS256'
+forgejo_cfg_oauth2_jwt_signing_algorithm: 'RS256'
 
 # Private key file path used to sign OAuth2 tokens.
 #
-# Requires forgejo_config_oauth2_jwt_signing_algorithm=RS256|RS384|RS512|ES256|
+# Requires forgejo_cfg_oauth2_jwt_signing_algorithm=RS256|RS384|RS512|ES256|
 #    ES384|ES512.
 #
 # Sourced from ansible controller; automatically placed in
@@ -35,19 +34,21 @@ forgejo_config_oauth2_jwt_signing_algorithm: 'RS256'
 # File must contain a RSA or ECDSA private key in the PKCS8 format:
 #
 #   openssl genrsa -out oauth2.rsa.pem 4096
-#   openssl pkcs8 -topk8 -inform PEM -nocrypt -in oauth2.rsa.pem -out oauth2.pkcs8.pem
+#   openssl pkcs8 -topk8 -inform PEM -nocrypt -in oauth2.rsa.pem
+#       -out oauth2.pkcs8.pem
 #
 # Special Case:
 #   '': Automatically create 4096 bit key at AppDataPath/jwt/private.pem.
 #
-# forgejo_config_oauth2_jwt_signing_private_key_file: 'host_vars/forgejo.example.com/data/oauth.pkcs8.pem'
+# forgejo_cfg_oauth2_jwt_signing_private_key_file:
+#   'host_vars/forgejo.example.com/data/oauth.pkcs8.pem'
 #
 # Default: '' (auto create).
-forgejo_config_oauth2_jwt_signing_private_key_file: ''
+forgejo_cfg_oauth2_jwt_signing_private_key_file: ''
 
 # OAuth2 authentication secret for access and refresh tokens.
 #
-# Requires forgejo_config_oauth2_jwt_signing_algorithm=HS256|HS384|HS512.
+# Requires forgejo_cfg_oauth2_jwt_signing_algorithm=HS256|HS384|HS512.
 #
 # Manually generate key:
 #
@@ -57,19 +58,19 @@ forgejo_config_oauth2_jwt_signing_private_key_file: ''
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
-forgejo_config_oauth2_jwt_secret: ''
+forgejo_cfg_oauth2_jwt_secret: ''
 
 # OAuth2 access token lifetime (seconds). Default: 3600.
-forgejo_config_oauth2_access_token_expiration_time: 3600
+forgejo_cfg_oauth2_access_token_expiration_time: 3600
 
 # OAuth2 refresh token lifetime (hours). Default: 730.
-forgejo_config_oauth2_refresh_token_expiration_time: 730
+forgejo_cfg_oauth2_refresh_token_expiration_time: 730
 
 # Enable invalidation of reused refresh tokens? Default: False.
-forgejo_config_oauth2_invalidate_refresh_tokens: false
+forgejo_cfg_oauth2_invalidate_refresh_tokens: false
 
 # Maximum length of OAuth2 token/cookie stored on server. Default: 32767.
-forgejo_config_oauth2_max_token_length: 32767
+forgejo_cfg_oauth2_max_token_length: 32767
 
 # List of pre-registered OAuth2 applications.
 #
@@ -82,7 +83,7 @@ forgejo_config_oauth2_max_token_length: 32767
 # * https://github.com/hickford/git-credential-oauth
 # * https://github.com/git-ecosystem/git-credential-manager
 # * https://gitea.com/gitea/tea
-forgejo_config_oauth2_default_applications:
+forgejo_cfg_oauth2_default_applications:
   - 'git-credential-oauth'
   - 'git-credential-manager'
   - 'tea'
@@ -94,10 +95,10 @@ forgejo_config_oauth2_default_applications:
 # Enable new auto registered OAuth2 email confirmation?
 #
 # Special Case:
-#   False: Use forgejo_config_service_register_email_confirm setting.
+#   False: Use forgejo_cfg_service_register_email_confirm setting.
 #
 # Default: False.
-forgejo_config_oauth2_client_register_email_confirm: false
+forgejo_cfg_oauth2_client_register_email_confirm: false
 
 # List of scopes for OpenID connect OAuth2 provider.
 #
@@ -105,10 +106,10 @@ forgejo_config_oauth2_client_register_email_confirm: false
 #
 # Reference:
 # * https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
-forgejo_config_oauth2_client_openid_connect_scopes: []
+forgejo_cfg_oauth2_client_openid_connect_scopes: []
 
 # Enable automatic user account creation for new OAuth2 users? Default: False.
-forgejo_config_oauth2_client_enable_auto_registration: false
+forgejo_cfg_oauth2_client_enable_auto_registration: false
 
 # Source of username for new OAuth2 accounts.
 #
@@ -123,10 +124,10 @@ forgejo_config_oauth2_client_enable_auto_registration: false
 #     email: Username part of email attribute.
 #
 # Default: 'nickname'.
-forgejo_config_oauth2_client_username: 'nickname'
+forgejo_cfg_oauth2_client_username: 'nickname'
 
 # Enable avatar updates if available from OAuth2 provider? Default: False.
-forgejo_config_oauth2_client_update_avatar: false
+forgejo_cfg_oauth2_client_update_avatar: false
 
 # Action if account/email already exists.
 #
@@ -136,4 +137,4 @@ forgejo_config_oauth2_client_update_avatar: false
 #       auto: Link directly with account.
 #
 # Default: 'login'.
-forgejo_config_oauth2_client_account_linking: 'login'
+forgejo_cfg_oauth2_client_account_linking: 'login'

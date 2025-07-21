@@ -1,9 +1,9 @@
 APP_NAME = Forgejo: Beyond coding. We Forge.
 RUN_USER = git
-WORK_PATH = /var/lib/forgejo
+WORK_PATH = /opt/forgejo
 
 [repository]
-ROOT = /var/lib/forgejo/gitea-repositories
+ROOT = /opt/forgejo/gitea-repositories
 SCRIPT_TYPE = bash
 DETECTED_CHARSETS_ORDER = UTF-8,UTF-16BE,UTF-16LE,UTF-32BE,UTF-32LE,ISO-8859,windows-1252,ISO-8859,windows-1250,ISO-8859,ISO-8859,ISO-8859,windows-1253,ISO-8859,windows-1255,ISO-8859,windows-1251,windows-1256,KOI8-R,ISO-8859,windows-1254,Shift_JIS,GB18030,EUC-JP,EUC-KR,Big5,ISO-2022,ISO-2022,ISO-2022,IBM424_rtl,IBM424_ltr,IBM420_rtl,IBM420_ltr
 FORCE_PRIVATE = false
@@ -55,7 +55,7 @@ MAX_PINNED = 3
 
 [repository.upload]
 ENABLED = true
-TEMP_PATH = /var/lib/forgejo/data/tmp/uploads
+TEMP_PATH = /opt/forgejo/data/tmp/uploads
 FILE_MAX_SIZE = 50
 MAX_FILES = 5
 
@@ -72,7 +72,7 @@ WIKI = never
 MERGES = pubkey,twofa,basesigned,commitssigned
 
 [repository.local]
-LOCAL_COPY_PATH = /var/lib/forgejo/tmp/local-repo
+LOCAL_COPY_PATH = /opt/forgejo/tmp/local-repo
 
 [repository.mimetype_mapping]
 .apk = application/vnd.android.package-archive
@@ -193,11 +193,11 @@ OFFLINE_MODE = true
 ENABLE_ACME = false
 ACME_ACCEPTTOS = false
 ACME_DIRECTORY = /etc/forgejo/https
-STATIC_ROOT_PATH = /var/lib/forgejo
-APP_DATA_PATH = /var/lib/forgejo
+STATIC_ROOT_PATH = /opt/forgejo
+APP_DATA_PATH = /opt/forgejo
 ENABLE_GZIP = false
 ENABLE_PPROF = false
-PPROF_DATA_PATH = /var/lib/forgejo/data/tmp/pprof
+PPROF_DATA_PATH = /opt/forgejo/data/tmp/pprof
 LANDING_PAGE = home
 LFS_START_SERVER = false
 LFS_JWT_SECRET = {{ _test_lfs_jwt_secret }}
@@ -227,13 +227,13 @@ SLOW_QUERY_THRESHOLD = 5s
 
 [indexer]
 ISSUE_INDEXER_TYPE = bleve
-ISSUE_INDEXER_PATH = /var/lib/forgejo/indexers/issues.bleve
+ISSUE_INDEXER_PATH = /opt/forgejo/indexers/issues.bleve
 ISSUE_INDEXER_NAME = gitea_issues
 STARTUP_TIMEOUT = 30s
 REPO_INDEXER_ENABLED = false
 REPO_INDEXER_REPO_TYPES = sources,forks,mirrors,templates
 REPO_INDEXER_TYPE = bleve
-REPO_INDEXER_PATH = /var/lib/forgejo/indexers/repos.bleve
+REPO_INDEXER_PATH = /opt/forgejo/indexers/repos.bleve
 REPO_INDEXER_NAME = gitea_codes
 REPO_INDEXER_EXCLUDE_VENDORED = true
 MAX_FILE_SIZE = 1048576
@@ -392,7 +392,7 @@ COMMITS_COUNT = 1000
 
 [session]
 PROVIDER = memory
-PROVIDER_CONFIG = /var/lib/forgejo/data/sessions
+PROVIDER_CONFIG = /opt/forgejo/data/sessions
 COOKIE_NAME = i_like_gitea
 COOKIE_SECURE = true
 GC_INTERVAL_TIME = 86400
@@ -428,7 +428,7 @@ BATCH_SIZE = 20
 BATCH_OPERATION_CONCURRENCY = 8
 
 [log]
-ROOT_PATH = /var/lib/forgejo/log
+ROOT_PATH = /opt/forgejo/log
 MODE = console
 LEVEL = Info
 STACKTRACE_LEVEL = None
@@ -637,7 +637,7 @@ DEFAULT_MAX_BLOB_SIZE = 10485760
 [oauth2]
 ENABLED = true
 JWT_SIGNING_ALGORITHM = RS256
-JWT_SIGNING_PRIVATE_KEY_FILE = /var/lib/forgejo/jwt/private.pem
+JWT_SIGNING_PRIVATE_KEY_FILE = /opt/forgejo/jwt/private.pem
 JWT_SECRET = {{ _test_lfs_jwt_secret }}
 ACCESS_TOKEN_EXPIRATION_TIME = 3600
 REFRESH_TOKEN_EXPIRATION_TIME = 730
@@ -740,4 +740,3 @@ ENABLE_FEED = true
 
 [F3]
 ENABLED = false
-

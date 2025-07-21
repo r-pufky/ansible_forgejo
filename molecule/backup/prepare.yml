@@ -17,84 +17,84 @@
         test_name: 'Prepare | cache'
         test_cache: '{{ _test_cache }}/ssh'
 
-    - name: 'Prepare | check forgejo v10.0.3'
+    - name: 'Prepare | check forgejo v11.0.3'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
-        test_name: 'Prepare | check forgejo v10.0.3'
-        test_dest: 'forgejo-10.0.3-linux-amd64'
+        test_name: 'Prepare | check forgejo v11.0.3'
+        test_dest: 'forgejo-11.0.3-linux-amd64'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64"
           }}'
         test_mode: '0750'
 
-    - name: 'Prepare | check forgejo v10.0.3 checksum'
+    - name: 'Prepare | check forgejo v11.0.3 checksum'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Prepare | check forgejo v10.0.3 checksum'
-        test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
+          'Prepare | check forgejo v11.0.3 checksum'
+        test_dest: 'forgejo-11.0.3-linux-amd64.sha256'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64.sha256"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64.sha256"
           }}'
         test_mode: '0640'
 
-    - name: 'Prepare | check forgejo v10.0.3 signature'
+    - name: 'Prepare | check forgejo v11.0.3 signature'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Prepare | check forgejo v10.0.3 signature'
-        test_dest: 'forgejo-10.0.3-linux-amd64.asc'
+          'Prepare | check forgejo v11.0.3 signature'
+        test_dest: 'forgejo-11.0.3-linux-amd64.asc'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64.asc"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64.asc"
           }}'
         test_mode: '0640'
 
-    - name: 'Prepare | cache forgejo v10.0.4'
+    - name: 'Prepare | cache forgejo v11.0.4'
       ansible.builtin.command:
         argv:
           - 'cp'
-          - '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
-          - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64'
-        creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64'
+          - '{{ _test_cache }}/forgejo-11.0.3-linux-amd64'
+          - '{{ _test_cache }}/forgejo-11.0.4-linux-amd64'
+        creates: '{{ _test_cache }}/forgejo-11.0.4-linux-amd64'
 
-    - name: 'Prepare | cache forgejo v10.0.4 checksum'
+    - name: 'Prepare | cache forgejo v11.0.4 checksum'
       ansible.builtin.command:
         argv:
           - 'cp'
-          - '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.sha256'
-          - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.sha256'
-        creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.sha256'
+          - '{{ _test_cache }}/forgejo-11.0.3-linux-amd64.sha256'
+          - '{{ _test_cache }}/forgejo-11.0.4-linux-amd64.sha256'
+        creates: '{{ _test_cache }}/forgejo-11.0.4-linux-amd64.sha256'
       register: _test_prepare
 
-    - name: 'Prepare | update forgejo v10.0.4 checksum'
+    - name: 'Prepare | update forgejo v11.0.4 checksum'
       when: _test_prepare.changed  # noqa no-handler
       ansible.builtin.command:
         argv:
           - 'sed'
           - '-i'
-          - 's/10.0.3/10.0.4/g'
-          - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.sha256'
+          - 's/11.0.3/11.0.4/g'
+          - '{{ _test_cache }}/forgejo-11.0.4-linux-amd64.sha256'
       changed_when: true
 
-    - name: 'Prepare | cache forgejo v10.0.4 signature'
+    - name: 'Prepare | cache forgejo v11.0.4 signature'
       ansible.builtin.command:
         argv:
           - 'cp'
-          - '{{ _test_cache }}/forgejo-10.0.3-linux-amd64.asc'
-          - '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.asc'
-        creates: '{{ _test_cache }}/forgejo-10.0.4-linux-amd64.asc'
+          - '{{ _test_cache }}/forgejo-11.0.3-linux-amd64.asc'
+          - '{{ _test_cache }}/forgejo-11.0.4-linux-amd64.asc'
+        creates: '{{ _test_cache }}/forgejo-11.0.4-linux-amd64.asc'
 
     - name: 'Prepare | cache PKCS8 RSA private key'
       ansible.builtin.command:
@@ -123,7 +123,7 @@
 
     - name: 'Prepare | cache forgejo_cfg_security_internal_token'
       ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-10.0.3-linux-amd64
+        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
         generate secret INTERNAL_TOKEN
         > {{ _test_cache }}/security_internal_token
       args:
@@ -131,7 +131,7 @@
 
     - name: 'Prepare | cache forgejo_cfg_server_lfs_jwt_secret'
       ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-10.0.3-linux-amd64
+        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
         generate secret JWT_SECRET
         > {{ _test_cache }}/lfs_jwt_secret
       args:
@@ -139,7 +139,7 @@
 
     - name: 'Prepare | cache forgejo_cfg_security_secret_key'
       ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-10.0.3-linux-amd64
+        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
         generate secret SECRET_KEY
         > {{ _test_cache }}/secret_key
       args:
@@ -148,7 +148,7 @@
     - name: 'Prepare | cache forgejo_cfg_server_cert_file'
       ansible.builtin.command:
         argv:
-          - '{{ _test_cache }}/forgejo-10.0.3-linux-amd64'
+          - '{{ _test_cache }}/forgejo-11.0.3-linux-amd64'
           - 'cert'
           - '-ca=true'
           - '-duration=8760h0m0s'

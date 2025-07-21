@@ -26,7 +26,7 @@
 # Last time Forgejo options were validated against a default configuration.
 forgejo_role_validate_date: '2025-07-21'
 forgejo_role_validate_release: 'bookworm'
-forgejo_role_validate_version: 'v10.0.3'
+forgejo_role_validate_version: 'v11.0.3'
 
 forgejo_role_poll_interval: 3
 forgejo_role_poll_timeout: 30

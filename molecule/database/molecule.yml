@@ -25,18 +25,18 @@ provisioner:
         repo_testing_enable: true
         repo_testing_versions:
           - comment: 'forgejo'
-            version: 'v10.0.3'
+            version: 'v11.0.3'
             asset: '{{
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-10.0.3-linux-amd64"
+                "/molecule/cache/forgejo-11.0.3-linux-amd64"
               }}'
             checksum: '{{
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-10.0.3-linux-amd64.sha256"
+                "/molecule/cache/forgejo-11.0.3-linux-amd64.sha256"
               }}'
             signature: '{{
                 lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-10.0.3-linux-amd64.asc"
+                "/molecule/cache/forgejo-11.0.3-linux-amd64.asc"
               }}'
         forgejo_srv_container_enable: true
         forgejo_srv_harden_enable: true

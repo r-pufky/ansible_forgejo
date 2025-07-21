@@ -16,46 +16,46 @@
       vars:
         test_name: 'Pepare | cache'
 
-    - name: 'Pepare | check forgejo v10.0.3'
+    - name: 'Pepare | check forgejo v11.0.3'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
-        test_name: 'Pepare | check forgejo v10.0.3'
-        test_dest: 'forgejo-10.0.3-linux-amd64'
+        test_name: 'Pepare | check forgejo v11.0.3'
+        test_dest: 'forgejo-11.0.3-linux-amd64'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64"
           }}'
         test_mode: '0750'
 
-    - name: 'Pepare | check forgejo v10.0.3 checksum'
+    - name: 'Pepare | check forgejo v11.0.3 checksum'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Pepare | check forgejo v10.0.3 checksum'
-        test_dest: 'forgejo-10.0.3-linux-amd64.sha256'
+          'Pepare | check forgejo v11.0.3 checksum'
+        test_dest: 'forgejo-11.0.3-linux-amd64.sha256'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64.sha256"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64.sha256"
           }}'
         test_mode: '0640'
 
-    - name: 'Pepare | check forgejo v10.0.3 signature'
+    - name: 'Pepare | check forgejo v11.0.3 signature'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Pepare | check forgejo v10.0.3 signature'
-        test_dest: 'forgejo-10.0.3-linux-amd64.asc'
+          'Pepare | check forgejo v11.0.3 signature'
+        test_dest: 'forgejo-11.0.3-linux-amd64.asc'
         test_url: '{{
             "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v10.0.3/" ~
-            "forgejo-10.0.3-linux-amd64.asc"
+            "v11.0.3/" ~
+            "forgejo-11.0.3-linux-amd64.asc"
           }}'
         test_mode: '0640'

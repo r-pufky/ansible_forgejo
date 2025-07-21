@@ -24,14 +24,14 @@
 #   RECOMMEND: Only increment PATCH. Never use 'latest'.
 #
 # Values:
-#   {VERSION}: Tagged release to use ('v10.0.3').
+#   {VERSION}: Tagged release to use ('v11.0.3').
 #      latest: Use latest stable release.
 #
-# Default: 'v.10.0.3'.
+# Default: 'v.11.0.3'.
 #
 # Reference:
 # * https://forgejo.org/releases
-forgejo_srv_version: 'v10.0.3'
+forgejo_srv_version: 'v11.0.3'
 
 # Forgejo GPG key ID.
 #

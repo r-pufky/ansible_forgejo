@@ -20,7 +20,7 @@ All ports and protocols have been defined for the role.
 Read defaults documentation. Migration from other Gitea/Forgejo roles should be
 re-evaluated and **not** blindly copied.
 
-Install 10.0.3 release of Forgejo; ensuring media files have proper
+Install 11.0.3 release of Forgejo; ensuring media files have proper
 permissions. Version (and databases) will be migrated and updated on new
 releases. Media permissions will be set to ensure Forgejo can read files.
 
@@ -31,7 +31,7 @@ releases. Media permissions will be set to ensure Forgejo can read files.
   roles:
      - 'r_pufky.srv.forgejo'
   vars:
-    forgejo_srv_version: 'v10.0.3'
+    forgejo_srv_version: 'v11.0.3'
     forgejo_srv_local_users:
       - username: 'admin_user'
         password: 'admin'

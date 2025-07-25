@@ -6,7 +6,7 @@
 
 [{{ header }}]
 {%   endif %}
-{%   for section in _forgejo_map | selectattr("value.section", "==", header) | sort(attribute="value.order") %}
+{%   for section in _forgejo_map | selectattr('value.section', '==', header) | sort(attribute='value.order') %}
 {%     if section.value.hint == 'dict' or section.value.hint == 'dict of dict' %}
 {%       include 'section/dict_mapping.j2' with context %}
 {%     elif section.value.hint == 'bool' %}

@@ -11,9 +11,9 @@ forgejo_cfg_packages_enabled: true
 # Special Case:
 #   * Relative paths anchored to AppDataPath.
 #
-# Default: '{{ forgejo_cfg_data_path }}/tmp/package-upload'.
+# Default: '{{ forgejo_cfg_server_app_data_path }}/tmp/package-upload'.
 forgejo_cfg_packages_chunked_upload_path:
-  '{{ forgejo_cfg_data_path }}/tmp/package-upload'
+  '{{ forgejo_cfg_server_app_data_path }}/tmp/package-upload'
 
 # Maximum count of package versions a single owner can have.
 #
@@ -114,8 +114,8 @@ forgejo_cfg_packages_storage_type: 'local'
 # Special Case:
 #   * Relative paths anchored to AppDataPath.
 #
-# Default: '{{ forgejo_cfg_data_path }}/packages'.
-forgejo_cfg_packages_path: '{{ forgejo_cfg_data_path }}/packages'
+# Default: '{{ forgejo_cfg_server_app_data_path }}/packages'.
+forgejo_cfg_packages_path: '{{ forgejo_cfg_server_app_data_path }}/packages'
 
 ###############################################################################
 # Minio Storage Options

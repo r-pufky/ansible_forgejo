@@ -13,7 +13,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/oauth2.pkcs8.pem"
           }}'
-        test_file: '/opt/forgejo/jwt/private.pem'
+        test_file: '/srv/git/forgejo/data/jwt/private.pem'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -53,7 +53,7 @@
 
     - name: 'Verify | enumerate server host keys'
       ansible.builtin.find:
-        paths: '/opt/forgejo/ssh'
+        paths: '/srv/git/forgejo/data/ssh'
         excludes: ['*.pub']
         follow: true
         recurse: true

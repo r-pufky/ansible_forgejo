@@ -25,9 +25,9 @@ forgejo_cfg_indexer_issue_indexer_type: 'bleve'
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}/indexers/issues.bleve'.
+# Default: '{{ forgejo_cfg_app_work_path }}/indexers/issues.bleve'.
 forgejo_cfg_indexer_issue_indexer_path:
-  '{{ forgejo_cfg_work_path }}/indexers/issues.bleve'
+  '{{ forgejo_cfg_app_work_path }}/indexers/issues.bleve'
 
 # Issue indexer URI connection string.
 #
@@ -91,9 +91,9 @@ forgejo_cfg_indexer_repo_indexer_type: 'bleve'
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}/indexers/repos.bleve'.
+# Default: '{{ forgejo_cfg_app_work_path }}/indexers/repos.bleve'.
 forgejo_cfg_indexer_repo_indexer_path:
-  '{{ forgejo_cfg_work_path }}/indexers/repos.bleve'
+  '{{ forgejo_cfg_app_work_path }}/indexers/repos.bleve'
 
 # Code indexer URI connection string.
 #

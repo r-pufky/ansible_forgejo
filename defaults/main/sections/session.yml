@@ -31,9 +31,9 @@ forgejo_cfg_session_provider: 'memory'
 #   mysql: go-sql-driver/mysql dsn config string (e.g
 #          root:password@/session_table).
 #
-# Default: '{{ forgejo_cfg_work_path }}/data/sessions'.
+# Default: '{{ forgejo_cfg_app_work_path }}/data/sessions'.
 forgejo_cfg_session_provider_config:
-  '{{ forgejo_cfg_work_path }}/data/sessions'
+  '{{ forgejo_cfg_app_work_path }}/data/sessions'
 
 # Session cookie name. Default: 'i_like_gitea'.
 forgejo_cfg_session_cookie_name: 'i_like_gitea'

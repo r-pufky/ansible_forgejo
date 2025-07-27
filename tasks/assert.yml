@@ -9,17 +9,14 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - not forgejo_cfg_data_path.startswith(forgejo_cfg_work_path)
-      - not forgejo_cfg_data_path.startswith(forgejo_cfg_custom_path)
-      - not forgejo_cfg_data_path.startswith(forgejo_role_repo_extract_symlink)
+      - not forgejo_cfg_server_app_data_path.startswith(forgejo_cfg_custom_path)
+      - not forgejo_cfg_server_app_data_path.startswith(forgejo_role_repo_extract_symlink)
     fail_msg: |
-      ✘ Data storage should be separate from install, working, and config
-      directories.
+      ✘ Data storage should be separate from install and config directories.
 
       Installs: '{{ forgejo_role_repo_extract_symlink }}'
 
-      forgejo_cfg_data_path: '{{ forgejo_cfg_data_path }}'
-      forgejo_cfg_work_path: '{{ forgejo_cfg_work_path }}'
+      forgejo_cfg_server_app_data_path: '{{ forgejo_cfg_server_app_data_path }}'
       forgejo_cfg_custom_path: '{{ forgejo_cfg_custom_path }}'
 
 # Service

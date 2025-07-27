@@ -91,7 +91,7 @@ forgejo_srv_local_users: []
 # If the service is running and a new version is installed, dump a backup of
 # the existing configuration and database before performing any operations.
 #
-# Backups are stored in {{ forgejo_cfg_data_path }}/backup.
+# Backups are stored in {{ forgejo_cfg_server_app_data_path }}/backup.
 #
 # Default: True.
 forgejo_srv_backup_dump: true
@@ -191,8 +191,8 @@ forgejo_srv_create_user: true
 # will not have sufficient privileges to modify these files.
 #
 # Applies to:
-# * forgejo_cfg_data_path
-# * {{ forgejo_cfg_data_path }}/backup
+# * forgejo_cfg_server_app_data_path
+# * {{ forgejo_cfg_server_app_data_path }}/backup
 # * {{ forgejo_srv_user (home) }}/.ssh
 # * forgejo_cfg_repository_root
 # * forgejo_cfg_database_path

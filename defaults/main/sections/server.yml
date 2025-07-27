@@ -562,18 +562,20 @@ forgejo_cfg_server_key_file: ''
 
 # Absolute path to root directory containing templates and static files.
 #
-# StaticRootPath=AppWorkPath.
+# Upper level of template and static files path. StaticRootPath=AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}' (StaticRootPath).
-forgejo_cfg_server_static_root_path: '{{ forgejo_cfg_work_path }}'
+# Default: '{{ forgejo_cfg_app_work_path }}' (StaticRootPath).
+forgejo_cfg_server_static_root_path: '{{ forgejo_cfg_app_work_path }}'
 
 # Default path for App data.
+#
+# This is the default root path for storing data.
 #
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}'
-forgejo_cfg_server_app_data_path: '{{ forgejo_cfg_work_path }}'
+# Default: '{{ forgejo_cfg_app_work_path }}/data'
+forgejo_cfg_server_app_data_path: '{{ forgejo_cfg_app_work_path }}/data'
 
 # Enable gzip compression for runtime-generated content?
 #
@@ -599,9 +601,9 @@ forgejo_cfg_server_enable_pprof: false
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}/data/tmp/pprof'.
+# Default: '{{ forgejo_cfg_app_work_path }}/data/tmp/pprof'.
 forgejo_cfg_server_pprof_data_path:
-  '{{ forgejo_cfg_work_path }}/data/tmp/pprof'
+  '{{ forgejo_cfg_app_work_path }}/data/tmp/pprof'
 
 # Landing page.
 #

@@ -40,8 +40,8 @@ forgejo_cfg_storage_storage_type: 'local'
 #
 # Requires forgejo_cfg_storage_storage_type=local.
 #
-# Default: '' (forgejo_cfg_server_app_data_path).
-forgejo_cfg_storage_path: ''
+# Default: '{{ forgejo_cfg_server_app_data_path }}'.
+forgejo_cfg_storage_path: '{{ forgejo_cfg_server_app_data_path }}'
 
 ###############################################################################
 # Minio Options

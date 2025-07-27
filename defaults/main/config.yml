@@ -14,15 +14,17 @@
 #   forgejo_cfg_{SECTION}_{HEADER}_{VAR}.
 #
 # Config References:
-#          AppPath: APP_PATH - Absolute path of running binary. Automatically
-#                   detected.
-#      AppWorkPath: APP_WORK_PATH - Working directory (where a majority of data
-#                   should be placed). forgejo_cfg_work_path.
-#      AppDataPath: APP_DATA_PATH - Data directory. forgejo_cfg_data_path.
-#       CustomPath: CUSTOM_PATH - Base directory for custom templates and other
-#                   options. forgejo_cfg_custom_path.
-#       CustomConf: Configuration file. CustomPath/app.ini.
-#   StaticRootPath: AppWorkPath.
+#          AppPath: APP_PATH - /opt/forgejo/forgejo - Absolute path of Forgejo
+#                   binary. Automatically detected, non-configurable.
+#      AppWorkPath: APP_WORK_PATH - forgejo_cfg_app_work_path - Application
+#                   working directory (running application data not including
+#                   repositories).
+#      AppDataPath: APP_DATA_PATH - forgejo_cfg_server_app_data_path - Default
+#                   location for storing application data (not repositories).
+#       CustomPath: CUSTOM_PATH - forgejo_cfg_custom_path - Base directory for
+#                   custom configuration templates and other options.
+#       CustomConf: CustomPath/app.ini - Configuration file.
+#   StaticRootPath: AppWorkPath - Non-configurable.
 #
 # Value Formats:
 #   TIME (time): A duration string is a possibly signed sequence of decimal
@@ -46,6 +48,14 @@
 # * https://pkg.go.dev/time#Duration
 # * https://github.com/dustin/go-humanize
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet/
+
+# Absolute path to Forgejo working directory.
+#
+# Sets AppWorkPath. Application working directory (running application data not
+# including repositories) and general process caching.
+#
+# Default: '/srv/git/forgejo'.
+forgejo_cfg_app_work_path: '/srv/git/forgejo'
 
 # Absolute path to ETC base directory.
 #
@@ -94,17 +104,3 @@ forgejo_cfg_run_user: '{{ forgejo_srv_user }}'
 #
 # Default: 'prod'.
 forgejo_cfg_run_mode: 'prod'
-
-# Absolute path to Forgejo working directory.
-#
-# Sets AppWorkPath. Used for static templates and general process caching.
-#
-# Default: '/opt/forgejo'.
-forgejo_cfg_work_path: '/opt/forgejo'
-
-# Absolute path to Forgejo data directory.
-#
-# Sets AppDataPath. User data stored here.
-#
-# Default: '/srv/git/data'.
-forgejo_cfg_data_path: '/srv/git/data'

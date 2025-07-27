@@ -20,13 +20,11 @@
 #
 # Decision: Use forgejo_cfg_*_path in place of App*Path sections - path
 #     sections by default use additional paths on top of the base path when
-#     resolving relative paths (e.g. forgejo_cfg_data_path and
-#     forgejo_cfg_server_app_data_path are technically different paths in
-#     the default Forgejo config. We standardized those to the same paths here
-#     to prevent many nuanced edge case errors in managing those files, as well
-#     as preventing variable order dependency resolution errors). Use empty
-#     string values for disabled options that should NOT appear in config even
-#     if datatype is not str.
+#     resolving relative paths. We standardized those to the same paths here to
+#     prevent many nuanced edge case errors in managing those files, as well as
+#     preventing variable order dependency resolution errors). Use empty string
+#     values for disabled options that should NOT appear in config even if
+#     datatype is not str.
 #
 # A necessary evil given the limitations of argument_spec:
 # * Strong validation and sanitization of user input.
@@ -73,6 +71,21 @@
       forgejo_config_* -> forgejo_cfg_*
       forgejo_service_* -> forgejo_srv_*
       forgejo_* -> forgejo_srv_*
+
+- name: 'Annotate | migrated variable usage ⚠'
+  when: >
+    hostvars[inventory_hostname] | dict2items |
+    selectattr("key", "match", "forgejo_cfg_federation_algorithms") |
+    length > 0
+  ansible.builtin.debug:
+    msg: |
+      ⚠ forgejo_cfg_federation_algorithms deprecated.
+
+      Please update your settings to use:
+
+        forgejo_cfg_federation_signature_algorithms
+
+      Migration message will be removed in next LTS release.
 
 - name: 'Annotate | sanitize & annotate service defaults'
   ansible.builtin.set_fact:
@@ -288,22 +301,33 @@
 - name: 'Annotate | normalize base paths'
   ansible.builtin.set_fact:
     _forgejo: {
-      custom_path: '{{ forgejo_cfg_custom_path | regex_replace("^\\/", "") }}',
-      work_path: '{{ forgejo_cfg_work_path | regex_replace("^\\/", "") }}',
-      data_path: '{{ forgejo_cfg_data_path | regex_replace("^\\/", "") }}',
+      app_work_path:
+        '{{ forgejo_cfg_app_work_path | regex_replace("^\\/", "") }}',
+      custom_path:
+        '{{ forgejo_cfg_custom_path | regex_replace("^\\/", "") }}',
+      base_data_path:
+        '{{ forgejo_cfg_server_app_data_path | regex_replace("^\\/", "") }}',
     }
+
+- name: 'Annotate | resolve base paths'
+  ansible.builtin.set_fact:
+    _forgejo: '{{
+        _forgejo |
+        combine({
+            "app_ini_path": _forgejo.custom_path ~ "/app.ini",
+            "server_app_data_path":
+            _forgejo.app_work_path ~ "/" ~ _forgejo.base_data_path
+            if not _forgejo.base_data_path.startswith("/") else
+            _forgejo.base_data_path
+        })
+      }}'
 
 - name: 'Annotate | normalize server base paths'
   ansible.builtin.set_fact:
     _forgejo: '{{
         _forgejo |
         combine({
-            "app_ini_path": _forgejo.custom_path ~ "/app.ini",
-            "backup_path": _forgejo.data_path ~ "/backup",
-            "server_app_data_path":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_server_app_data_path
-            if not forgejo_cfg_server_app_data_path.startswith("/") else
-            forgejo_cfg_server_app_data_path | regex_replace("^\\/", "")
+            "backup_path": _forgejo.server_app_data_path ~ "/backup",
         })
       }}'
 
@@ -317,65 +341,96 @@
         _forgejo |
         combine({
             "repository_root":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_repository_root
-            if not forgejo_cfg_repository_root.startswith("/") else
-            forgejo_cfg_repository_root | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~ forgejo_cfg_repository_root |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_repository_root.startswith("/") else
+              forgejo_cfg_repository_root | regex_replace("^\\/", ""),
             "repository_upload_temp_path":
-            _forgejo.server_app_data_path ~ "/" ~ forgejo_cfg_repository_upload_temp_path
-            if not forgejo_cfg_repository_upload_temp_path.startswith("/") else
-            forgejo_cfg_repository_upload_temp_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~
+                forgejo_cfg_repository_upload_temp_path |
+                regex_replace("^\\/", "")
+              if
+              not forgejo_cfg_repository_upload_temp_path.startswith("/")
+              else
+              forgejo_cfg_repository_upload_temp_path |
+              regex_replace("^\\/", ""),
             "repository_local_local_copy_path":
-            _forgejo.server_app_data_path ~ "/" ~ forgejo_cfg_repository_local_local_copy_path
-            if not forgejo_cfg_repository_local_local_copy_path.startswith("/") else
-            forgejo_cfg_repository_local_local_copy_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~
+                forgejo_cfg_repository_local_local_copy_path |
+                regex_replace("^\\/", "")
+              if
+              not forgejo_cfg_repository_local_local_copy_path.startswith("/")
+              else
+              forgejo_cfg_repository_local_local_copy_path |
+              regex_replace("^\\/", ""),
             "server_pprof_data_path":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_server_pprof_data_path
-            if not forgejo_cfg_server_pprof_data_path.startswith("/") else
-            forgejo_cfg_server_pprof_data_path | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~
+                forgejo_cfg_server_pprof_data_path | regex_replace("^\\/", "")
+              if not forgejo_cfg_server_pprof_data_path.startswith("/") else
+              forgejo_cfg_server_pprof_data_path | regex_replace("^\\/", ""),
             "database_path":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_database_path
-            if not forgejo_cfg_database_path.startswith("/") else
-            forgejo_cfg_database_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~ forgejo_cfg_database_path |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_database_path.startswith("/") else
+              forgejo_cfg_database_path | regex_replace("^\\/", ""),
             "indexer_issue_indexer_path":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_indexer_issue_indexer_path
-            if not forgejo_cfg_indexer_issue_indexer_path.startswith("/") else
-            forgejo_cfg_indexer_issue_indexer_path | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~
+                forgejo_cfg_indexer_issue_indexer_path |
+                regex_replace("^\\/", "")
+              if not forgejo_cfg_indexer_issue_indexer_path.startswith("/") else
+              forgejo_cfg_indexer_issue_indexer_path |
+              regex_replace("^\\/", ""),
             "indexer_repo_indexer_path":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_indexer_repo_indexer_path
-            if not forgejo_cfg_indexer_repo_indexer_path.startswith("/") else
-            forgejo_cfg_indexer_repo_indexer_path | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~
+                forgejo_cfg_indexer_repo_indexer_path |
+                regex_replace("^\\/", "")
+              if not forgejo_cfg_indexer_repo_indexer_path.startswith("/") else
+              forgejo_cfg_indexer_repo_indexer_path |
+              regex_replace("^\\/", ""),
             "queue_datadir":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_queue_datadir
-            if not forgejo_cfg_queue_datadir.startswith("/") else
-            forgejo_cfg_queue_datadir | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~ forgejo_cfg_queue_datadir |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_queue_datadir.startswith("/") else
+              forgejo_cfg_queue_datadir | regex_replace("^\\/", ""),
             "server_acme_directory":
-            _forgejo.custom_path ~ "/" ~ forgejo_cfg_server_acme_directory
-            if not forgejo_cfg_server_acme_directory.startswith("/") else
-            forgejo_cfg_server_acme_directory | regex_replace("^\\/", ""),
+              _forgejo.custom_path ~ "/" ~ forgejo_cfg_server_acme_directory |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_server_acme_directory.startswith("/") else
+              forgejo_cfg_server_acme_directory | regex_replace("^\\/", ""),
             "session_provider_config":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_session_provider_config
-            if not forgejo_cfg_session_provider_config.startswith("/") else
-            forgejo_cfg_session_provider_config | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~
+                forgejo_cfg_session_provider_config | regex_replace("^\\/", "")
+              if not forgejo_cfg_session_provider_config.startswith("/") else
+              forgejo_cfg_session_provider_config | regex_replace("^\\/", ""),
             "attachment_path":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_attachment_path
-            if not forgejo_cfg_attachment_path.startswith("/") else
-            forgejo_cfg_attachment_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~
+                forgejo_cfg_attachment_path | regex_replace("^\\/", "")
+              if not forgejo_cfg_attachment_path.startswith("/") else
+              forgejo_cfg_attachment_path | regex_replace("^\\/", ""),
             "log_root_path":
-            _forgejo.work_path ~ "/" ~ forgejo_cfg_log_root_path
-            if not forgejo_cfg_log_root_path.startswith("/") else
-            forgejo_cfg_log_root_path | regex_replace("^\\/", ""),
+              _forgejo.app_work_path ~ "/" ~ forgejo_cfg_log_root_path |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_log_root_path.startswith("/") else
+              forgejo_cfg_log_root_path | regex_replace("^\\/", ""),
             "git_home_path":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_git_home_path
-            if not forgejo_cfg_git_home_path.startswith("/") else
-            forgejo_cfg_git_home_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~ forgejo_cfg_git_home_path |
+              regex_replace("^\\/", "")
+              if not forgejo_cfg_git_home_path.startswith("/") else
+              forgejo_cfg_git_home_path | regex_replace("^\\/", ""),
             "packages_chunked_upload_path":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_packages_chunked_upload_path
-            if not forgejo_cfg_packages_chunked_upload_path.startswith("/") else
-            forgejo_cfg_packages_chunked_upload_path | regex_replace("^\\/", ""),
+              _forgejo.server_app_data_path ~ "/" ~
+                forgejo_cfg_packages_chunked_upload_path |
+                regex_replace("^\\/", "")
+              if
+              not forgejo_cfg_packages_chunked_upload_path.startswith("/")
+              else
+              forgejo_cfg_packages_chunked_upload_path |
+              regex_replace("^\\/", ""),
             "packages_path":
-            _forgejo.data_path ~ "/" ~ forgejo_cfg_packages_path
-            if not forgejo_cfg_packages_path.startswith("/") else
-            forgejo_cfg_packages_path | regex_replace("^\\/", "")
+              _forgejo.server_app_data_path ~ "/" ~
+                forgejo_cfg_packages_path | regex_replace("^\\/", "")
+              if not forgejo_cfg_packages_path.startswith("/") else
+              forgejo_cfg_packages_path | regex_replace("^\\/", "")
           })
       }}'
 
@@ -441,10 +496,10 @@
       deprecated: false,
       order: 5,
     }
-    _forgejo_cfg_work_path: {
+    _forgejo_cfg_app_work_path: {
       section: 'general',
       key: 'WORK_PATH',
-      raw: '{{ _forgejo.work_path | default("/opt/forgejo") }}',
+      raw: '{{ _forgejo.app_work_path | default("/opt/forgejo") }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -455,8 +510,9 @@
       section: 'repository',
       key: 'ROOT',
       raw: '{{
-          _forgejo.repository_root |
-          default(_forgejo.work_path ~ "/gitea-repositories")
+          _forgejo.repository_root
+          if forgejo_cfg_repository_root | length > 0 else
+          _forgejo.app_work_path ~ "/gitea-repositories"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -1028,8 +1084,9 @@
       section: 'repository.upload',
       key: 'TEMP_PATH',
       raw: '{{
-          _forgejo.repository_upload_temp_path |
-          default(_forgejo.server_app_data_path ~ "/data/tmp/uploads")
+          _forgejo.repository_upload_temp_path
+          if forgejo_cfg_repository_upload_temp_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/tmp/uploads"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -1208,8 +1265,9 @@
       section: 'repository.local',
       key: 'LOCAL_COPY_PATH',
       raw: '{{
-          _forgejo.repository_local_local_copy_path |
-          default(_forgejo.server_app_data_path ~ "/tmp/local-repo")
+          _forgejo.repository_local_local_copy_path
+          if forgejo_cfg_repository_local_local_copy_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/tmp/local-repo"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -2453,7 +2511,11 @@
     _forgejo_cfg_server_acme_directory: {
       section: 'server',
       key: 'ACME_DIRECTORY',
-      raw: '{{ _forgejo.server_acme_directory | default("https") }}',
+      raw: '{{
+          _forgejo.server_acme_directory
+          if forgejo_cfg_server_acme_directory | length > 0 else
+          _forgejo.custom_path ~ "/https"
+        }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -2534,8 +2596,9 @@
       section: 'server',
       key: 'PPROF_DATA_PATH',
       raw: '{{
-          _forgejo.server_pprof_data_path |
-          default(_forgejo.work_path ~ "/data/tmp/pprof")
+          _forgejo.server_pprof_data_path
+          if forgejo_cfg_server_pprof_data_path | length > 0 else
+          _forgejo.app_work_path ~ "/data/tmp/pprof"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -2737,14 +2800,12 @@
       section: 'database',
       key: 'PATH',
       raw: '{{
-          _forgejo.database_path | default(_forgejo.data_path ~ "/forgejo.db")
+          _forgejo.database_path
           if forgejo_cfg_database_db_type | lower == "sqlite3" else
           ""
         }}',
-      parsed: '{{
-          _forgejo.database_path |
-          default(_forgejo.data_path ~ "/forgejo.db") | dirname
-        }}',  # Always resolve data path for perms setting regardless of DB.
+      # Always resolve data path for perms setting regardless of DB.
+      parsed: '{{ _forgejo.database_path | dirname }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -2921,8 +2982,9 @@
       section: 'indexer',
       key: 'ISSUE_INDEXER_PATH',
       raw: '{{
-          _forgejo.indexer_issue_indexer_path |
-          default(_forgejo.work_path ~ "/indexers/issues.bleve")
+          _forgejo.indexer_issue_indexer_path
+          if forgejo_cfg_indexer_issue_indexer_path | length > 0 else
+          _forgejo.app_work_path ~ "/indexers/issues.bleve"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -3004,8 +3066,9 @@
       section: 'indexer',
       key: 'REPO_INDEXER_PATH',
       raw: '{{
-          _forgejo.indexer_repo_indexer_path |
-          default(_forgejo.work_path ~ "/indexers/repos.bleve")
+          _forgejo.indexer_repo_indexer_path
+          if forgejo_cfg_indexer_repo_indexer_path | length > 0 else
+          _forgejo.app_work_path ~ "/indexers/repos.bleve"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -3091,8 +3154,9 @@
       section: 'queue',
       key: 'DATADIR',
       raw: '{{
-          _forgejo.queue_datadir |
-          default(_forgejo.data_path ~ "/queues/common")
+          _forgejo.queue_datadir
+          if forgejo_cfg_queue_datadir | length > 0 else
+          _forgejo.server_app_data_path ~ "/queues/common"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -4864,8 +4928,9 @@
       section: 'session',
       key: 'PROVIDER_CONFIG',
       raw: '{{
-          _forgejo.session_provider_config |
-          default(_forgejo.work_path ~ "/data/sessions")
+          _forgejo.session_provider_config
+          if forgejo_cfg_session_provider_config | length > 0 else
+          _forgejo.app_work_path ~ "/data/sessions"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -5131,8 +5196,9 @@
       section: 'attachment',
       key: 'PATH',
       raw: '{{
-          _forgejo.attachment_path |
-          default(_forgejo.data_path ~ "/attachments")
+          _forgejo.attachment_path
+          if forgejo_cfg_attachment_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/attachments"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -5321,8 +5387,11 @@
     _forgejo_cfg_log_root_path: {
       section: 'log',
       key: 'ROOT_PATH',
-      raw:
-        '{{ _forgejo.log_root_path | default(_forgejo.work_path ~ "/log") }}',
+      raw: '{{
+          _forgejo.log_root_path
+          if forgejo_cfg_log_root_path | length > 0 else
+          _forgejo.app_work_path ~ "/log"
+        }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -6770,7 +6839,9 @@
       section: 'git',
       key: 'HOME_PATH',
       raw: '{{
-          _forgejo.git_home_path | default(_forgejo.data_path ~ "/home")
+          _forgejo.git_home_path
+          if forgejo_cfg_git_home_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/home"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -7381,6 +7452,17 @@
       deprecated: false,
       order: 3,
     }
+    _forgejo_cfg_federation_signature_enforced: {
+      section: 'federation',
+      key: 'SIGNATURE_ENFORCED',
+      raw:
+        '{{ forgejo_cfg_federation_signature_enforced | default(true) }}',
+      hint: 'bool',
+      added: '11.0.0',
+      sensitive: false,
+      deprecated: false,
+      order: 4,
+    }
     _forgejo_cfg_federation_algorithms: {
       section: 'federation',
       key: 'ALGORITHMS',
@@ -7391,8 +7473,22 @@
       hint: 'list of str',
       added: '0.0.0',
       sensitive: false,
+      deprecated: true,  # forgejo_cfg_federation_signature_algorithms.
+      order: 5,
+    }
+    _forgejo_cfg_federation_signature_algorithms: {
+      section: 'federation',
+      key: 'SIGNATURE_ALGORITHMS',
+      raw: '{{
+          (forgejo_cfg_federation_signature_algorithms or
+          forgejo_cfg_federation_algorithms) |
+          default(["rsa-sha256", "rsa-sha512", "ed25519"])
+        }}',
+      hint: 'list of str',
+      added: '11.0.0',
+      sensitive: false,
       deprecated: false,
-      order: 4,
+      order: 5,
     }
     _forgejo_cfg_federation_digest_algorithm: {
       section: 'federation',
@@ -7403,7 +7499,7 @@
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
-      order: 5,
+      order: 6,
     }
     _forgejo_cfg_federation_get_headers: {
       section: 'federation',
@@ -7416,7 +7512,7 @@
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
-      order: 6,
+      order: 7,
     }
     _forgejo_cfg_federation_post_headers: {
       section: 'federation',
@@ -7429,7 +7525,7 @@
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
-      order: 7,
+      order: 8,
     }
     _forgejo_cfg_packages_enabled: {
       section: 'packages',
@@ -7445,8 +7541,9 @@
       section: 'packages',
       key: 'CHUNKED_UPLOAD_PATH',
       raw: '{{
-          _forgejo.packages_chunked_upload_path |
-          default(_forgejo.data_path ~ "/tmp/package-upload")
+          _forgejo.packages_chunked_upload_path
+          if forgejo_cfg_packages_chunked_upload_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/tmp/package-upload"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -7709,8 +7806,9 @@
       section: 'packages',
       key: 'PATH',
       raw: '{{
-          _forgejo.packages_path |
-          default(_forgejo.data_path ~ "/packages")
+          _forgejo.packages_path
+          if forgejo_cfg_packages_path | length > 0 else
+          _forgejo.server_app_data_path ~ "/packages"
         }}',
       hint: 'str',
       added: '0.0.0',
@@ -7935,7 +8033,9 @@
     _forgejo_cfg_storage_path: {
       section: 'storage',
       key: 'PATH',
-      raw: '{{ forgejo_cfg_storage_path | default("") }}',
+      raw: '{{
+          forgejo_cfg_storage_path | default(_forgejo.server_app_data_path)
+        }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,

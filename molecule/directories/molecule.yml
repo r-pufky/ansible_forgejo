@@ -46,7 +46,7 @@ provisioner:
         forgejo_cfg_server_lfs_jwt_secret: 'test'
         forgejo_cfg_security_secret_key: 'test'
         forgejo_cfg_repository_root: 'gitea-repositories'
-        forgejo_cfg_repository_upload_temp_path: 'data/tmp/uploads'
+        forgejo_cfg_repository_upload_temp_path: 'tmp/uploads'
         forgejo_cfg_repository_local_local_copy_path: 'tmp/local-repo'
         forgejo_cfg_server_pprof_data_path: 'data/tmp/pprof'
         forgejo_cfg_database_path: 'forgejo.db'

@@ -16,8 +16,8 @@ forgejo_cfg_git_path: ''
 # Special Case:
 #   * Relative paths are anchored to AppDataPath.
 #
-# Default: '{{ forgejo_cfg_data_path }}/home'.
-forgejo_cfg_git_home_path: '{{ forgejo_cfg_data_path }}/home'
+# Default: '{{ forgejo_cfg_server_app_data_path }}/home'.
+forgejo_cfg_git_home_path: '{{ forgejo_cfg_server_app_data_path }}/home'
 
 # Disable highlighting of added and removed changes? Default: False.
 forgejo_cfg_git_disable_diff_highlight: false

@@ -12,13 +12,16 @@ forgejo_cfg_federation_share_user_statistics: true
 # Maximum federation request and response size (MB). Default: 4.
 forgejo_cfg_federation_max_size: 4
 
+# Enable validation of HTTP signatures? Default: True.
+forgejo_cfg_federation_signature_enforced: true
+
 # List HTTP signature algorithms.
 #
 # Default:
 #  - 'rsa-sha256'
 #  - 'rsa-sha512'
 #  - 'ed25519'
-forgejo_cfg_federation_algorithms:
+forgejo_cfg_federation_signature_algorithms:
   - 'rsa-sha256'
   - 'rsa-sha512'
   - 'ed25519'

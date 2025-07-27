@@ -12,6 +12,8 @@
 # New Forgejo options must be manually added to the template and role
 # default templates.
 #
+# Always execute forgejo shell commands as forgejo_srv_user.
+#
 # Reference:
 # * https://forgejo.org/docs/latest/admin/installation-binary/
 # * https://codeberg.org/forgejo/forgejo/src/branch/forgejo/contrib/systemd/forgejo.service
@@ -45,7 +47,7 @@
     state: 'directory'
   loop:
     - '{{ _forgejo_cfg_mailer_client_cert_file.role | dirname }}'  # Mail dir.
-    - '{{ _forgejo_cfg_work_path.raw }}'
+    - '{{ _forgejo_cfg_app_work_path.raw }}'
     - '{{ _forgejo_cfg_repository_upload_temp_path.raw }}'
     - '{{ _forgejo_cfg_repository_local_local_copy_path.raw }}'
     - '{{ _forgejo_cfg_server_app_data_path.parsed }}'  # JWT dir.
@@ -73,7 +75,7 @@
       omit
     }}'
   loop:
-    - '{{ _forgejo.data_path }}'
+    - '{{ _forgejo.server_app_data_path }}'
     - '{{ _forgejo_cfg_repository_root.raw }}'
     - '{{ _forgejo_cfg_database_path.parsed }}'
     - '{{ _forgejo_cfg_queue_datadir.raw }}'
@@ -281,7 +283,7 @@
               {{ forgejo_role_repo_extract_symlink }} web
               --config "{{ _forgejo.app_ini_path }}"
               --custom-path "{{ _forgejo.custom_path }}"
-              --work-path "{{ _forgejo_cfg_work_path.raw }}"
+              --work-path "{{ _forgejo_cfg_app_work_path.raw }}"
           runtime_max_sec: '{{
               "1d"
               if _forgejo_srv_restart_daily_enable.raw else
@@ -291,7 +293,7 @@
         exec:
           user: '{{ _forgejo_srv_user.raw }}'
           group: '{{ _forgejo_srv_group.raw }}'
-          working_directory: '{{ _forgejo_cfg_work_path.raw }}'
+          working_directory: '{{ _forgejo_cfg_app_work_path.raw }}'
           environment:
             - var: 'USER'
               value: '{{ _forgejo_srv_user.raw }}'

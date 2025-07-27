@@ -27,11 +27,11 @@
           assert data locations are not in install paths
         test_role: 'r_pufky.srv.forgejo'
         test_fail_message:
-          'forgejo_cfg_work_path="/tmp/test" did not trigger assertion.'
+          'forgejo_cfg_app_work_path="/tmp/test" did not trigger assertion.'
         forgejo_cfg_security_secret_key: '!#@FDEWREWR&*('
         forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_cfg_data_path: '/tmp/test'
-        forgejo_cfg_work_path: '/tmp/test'
+        forgejo_cfg_server_app_data_path: '/tmp/test'
+        forgejo_cfg_app_work_path: '/tmp/test'
         forgejo_cfg_custom_path: '/tmp/test2'
         forgejo_role_repo_extract_symlink: '/tmp/test2'
 
@@ -50,8 +50,8 @@
           'forgejo_cfg_custom_path="/tmp/test" did not trigger assertion.'
         forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
         forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_cfg_data_path: '/tmp/test'
-        forgejo_cfg_work_path: '/tmp/test2'
+        forgejo_cfg_server_app_data_path: '/tmp/test'
+        forgejo_cfg_app_work_path: '/tmp/test2'
         forgejo_cfg_custom_path: '/tmp/test'
         forgejo_role_repo_extract_symlink: '/tmp/test2'
 
@@ -71,8 +71,8 @@
           did not trigger assertion.
         forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
         forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_cfg_data_path: '/tmp/test'
-        forgejo_cfg_work_path: '/tmp/test2'
+        forgejo_cfg_server_app_data_path: '/tmp/test'
+        forgejo_cfg_app_work_path: '/tmp/test2'
         forgejo_cfg_custom_path: '/tmp/test2'
         forgejo_role_repo_extract_symlink: '/tmp/test'
 

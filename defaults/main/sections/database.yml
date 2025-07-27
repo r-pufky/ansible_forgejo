@@ -75,8 +75,8 @@ forgejo_cfg_database_ssl_mode: false
 # Special Case:
 #   * Relative paths are anchored to AppDataPath.
 #
-# Default: '{{ forgejo_cfg_data_path }}/forgejo.db'.
-forgejo_cfg_database_path: '{{ forgejo_cfg_data_path }}/forgejo.db'
+# Default: '{{ forgejo_cfg_server_app_data_path }}/forgejo.db'.
+forgejo_cfg_database_path: '{{ forgejo_cfg_server_app_data_path }}/forgejo.db'
 
 # SQLite query timeout (seconds). Default: 500.
 forgejo_cfg_database_sqlite_timeout: 500

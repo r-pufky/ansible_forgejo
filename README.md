@@ -17,8 +17,17 @@ All ports and protocols have been defined for the role.
 [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv) collection.
 
 ## Example Playbook
-Read defaults documentation. Migration from other Gitea/Forgejo roles should be
-re-evaluated and **not** blindly copied.
+**STOP.**
+
+Read defaults documentation.
+
+Gitea migrations should be done **manually**: Gitea versions > `1.22` may not
+be migratable. Only Forgejo `10.0.3` is guaranteed to safely migrate from Gitea
+up to `1.22`.
+
+This role explicitly manages each configuration parameter, and popular Gitea
+roles will need to be re-evaulated before migration. ALWAYS BACKUP. See manual
+[migration instructions](https://forgejo.org/docs/latest/admin/upgrade/from-gitea/).
 
 Install 11.0.3 release of Forgejo; ensuring media files have proper
 permissions. Version (and databases) will be migrated and updated on new
@@ -38,8 +47,7 @@ releases. Media permissions will be set to ensure Forgejo can read files.
         email: 'admin@example.com'
         admin: true
     forgejo_cfg_custom_path: '/etc/forgejo'
-    forgejo_cfg_work_path: '/opt/forgejo'
-    forgejo_cfg_data_path: '/srv/git/data'
+    forgejo_cfg_app_work_path: '/srv/git/forgejo'
     forgejo_cfg_security_install_lock: true
 ```
 

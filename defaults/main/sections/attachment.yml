@@ -82,8 +82,9 @@ forgejo_cfg_attachment_storage_type: 'local'
 # Special Case:
 #   * Relative paths anchored to AppDataPath.
 #
-# Default: '{{ forgejo_cfg_data_path }}/attachments'.
-forgejo_cfg_attachment_path: '{{ forgejo_cfg_data_path }}/attachments'
+# Default: '{{ forgejo_cfg_server_app_data_path }}/attachments'.
+forgejo_cfg_attachment_path:
+  '{{ forgejo_cfg_server_app_data_path }}/attachments'
 
 ###############################################################################
 # Minio Storage Options

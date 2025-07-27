@@ -9,9 +9,9 @@
 # Special Case:
 #   * Relative paths anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}/gitea-repositories'.
+# Default: '{{ forgejo_cfg_app_work_path }}/gitea-repositories'.
 forgejo_cfg_repository_root:
-  '{{ forgejo_cfg_work_path }}/gitea-repositories'
+  '{{ forgejo_cfg_app_work_path }}/gitea-repositories'
 
 # Script type this server supports.
 #
@@ -310,9 +310,9 @@ forgejo_cfg_repository_upload_enabled: true
 # Special Case:
 #   * Relative paths are anchored to AppDataPath.
 #
-# Defaults: '{{ forgejo_cfg_server_app_data_path }}/data/tmp/uploads'.
+# Defaults: '{{ forgejo_cfg_server_app_data_path }}/tmp/uploads'.
 forgejo_cfg_repository_upload_temp_path:
-  '{{ forgejo_cfg_server_app_data_path }}/data/tmp/uploads'
+  '{{ forgejo_cfg_server_app_data_path }}/tmp/uploads'
 
 # List of allowed file extensions.
 #

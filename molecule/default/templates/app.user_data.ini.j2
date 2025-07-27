@@ -1,9 +1,9 @@
 APP_NAME = Forgejo: Beyond coding. We Forge.
 RUN_USER = git
-WORK_PATH = /opt/forgejo
+WORK_PATH = /srv/git/forgejo
 
 [repository]
-ROOT = /opt/forgejo/gitea-repositories
+ROOT = /srv/git/forgejo/gitea-repositories
 SCRIPT_TYPE = bash
 DETECTED_CHARSETS_ORDER = UTF-8,UTF-16BE,UTF-16LE,UTF-32BE,UTF-32LE,ISO-8859,windows-1252,ISO-8859,windows-1250,ISO-8859,ISO-8859,ISO-8859,windows-1253,ISO-8859,windows-1255,ISO-8859,windows-1251,windows-1256,KOI8-R,ISO-8859,windows-1254,Shift_JIS,GB18030,EUC-JP,EUC-KR,Big5,ISO-2022,ISO-2022,ISO-2022,IBM424_rtl,IBM424_ltr,IBM420_rtl,IBM420_ltr
 FORCE_PRIVATE = false
@@ -55,7 +55,7 @@ MAX_PINNED = 3
 
 [repository.upload]
 ENABLED = true
-TEMP_PATH = /opt/forgejo/data/tmp/uploads
+TEMP_PATH = /srv/git/forgejo/data/tmp/uploads
 FILE_MAX_SIZE = 50
 MAX_FILES = 5
 
@@ -72,7 +72,7 @@ WIKI = never
 MERGES = pubkey,twofa,basesigned,commitssigned
 
 [repository.local]
-LOCAL_COPY_PATH = /opt/forgejo/tmp/local-repo
+LOCAL_COPY_PATH = /srv/git/forgejo/data/tmp/local-repo
 
 [repository.mimetype_mapping]
 .apk = application/vnd.android.package-archive
@@ -193,11 +193,11 @@ OFFLINE_MODE = true
 ENABLE_ACME = false
 ACME_ACCEPTTOS = false
 ACME_DIRECTORY = /etc/forgejo/https
-STATIC_ROOT_PATH = /opt/forgejo
-APP_DATA_PATH = /opt/forgejo
+STATIC_ROOT_PATH = /srv/git/forgejo
+APP_DATA_PATH = /srv/git/forgejo/data
 ENABLE_GZIP = false
 ENABLE_PPROF = false
-PPROF_DATA_PATH = /opt/forgejo/data/tmp/pprof
+PPROF_DATA_PATH = /srv/git/forgejo/data/tmp/pprof
 LANDING_PAGE = home
 LFS_START_SERVER = false
 LFS_JWT_SECRET = {{ _test_lfs_jwt_secret }}
@@ -212,7 +212,7 @@ STATIC_CACHE_TIME = 6h
 
 [database]
 DB_TYPE = sqlite3
-PATH = /srv/git/data/forgejo.db
+PATH = /srv/git/forgejo/data/forgejo.db
 SQLITE_TIMEOUT = 500
 ITERATE_BUFFER_SIZE = 50
 LOG_SQL = false
@@ -227,20 +227,20 @@ SLOW_QUERY_THRESHOLD = 5s
 
 [indexer]
 ISSUE_INDEXER_TYPE = bleve
-ISSUE_INDEXER_PATH = /opt/forgejo/indexers/issues.bleve
+ISSUE_INDEXER_PATH = /srv/git/forgejo/indexers/issues.bleve
 ISSUE_INDEXER_NAME = gitea_issues
 STARTUP_TIMEOUT = 30s
 REPO_INDEXER_ENABLED = false
 REPO_INDEXER_REPO_TYPES = sources,forks,mirrors,templates
 REPO_INDEXER_TYPE = bleve
-REPO_INDEXER_PATH = /opt/forgejo/indexers/repos.bleve
+REPO_INDEXER_PATH = /srv/git/forgejo/indexers/repos.bleve
 REPO_INDEXER_NAME = gitea_codes
 REPO_INDEXER_EXCLUDE_VENDORED = true
 MAX_FILE_SIZE = 1048576
 
 [queue]
 TYPE = redis
-DATADIR = /srv/git/data/queues/common
+DATADIR = /srv/git/forgejo/data/queues/common
 LENGTH = 100000
 BATCH_LENGTH = 20
 CONN_STR = redis://127.0.0.1:6379/0
@@ -397,7 +397,7 @@ COMMITS_COUNT = 1000
 
 [session]
 PROVIDER = memory
-PROVIDER_CONFIG = /opt/forgejo/data/sessions
+PROVIDER_CONFIG = /srv/git/forgejo/data/sessions
 COOKIE_NAME = i_like_gitea
 COOKIE_SECURE = true
 GC_INTERVAL_TIME = 86400
@@ -426,14 +426,14 @@ ALLOWED_TYPES = .avif,.cpuprofile,.csv,.dmp,.docx,.fodg,.fodp,.fods,.fodt,.gif,.
 MAX_SIZE = 2048
 MAX_FILES = 5
 STORAGE_TYPE = local
-PATH = /srv/git/data/attachments
+PATH = /srv/git/forgejo/data/attachments
 
 [lfs_client]
 BATCH_SIZE = 20
 BATCH_OPERATION_CONCURRENCY = 8
 
 [log]
-ROOT_PATH = /opt/forgejo/log
+ROOT_PATH = /srv/git/forgejo/log
 MODE = console
 LEVEL = Info
 STACKTRACE_LEVEL = None
@@ -617,7 +617,7 @@ NOTICE_ON_SUCCESS = false
 SCHEDULE = @annually
 
 [git]
-HOME_PATH = /srv/git/data/home
+HOME_PATH = /srv/git/forgejo/data/home
 DISABLE_DIFF_HIGHLIGHT = false
 MAX_GIT_DIFF_LINES = 1000
 MAX_GIT_DIFF_LINE_CHARACTERS = 5000
@@ -658,7 +658,7 @@ DEFAULT_MAX_BLOB_SIZE = 10485760
 [oauth2]
 ENABLED = true
 JWT_SIGNING_ALGORITHM = RS256
-JWT_SIGNING_PRIVATE_KEY_FILE = /opt/forgejo/jwt/private.pem
+JWT_SIGNING_PRIVATE_KEY_FILE = /srv/git/forgejo/data/jwt/private.pem
 JWT_SECRET = {{ _test_lfs_jwt_secret }}
 ACCESS_TOKEN_EXPIRATION_TIME = 3600
 REFRESH_TOKEN_EXPIRATION_TIME = 730
@@ -711,14 +711,15 @@ SKIP_TLS_VERIFY = false
 ENABLED = false
 SHARE_USER_STATISTICS = true
 MAX_SIZE = 4
-ALGORITHMS = rsa-sha256,rsa-sha512,ed25519
+SIGNATURE_ENFORCED = true
+SIGNATURE_ALGORITHMS = rsa-sha256,rsa-sha512,ed25519
 DIGEST_ALGORITHM = SHA-256
 GET_HEADERS = (request-target),Date
 POST_HEADERS = (request-target),Date,Digest
 
 [packages]
 ENABLED = true
-CHUNKED_UPLOAD_PATH = /srv/git/data/tmp/package-upload
+CHUNKED_UPLOAD_PATH = /srv/git/forgejo/data/tmp/package-upload
 LIMIT_TOTAL_OWNER_COUNT = -1
 LIMIT_TOTAL_OWNER_SIZE = -1
 LIMIT_SIZE_ALPINE = -1
@@ -744,7 +745,7 @@ LIMIT_SIZE_SWIFT = -1
 LIMIT_SIZE_VAGRANT = -1
 DEFAULT_RPM_SIGN_ENABLED = false
 STORAGE_TYPE = local
-PATH = /srv/git/data/packages
+PATH = /srv/git/forgejo/data/packages
 
 [mirror]
 ENABLED = true
@@ -755,6 +756,7 @@ MIN_INTERVAL = 10m
 
 [storage]
 STORAGE_TYPE = local
+PATH = /srv/git/forgejo/data
 
 [actions.artifacts]
 MINIO_BASE_PATH = repo-archive/

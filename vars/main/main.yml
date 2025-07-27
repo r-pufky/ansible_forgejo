@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Forgejo Role Options
 ###############################################################################
@@ -15,6 +16,10 @@
 #         <(curl -s https://forgejo.org/docs/v11.0/admin/config-cheat-sheet/)
 #         <(curl -s https://forgejo.org/docs/v10.0/admin/config-cheat-sheet/)
 #
+#       meld \
+#         <(curl -s https://codeberg.org/forgejo/forgejo/raw/branch/v11.0/forgejo/custom/conf/app.example.ini)
+#         <(curl -s https://codeberg.org/forgejo/forgejo/raw/branch/v10.0/forgejo/custom/conf/app.example.ini)
+#
 #   * Use defaults/ to remove any changed/deprecated variables.
 #   * Hidden variables may be discovered after running the service and shutting
 #     down and checking app.ini for differences.
@@ -22,6 +27,7 @@
 # * Update tests for any changes.
 # * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
 # * Tag with MAJOR.MINOR version, with PATCH representing role change.
+# yamllint enable rule:line-length
 
 # Last time Forgejo options were validated against a default configuration.
 forgejo_role_validate_date: '2025-07-21'

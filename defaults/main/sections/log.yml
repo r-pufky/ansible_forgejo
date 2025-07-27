@@ -10,8 +10,8 @@
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.
 #
-# Default: '{{ forgejo_cfg_work_path }}/log' (AppWorkPath/log).
-forgejo_cfg_log_root_path: '{{ forgejo_cfg_work_path }}/log'
+# Default: '{{ forgejo_cfg_app_work_path }}/log' (AppWorkPath/log).
+forgejo_cfg_log_root_path: '{{ forgejo_cfg_app_work_path }}/log'
 
 # List of main Logging modes.
 #

@@ -5,6 +5,8 @@
 # Prepare system for install by creating user/group for service, and
 # enumerating existing SSH keys if used. Stop services if they exist.
 #
+# Backup running configuration if enabled before applying changes.
+#
 # Generates:
 #   _forgejo_existing_service: dict - Systemd result object from service stop.
 
@@ -28,20 +30,21 @@
   ansible.builtin.set_fact:
     _forgejo_srv_user: '{{
         _forgejo_srv_user |
-        combine({"parsed": _forgejo_srv_user_query.uid,
-                 "role": _forgejo_srv_user_query.home})
+        combine({"role_uid": _forgejo_srv_user_query.uid,
+                 "role_home": _forgejo_srv_user_query.home,
+                 "role_ssh": _forgejo_srv_user_query.home ~ "/.ssh"})
       }}'
     _forgejo_srv_group: '{{
         _forgejo_srv_group |
-        combine({"parsed": _forgejo_srv_user_query.group})
+        combine({"role_gid": _forgejo_srv_user_query.group})
       }}'
 
 - name: 'Prep | update trusted user home directory'
   ansible.builtin.set_fact:
     _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename: '{{
         _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename |
-        combine({"parsed":
-            _forgejo_srv_user.role ~ "/.ssh/ca_trust_chain_root.pem"
+        combine({"role_dest":
+            _forgejo_srv_user.role_home ~ "/.ssh/ca_trust_chain_root.pem"
             if
             _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw |
               length > 0
@@ -56,36 +59,45 @@
     - name: 'Prep | enumerate server host keys | query'
       delegate_to: 'localhost'
       ansible.builtin.find:
-        paths: '{{ _forgejo_cfg_server_ssh_server_host_keys.raw }}'
+        paths: '{{ _forgejo_cfg_server_ssh_server_host_keys.role_src }}'
         excludes: ['*.pub']
         follow: true
         recurse: true
         file_type: 'file'
       register: _forgejo_source_ssh_keys
 
-    - name: 'Prep | enumerated server host keys | normalize paths'
+    - name: 'Prep | enumerated server host keys | parse relative key paths'
       ansible.builtin.set_fact:
         _forgejo_parsed_ssh_keys: '{{
             _forgejo_parsed_ssh_keys | default([]) +
             [item.path |
-             replace(_forgejo_cfg_server_ssh_server_host_keys.raw, "")]
+             replace(_forgejo_cfg_server_ssh_server_host_keys.role_src, "")]
           }}'
       loop: '{{ _forgejo_source_ssh_keys.files }}'
       loop_control:
         label: '{{ item.path }}'
 
-    - name: 'Prep | enumerated server host keys | merge keys'
+    - name: 'Prep | enumerated server host keys | normalize key paths'
       ansible.builtin.set_fact:
         _forgejo_cfg_server_ssh_server_host_keys: '{{
             _forgejo_cfg_server_ssh_server_host_keys |
-            combine({"parsed":
-              _forgejo_cfg_server_ssh_server_host_keys.parsed | default([]) +
-              [_forgejo_cfg_server_ssh_server_host_keys.role ~ "/" ~ item]
+            combine({"data":
+              _forgejo_cfg_server_ssh_server_host_keys.data +
+              [_forgejo_cfg_server_ssh_server_host_keys.role_dest_dir ~ "/" ~
+               item]
             })
           }}'
       loop: '{{ _forgejo_parsed_ssh_keys | default([]) | sort }}'
 
-- name: 'Config | stop services'
+    - name: 'Prep | enumerated server host keys | sanitize key list'
+      ansible.builtin.set_fact:
+        _forgejo_cfg_server_ssh_server_host_keys: '{{
+            _forgejo_cfg_server_ssh_server_host_keys |
+            combine({"data":
+              _forgejo_cfg_server_ssh_server_host_keys.data | join(",")})
+          }}'
+
+- name: 'Prep | stop services'
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: 'stopped'
@@ -93,3 +105,20 @@
   register: _forgejo_existing_service
   loop:
     - 'forgejo.service'
+
+# Directory created and service running from previous role run.
+- name: 'Prep | backup existing installation'
+  when: >
+    _forgejo_srv_backup_dump.raw and
+    _forgejo_existing_service.changed
+  ansible.builtin.command:
+    argv:
+      - '{{ forgejo_role_repo_extract_symlink }}'
+      - 'dump'
+      - '{{ _forgejo_cfg_custom_path.role_args }}'
+      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
+      - '{{ _forgejo_srv_backup_path.role_args }}'
+    chdir: '{{ _forgejo_srv_backup_path.raw }}'
+  changed_when: true
+  become: true
+  become_user: '{{ _forgejo_srv_user.raw }}'

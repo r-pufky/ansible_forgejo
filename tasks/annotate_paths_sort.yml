@@ -1,0 +1,31 @@
+---
+###############################################################################
+# Annotate Sort Directories
+###############################################################################
+# Sort directories requiring user permissions to modify based on defined root
+# directories. Mounted directories potentially require user permissions to set.
+#
+# Jinja2 wart: startswith cannot be used in map,select(attr),reject(attr)
+#              filters and must be iterated manually to generate the set of
+#              nested directories. This is compounded by that list of
+#              directories being dynamic from configuration.
+#
+# Args:
+#   dir: str - User data directory to check.
+#
+# Generates:
+#   _forgejo_mounted_dirs - list of str (dirty) mounted data directories.
+#   _forgejo_local_dirs - list of str (dirty) local data directories.
+
+- name: 'Annotate | sort directories | detect included {{ dir }}'
+  ansible.builtin.set_fact:
+    _forgejo_mounted_dirs: '{{
+        _forgejo_mounted_dirs | default([]) +
+            [dir if dir.startswith(item) else ""]
+      }}'
+  loop: '{{ _forgejo_srv_user_data_manage_enable.role_mounted_dirs }}'
+
+- name: 'Annotate | sort directories | detect excluded {{ dir }}'
+  when: dir not in _forgejo_mounted_dirs | default([])
+  ansible.builtin.set_fact:
+    _forgejo_local_dirs: '{{ _forgejo_local_dirs | default([]) + [dir] }}'

@@ -70,7 +70,7 @@ forgejo_cfg_mailer_use_client_cert: false
 # Requires forgejo_cfg_mailer_use_client_cert=true.
 #
 # Sourced from ansible controller; automatically placed in
-# CustomPath/mailer/cert.pem with correct permissions.
+# AppWorkPath/mailer/cert.pem with correct permissions.
 #
 # forgejo_cfg_mailer_client_cert_file:
 #   'host_vars/forgejo.example.com/data/mail_cert.pem'
@@ -83,7 +83,7 @@ forgejo_cfg_mailer_client_cert_file: ''
 # Requires forgejo_cfg_mailer_use_client_cert=true.
 #
 # Sourced from ansible controller; automatically placed in
-# CustomPath/mailer/cert.key with correct permissions.
+# AppWorkPath/mailer/cert.key with correct permissions.
 #
 # forgejo_cfg_mailer_client_cert_file:
 #   'host_vars/forgejo.example.com/data/mail_key.pem'

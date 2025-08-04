@@ -37,7 +37,8 @@ forgejo_cfg_queue_type: 'redis'
 #   * Individual queues will default to 'queues/common' (shared queue).
 #
 # Default: '{{ forgejo_cfg_server_app_data_path }}/queues/common'.
-forgejo_cfg_queue_datadir: '{{ forgejo_cfg_server_app_data_path }}/queues/common'
+forgejo_cfg_queue_datadir:
+  '{{ forgejo_cfg_server_app_data_path }}/queues/common'
 
 # Default queue length before a channel queue will block. Default: 100000.
 forgejo_cfg_queue_length: 100000

@@ -2,6 +2,7 @@
 ###############################################################################
 # Attachment [attachment]
 ###############################################################################
+# Set storage options in forgejo_cfg_storage_sub_system (storage.yml).
 
 # Enable issue and pull request attachments? Default: True.
 forgejo_cfg_attachment_enabled: true
@@ -59,92 +60,3 @@ forgejo_cfg_attachment_max_size: 2048
 
 # Max files per upload. Default: 5.
 forgejo_cfg_attachment_max_files: 5
-
-###############################################################################
-# Storage Options
-###############################################################################
-# Reference:
-# * https://forgejo.org/docs/latest/admin/storage/
-
-# Attachment storage type.
-#
-# Values:
-#   local: Local disk (default).
-#   minio: S3 compatible object storage service.
-#
-# Default: 'local'.
-forgejo_cfg_attachment_storage_type: 'local'
-
-# Attachment path.
-#
-# Requires forgejo_cfg_attachment_storage_type=local.
-#
-# Special Case:
-#   * Relative paths anchored to AppDataPath.
-#
-# Default: '{{ forgejo_cfg_server_app_data_path }}/attachments'.
-forgejo_cfg_attachment_path:
-  '{{ forgejo_cfg_server_app_data_path }}/attachments'
-
-###############################################################################
-# Minio Storage Options
-###############################################################################
-# All options require forgejo_cfg_attachment_storage_type=minio.
-#
-# Reference:
-# * https://forgejo.org/docs/latest/admin/storage/#using-minio-1
-
-# Enable redirect to authenticated URL to serve files directly? Default: False.
-forgejo_cfg_attachment_serve_direct: false
-
-# Minio endpoint. Default: 'localhost:9000'.
-forgejo_cfg_attachment_minio_endpoint: 'localhost:9000'
-
-# Minio accessKeyID.
-#
-# Values:
-#   '': Search for credentials in known environment variables
-#       (MINIO_ACCESS_KEY_ID, AWS_ACCESS_KEY_ID), credentials files
-#       (~/.mc/config.json, ~/.aws/credentials), and EC2 instance metadata
-#       (default).
-#
-# Default: '' (search).
-forgejo_cfg_attachment_minio_access_key_id: ''
-
-# Minio secretAccessKey. Default: ''.
-forgejo_cfg_attachment_minio_secret_access_key: ''
-
-# Minio attachment storage bucket. Default: 'forgejo'.
-forgejo_cfg_attachment_minio_bucket: 'forgejo'
-
-# Minio URL storage bucket lookup.
-#
-# Values:
-#   auto: Automatic.
-#    dns: Use DNS.
-#   path: Use path.
-#     '': auto (default).
-#
-# Default: '' (auto).
-forgejo_cfg_attachment_minio_bucket_lookup: ''
-
-# Minio create bucket location. Default: 'us-east-1'.
-forgejo_cfg_attachment_minio_location: 'us-east-1'
-
-# Minio bucket base path. Default: 'attachments/'.
-forgejo_cfg_attachment_minio_base_path: 'attachments/'
-
-# Enable Minio SSL? Default: False.
-forgejo_cfg_attachment_minio_use_ssl: false
-
-# Minio skip SSL verification? Default: False.
-forgejo_cfg_attachment_minio_insecure_skip_verify: false
-
-# Minio checksum algorithm.
-#
-# Values:
-#   default: MinIO or AWS S3.
-#       md5: Cloudflare or Backblaze.
-#
-# Default: 'default'.
-forgejo_cfg_attachment_minio_checksum_algorithm: 'default'

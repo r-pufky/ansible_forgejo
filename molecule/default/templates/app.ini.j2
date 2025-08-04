@@ -1,0 +1,18 @@
+WORK_PATH = /srv/forgejo
+
+[repository]
+ROOT = /srv/forgejo/gitea-repositories
+
+[server]
+LFS_JWT_SECRET = {{ _test_lfs_jwt_secret }}
+
+[database]
+DB_TYPE = sqlite3
+
+[security]
+INSTALL_LOCK = true
+SECRET_KEY = {{ _test_secret_key }}
+INTERNAL_TOKEN = {{ _test_security_internal_token }}
+
+[oauth2]
+JWT_SECRET = {{ _test_lfs_jwt_secret }}

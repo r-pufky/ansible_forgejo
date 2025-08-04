@@ -17,7 +17,6 @@
         - 'DB_TYPE = postgres'
         - 'HOST = 127.0.0.1'
         - 'NAME = forgejo'
-        - 'USER = root'
         - 'PASSWD = `test`'
 
 - name: 'Verify'
@@ -38,5 +37,4 @@
         - 'DB_TYPE = mysql'
         - 'HOST = 127.0.0.1'
         - 'NAME = forgejo'
-        - 'USER = root'
         - 'PASSWD = `test`'

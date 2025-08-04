@@ -7,8 +7,7 @@
 # Instead of copy/diff pattern, use template/remote copy/diff pattern.
 
 - name: 'Verify'
-  hosts:
-    - 'forgejo-debian-12-default'
+  hosts: 'all'
   gather_facts: false
   tasks:
     - name: 'Verify | app.ini'
@@ -54,19 +53,24 @@
       become_user: 'git'
       register: _forgejo_srv_user_list
 
-- name: 'Verify'
-  hosts: 'forgejo-debian-12-user_data'
-  gather_facts: false
-  tasks:
-    - name: 'Verify | app.ini'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'remote_file_diff.yml'
-      vars:
-        test_name: 'Verify | app.ini'
-        test_remote_src: '/tmp/app.ini'
-        test_file: '/etc/forgejo/app.ini'
-        test_owner: 'git'
-        test_group: 'git'
-        test_mode: '0640'
-        test_diff: true
+    - name: 'Verify | query admin_test login success'
+      ansible.builtin.command:
+        argv:
+          - 'curl'
+          - '-X'
+          - 'POST'
+          - '-F'
+          - 'user_name=admin_test'
+          - '-F'
+          - 'password=adminadmin'
+          - 'http://127.0.0.1:3000/user/login'
+      changed_when: false
+      register: _test_forgejo_login
+
+    - name: 'Verify | assert local user login success'
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - _test_forgejo_login.stdout is not
+            search("Username or password is incorrect.")
+        fail_msg: '✘ admin_test@127.0.0.1 should successfully login.'

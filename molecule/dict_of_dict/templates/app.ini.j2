@@ -1,0 +1,97 @@
+WORK_PATH = /srv/forgejo
+
+[repository]
+ROOT = /srv/forgejo/gitea-repositories
+
+[server]
+LFS_JWT_SECRET = {{ _test_lfs_jwt_secret }}
+
+[database]
+DB_TYPE = sqlite3
+
+[queue.mail]
+SET_NAME = _mail
+
+[security]
+INSTALL_LOCK = true
+SECRET_KEY = {{ _test_secret_key }}
+INTERNAL_TOKEN = {{ _test_security_internal_token }}
+
+[mailer.override_header]
+Content-Type = text/html; charset=utf-8
+Reply-To = test@example.com, test2@example.com
+
+[log.conn]
+PROTOCOL = tcp
+RECONNECT = false
+RECONNECT_ON_MSG = false
+
+[log.console]
+COLORIZE = false
+FLAGS = journald
+LEVEL = Info
+MODE = console
+
+[log.file]
+COMPRESS = true
+COMPRESSION_LEVEL = -1
+DAILY_ROTATE = true
+LOG_ROTATE = true
+MAX_DAYS = 7
+MAX_SIZE_SHIFT = 28
+
+[oauth2]
+JWT_SECRET = {{ _test_lfs_jwt_secret }}
+
+[i18n]
+LANGS = en-US,zh-CN
+NAMES = English,简体中文
+
+[markup.asciidoc]
+ENABLED = true
+FILE_EXTENSIONS = .adoc,.asciidoc
+IS_INPUT_FILE = false
+NEED_POSTPROCESS = true
+RENDER_COMMAND = asciidoctor --embedded --safe-mode=secure --out-file=- -
+
+[markup.sanitizer.1]
+ALLOW_ATTR = class
+ELEMENT = span
+REGEXP = (info|warning|error)
+
+[markup.sanitizer.asciidoc]
+ENABLED = false
+FILE_EXTENSIONS = .adoc,.asciidoc
+IS_INPUT_FILE = false
+RENDER_COMMAND = asciidoc --out-file=- -
+RENDER_CONTENT_MODE = sanitized
+
+[markup.sanitizer.asciidoc.rule-1]
+ENABLED = true
+
+[highlight.mapping]
+.toml = ini
+
+[actions.artifacts]
+MINIO_BASE_PATH = repo-archive/
+MINIO_BUCKET = forgejo
+MINIO_CHECKSUM_ALGORITHM = default
+MINIO_ENDPOINT = localhost:9000
+MINIO_INSECURE_SKIP_VERIFY = false
+MINIO_LOCATION = us-east-1
+MINIO_USE_SSL = false
+SERVE_DIRECT = false
+STORAGE_TYPE = minio
+
+[repo-archive]
+PATH = repo-archive
+STORAGE_TYPE = local
+
+[storage.my_minio]
+MINIO_BASE_PATH = repo-archive/
+MINIO_BUCKET = forgejo
+MINIO_ENDPOINT = localhost:9000
+MINIO_INSECURE_SKIP_VERIFY = false
+MINIO_LOCATION = us-east-1
+MINIO_USE_SSL = false
+STORAGE_TYPE = minio

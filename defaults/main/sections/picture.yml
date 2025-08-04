@@ -2,7 +2,7 @@
 ###############################################################################
 # Picture [picture]
 ###############################################################################
-# Configure storage options in forgejo_cfg_storage_sub_system.
+# Set storage options in forgejo_cfg_storage_sub_system (storage.yml).
 
 # Missing repository avatar handling.
 #

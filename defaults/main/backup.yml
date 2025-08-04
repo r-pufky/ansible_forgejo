@@ -1,0 +1,40 @@
+---
+###############################################################################
+# Forgejo Backup Configuration
+###############################################################################
+
+# Enable backup dump of database and config?
+#
+# If the service is running dump a backup of the existing configuration and
+# database before performing any operations. This is executed before installing
+# a new binary and only if a forgejo service is currently running.
+#
+# Default: True.
+forgejo_srv_backup_dump: true
+
+# Absolute path to backup location.
+forgejo_srv_backup_path: '{{ forgejo_cfg_storage_path }}/backup'
+
+# Skip archiving all repositories? Default: False.
+forgejo_srv_backup_repository_skip: false
+
+# Skip archiving all logs? Default: False.
+forgejo_srv_backup_log_skip: false
+
+# Skip archiving custom directories? Default: False.
+forgejo_srv_backup_custom_dir_skip: false
+
+# Skip archiving all LFS data? Default: False.
+forgejo_srv_backup_lfs_data_skip: false
+
+# Skip archiving all attachment data? Default: False.
+forgejo_srv_backup_attachment_data_skip: false
+
+# Skip archiving all package data? Default: False.
+forgejo_srv_backup_package_data_skip: false
+
+# Skip archiving all index data? Default: False.
+forgejo_srv_backup_index_skip: false
+
+# Skip archiving all repository archive data? Default: False.
+forgejo_srv_backup_repo_archives_skip: false

@@ -10,6 +10,7 @@
 # * Configuration (user_data) dict and dict of dicts are syntactically correct.
 # * Hardened drop-in works.
 # * permissions propagated to all user data directories.
+# * Relative default paths specified resolve to default locations correctly.
 
 dependency:
   name: 'galaxy'
@@ -44,103 +45,41 @@ provisioner:
               }}'
         forgejo_srv_container_enable: true
         forgejo_srv_harden_enable: true
-    host_vars:
-      forgejo-debian-12-default:
         forgejo_cfg_security_install_lock: true
         forgejo_srv_local_users:
           - username: 'admin_test'
-            password: 'admin'
+            password: 'adminadmin'
             email: 'admin@example.com'
             admin: true
           - username: 'user_test'
-            password: 'test'
+            password: 'testtest'
             email: 'user@example.com'
           - username: 'user_test'
             state: 'absent'
+    host_vars:
       forgejo-debian-12-user_data:
         forgejo_srv_user_data_manage_enable: true
-        forgejo_cfg_repository_mimetype_mapping:
-          '.apk': 'application/vnd.android.package-archive'
-        forgejo_cfg_mailer_override_header:
-          Reply-To: 'test@example.com, test2@example.com'
-          Content-Type: 'text/html; charset=utf-8'
-          In-Reply-To: ''
-        forgejo_cfg_git_config: {}
-        forgejo_cfg_i18n_languages:
-          - lang: 'en-US'
-            name: 'English'
-          - lang: 'zh-CN'
-            name: '简体中文'
-        forgejo_cfg_highlight_mapping:
-          '.toml': 'ini'
-        forgejo_cfg_queue_individual:
-          queue.mail:
-            SET_NAME: '_mail'
-        forgejo_cfg_log_writers:
-          log.console:
-            MODE: 'console'
-            LEVEL: 'Info'
-            FLAGS: 'journald'
-            COLORIZE: false
-          log.file:
-            LOG_ROTATE: true
-            MAX_SIZE_SHIFT: 28
-            DAILY_ROTATE: true
-            MAX_DAYS: 7
-            COMPRESS: true
-            COMPRESSION_LEVEL: -1
-          log.conn:
-            RECONNECT_ON_MSG: false
-            RECONNECT: false
-            PROTOCOL: 'tcp'
-        forgejo_cfg_markup_external:
-          markup.asciidoc:
-            ENABLED: true
-            NEED_POSTPROCESS: true
-            FILE_EXTENSIONS: '.adoc,.asciidoc'
-            RENDER_COMMAND:
-              'asciidoctor --embedded --safe-mode=secure --out-file=- -'
-            IS_INPUT_FILE: false
-          markup.sanitizer.1:
-            ELEMENT: 'span'
-            ALLOW_ATTR: 'class'
-            REGEXP: '(info|warning|error)'
-          markup.sanitizer.asciidoc:
-            ENABLED: false
-            FILE_EXTENSIONS: '.adoc,.asciidoc'
-            RENDER_COMMAND: 'asciidoc --out-file=- -'
-            IS_INPUT_FILE: false
-            RENDER_CONTENT_MODE: 'sanitized'
-          markup.sanitizer.asciidoc.rule-1:
-            ENABLED: true
-        forgejo_cfg_storage_sub_system:
-          repo-archive:
-            STORAGE_TYPE: 'local'
-            PATH: 'data/repo-archive'
-          actions.artifacts:
-            STORAGE_TYPE: 'minio'
-            SERVE_DIRECT: false
-            MINIO_ENDPOINT: 'localhost:9000'
-            MINIO_ACCESS_KEY_ID: ''
-            MINIO_SECRET_ACCESS_KEY: ''
-            MINIO_BUCKET: 'forgejo'
-            MINIO_BUCKET_LOOKUP: ''
-            MINIO_LOCATION: 'us-east-1'
-            MINIO_BASE_PATH: 'repo-archive/'
-            MINIO_USE_SSL: false
-            MINIO_INSECURE_SKIP_VERIFY: false
-            MINIO_CHECKSUM_ALGORITHM: 'default'
-          storage.my_minio:
-            STORAGE_TYPE: 'minio'
-            MINIO_ENDPOINT: 'localhost:9000'
-            MINIO_ACCESS_KEY_ID: ''
-            MINIO_SECRET_ACCESS_KEY: ''
-            MINIO_BUCKET: 'forgejo'
-            MINIO_BUCKET_LOOKUP: ''
-            MINIO_LOCATION: 'us-east-1'
-            MINIO_BASE_PATH: 'repo-archive/'
-            MINIO_USE_SSL: false
-            MINIO_INSECURE_SKIP_VERIFY: false
+      forgejo-debian-12-paths:
+        forgejo_srv_container_enable: true
+        forgejo_srv_harden_enable: true
+        forgejo_cfg_security_internal_token: 'test'
+        forgejo_cfg_server_lfs_jwt_secret: 'test'
+        forgejo_cfg_security_secret_key: 'test'
+        forgejo_cfg_repository_root: 'gitea-repositories'
+        forgejo_cfg_repository_upload_temp_path: 'tmp/uploads'
+        forgejo_cfg_repository_local_local_copy_path: 'tmp/local-repo'
+        forgejo_cfg_server_pprof_data_path: 'data/tmp/pprof'
+        forgejo_cfg_database_path: 'forgejo.db'
+        forgejo_cfg_indexer_issue_indexer_path: 'indexers/issues.bleve'
+        forgejo_cfg_indexer_repo_indexer_path: 'indexers/repos.bleve'
+        forgejo_cfg_queue_datadir: 'queues/common'
+        forgejo_cfg_server_acme_directory: 'https'
+        forgejo_cfg_session_provider_config: 'data/sessions'
+        forgejo_cfg_attachment_path: 'attachments'
+        forgejo_cfg_log_root_path: 'log'
+        forgejo_cfg_git_home_path: 'home'
+        forgejo_cfg_packages_chunked_upload_path: 'tmp/package-upload'
+        forgejo_cfg_packages_path: 'packages'
 platforms:
   - name: 'forgejo-debian-12-default'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
@@ -152,6 +91,13 @@ platforms:
     published_ports:
       - '3000/tcp'
   - name: 'forgejo-debian-12-user_data'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+  - name: 'forgejo-debian-12-paths'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:

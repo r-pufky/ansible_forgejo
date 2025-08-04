@@ -1,0 +1,25 @@
+---
+###############################################################################
+# Verify
+###############################################################################
+# Forgejo will overwrite invalid tokens/keys with auto-generated valid ones,
+# which requires rendering a config file with only those options templated;
+# Instead of copy/diff pattern, use template/remote copy/diff pattern.
+
+- name: 'Verify'
+  hosts:
+    - 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Verify | app.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'remote_file_diff.yml'
+      vars:
+        test_name: 'Verify | app.ini'
+        test_remote_src: '/tmp/app.ini'
+        test_file: '/etc/forgejo/app.ini'
+        test_owner: 'git'
+        test_group: 'git'
+        test_mode: '0640'
+        test_diff: true

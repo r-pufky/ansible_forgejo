@@ -35,7 +35,7 @@
 - name: 'Local users | poll service'
   when: _forgejo_srv_poll_enable.raw
   ansible.builtin.wait_for:
-    port: '{{ forgejo_cfg_server_http_port | default(3000) }}'
+    port: '{{ _forgejo_cfg_server_http_port.raw }}'
     delay: 5
     sleep: '{{ forgejo_role_poll_interval }}'
     timeout: '{{ forgejo_role_poll_timeout }}'
@@ -45,8 +45,8 @@
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
-      - '--config'
-      - '{{ _forgejo.app_ini_path }}'
+      - '{{ _forgejo_cfg_custom_path.role_args }}'
+      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
       - 'admin'
       - 'user'
       - 'list'
@@ -63,8 +63,8 @@
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
-      - '--config'
-      - '{{ _forgejo.app_ini_path }}'
+      - '{{ _forgejo_cfg_custom_path.role_args }}'
+      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
       - 'admin'
       - 'user'
       - 'create'
@@ -82,7 +82,7 @@
   changed_when: '"successfully created" in _forgejo_status.stdout'
   become: true
   become_user: '{{ _forgejo_srv_user.raw }}'
-  loop: '{{ _forgejo_srv_local_users.parsed }}'
+  loop: '{{ _forgejo_srv_local_users.role_user_list }}'
   loop_control:
     label: '{{ item.username }}'
 
@@ -90,8 +90,8 @@
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
-      - '--config'
-      - '{{ _forgejo.app_ini_path }}'
+      - '{{ _forgejo_cfg_custom_path.role_args }}'
+      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
       - 'admin'
       - 'user'
       - 'list'
@@ -107,8 +107,8 @@
   ansible.builtin.command:
     argv:
       - '{{ forgejo_role_repo_extract_symlink }}'
-      - '--config'
-      - '{{ _forgejo.app_ini_path }}'
+      - '{{ _forgejo_cfg_custom_path.role_args }}'
+      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
       - 'admin'
       - 'user'
       - 'delete'
@@ -119,6 +119,6 @@
   changed_when: 'item.username in _forgejo_status.stdout'
   become: true
   become_user: '{{ _forgejo_srv_user.raw }}'
-  loop: '{{ _forgejo_srv_local_users.parsed }}'
+  loop: '{{ _forgejo_srv_local_users.role_user_list }}'
   loop_control:
     label: '{{ item.username }}'

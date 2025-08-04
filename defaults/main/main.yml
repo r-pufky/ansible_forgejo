@@ -5,6 +5,18 @@
 # Skeleton database must be setup before role is applied (except SQLite).
 # Database backend migrations (SQLite/Postgres/MySQL) must be done manually.
 #
+# WARNING
+# > Migrations from Gitea/Gogs in practice require manual intervention.
+# >
+# > ALWAYS backup databases and all repository data (or make a snapshot) before
+# > attempting a migration.
+# >
+# > Suggest creating a new container with data/db snapshots with Forgejo, then
+# > removing the old instance once confirmed working.
+# >
+# > Reference:
+# > * https://forgejo.org/docs/latest/admin/upgrade/from-gitea/
+#
 # Install size: ~162MB
 #    Forgejo: ~102MB.
 #   Packages: ~60MB.
@@ -85,16 +97,6 @@ forgejo_srv_redis_enable: true
 #
 # Default: [] (No local users).
 forgejo_srv_local_users: []
-
-# Enable backup dump of database and config on upgrade?
-#
-# If the service is running and a new version is installed, dump a backup of
-# the existing configuration and database before performing any operations.
-#
-# Backups are stored in {{ forgejo_cfg_server_app_data_path }}/backup.
-#
-# Default: True.
-forgejo_srv_backup_dump: true
 
 # Enable polling for forgejo_cfg_server_http_port?
 #
@@ -191,63 +193,15 @@ forgejo_srv_create_user: true
 # will not have sufficient privileges to modify these files.
 #
 # Applies to:
-# * forgejo_cfg_server_app_data_path
-# * {{ forgejo_cfg_server_app_data_path }}/backup
-# * {{ forgejo_srv_user (home) }}/.ssh
 # * forgejo_cfg_repository_root
-# * forgejo_cfg_database_path
-# * forgejo_cfg_queue_datadir
-# * forgejo_cfg_attachment_path
-# * forgejo_cfg_git_home_path
-# * forgejo_cfg_packages_chunked_upload_path
-# * forgejo_cfg_packages_path
+# * forgejo_cfg_storage_path (forgejo_cfg_storage_storage_type=local)
+# * forgejo_cfg_storage_sub_system{}.PATH
+#   (forgejo_cfg_storage_sub_system{}.STORAGE_TYPE=local)
+# * forgejo_srv_backup_path (location)
+# * ANY config paths which are nested under these directories.
 #
 # Default: False.
 forgejo_srv_user_data_manage_enable: false
-
-###############################################################################
-# Media Permissions
-###############################################################################
-# Directories set in configuration are managed using these settings.
-
-# Recursively set media permissions?
-#
-# Forgejo installations with large media and metadata caches will be
-# excessively slow.
-#
-# Default: False.
-forgejo_srv_media_perms_recursive_enable: false
-
-# Media folder permissions octal.
-#
-# Media folders always set using forgejo_srv_media_perms_folder,
-# forgejo_srv_user, and forgejo_srv_group.
-#
-# Default: '0755'.
-forgejo_srv_media_perms_folder: '0755'
-
-# Enable setting of media file permissions?
-#
-# Set file permissions use forgejo_srv_media_perms_file, forgejo_srv_user, and
-# forgejo_srv_group. Large sets of files may be slow to set permissions.
-#
-# Useful when first configuring to ensure service has access to all specified
-# media locations. Suggest applying with extra options:
-#
-#   ansible-playbook site.yml
-#       --tags Forgejo
-#       -e 'forgejo_srv_media_set_perms_file_enable=true'
-#
-# Default: False.
-forgejo_srv_media_set_perms_file_enable: true
-
-# Media file permissions octal.
-#
-# Media folders always set using forgejo_srv_media_perms_folder,
-# forgejo_srv_user, and forgejo_srv_group.
-#
-# Default: '0644'.
-forgejo_srv_media_perms_file: '0644'
 
 ###############################################################################
 # Forgejo Service Hardening

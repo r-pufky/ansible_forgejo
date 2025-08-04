@@ -5,7 +5,7 @@
   tasks:
     - name: 'Verify | enumerate backups'
       ansible.builtin.find:
-        paths: '/srv/git/forgejo/data/backup'
+        paths: '/srv/forgejo/data/backup'
         follow: true
         recurse: false
         file_type: 'file'

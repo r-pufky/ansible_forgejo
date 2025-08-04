@@ -2,6 +2,7 @@
 ###############################################################################
 # Packages [packages]
 ###############################################################################
+# Set storage options in forgejo_cfg_storage_sub_system (storage.yml).
 
 # Enable/Disable package registry capabilities? Default: True.
 forgejo_cfg_packages_enabled: true
@@ -91,91 +92,3 @@ forgejo_cfg_packages_limit_size_vagrant: -1
 
 # Enable RPM re-signing by default? Default: False.
 forgejo_cfg_packages_default_rpm_sign_enabled: false
-
-###############################################################################
-# Storage Options
-###############################################################################
-# Reference:
-# * https://forgejo.org/docs/latest/admin/storage/
-
-# Packages storage type.
-#
-# Values:
-#   local: Local disk (default).
-#   minio: S3 compatible object storage service.
-#
-# Default: 'local'.
-forgejo_cfg_packages_storage_type: 'local'
-
-# Attachment path.
-#
-# Requires forgejo_cfg_packages_storage_type=local.
-#
-# Special Case:
-#   * Relative paths anchored to AppDataPath.
-#
-# Default: '{{ forgejo_cfg_server_app_data_path }}/packages'.
-forgejo_cfg_packages_path: '{{ forgejo_cfg_server_app_data_path }}/packages'
-
-###############################################################################
-# Minio Storage Options
-###############################################################################
-# All options require forgejo_cfg_packages_storage_type=minio.
-#
-# Reference:
-# * https://forgejo.org/docs/latest/admin/storage/#using-minio-1
-
-# Enable redirect to authenticated URL to serve files directly? Default: False.
-forgejo_cfg_packages_serve_direct: false
-
-# Minio endpoint. Default: 'localhost:9000'.
-forgejo_cfg_packages_minio_endpoint: 'localhost:9000'
-
-# Minio accessKeyID.
-#
-# Values:
-#   '': Search for credentials in known environment variables
-#       (MINIO_ACCESS_KEY_ID, AWS_ACCESS_KEY_ID), credentials files
-#       (~/.mc/config.json, ~/.aws/credentials), and EC2 instance metadata
-#       (default).
-#
-# Default: '' (search).
-forgejo_cfg_packages_minio_access_key_id: ''
-
-# Minio secretAccessKey. Default: ''.
-forgejo_cfg_packages_minio_secret_access_key: ''
-
-# Minio attachment storage bucket. Default: 'forgejo'.
-forgejo_cfg_packages_minio_bucket: 'forgejo'
-
-# Minio URL storage bucket lookup.
-#
-# Values:
-#   auto: Automatic.
-#    dns: Use DNS.
-#   path: Use path.
-#     '': auto (default).
-#
-# Default: '' (auto).
-forgejo_cfg_packages_minio_bucket_lookup: ''
-
-# Minio create bucket location. Default: 'us-east-1'.
-forgejo_cfg_packages_minio_location: 'us-east-1'
-
-# Minio bucket base path. Default: 'packages/'.
-forgejo_cfg_packages_minio_base_path: 'packages/'
-
-# Enable Minio SSL? Default: False.
-forgejo_cfg_packages_minio_use_ssl: false
-
-# Minio skip SSL verification? Default: False.
-forgejo_cfg_packages_minio_insecure_skip_verify: false
-
-# Minio checksum algorithm.
-#
-# Values:
-#   default: MinIO or AWS S3.
-#       md5: Cloudflare or Backblaze.
-#
-# Default: 'default'.
-forgejo_cfg_packages_minio_checksum_algorithm: 'default'

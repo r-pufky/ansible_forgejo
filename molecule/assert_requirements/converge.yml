@@ -351,13 +351,32 @@
         forgejo_cfg_camo_hmac_key: 'test'
 
     - name:
+        'Converge | required database settings (type)'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'assertions.yml'
+      vars:
+        test_name:
+          'Converge | required database settings (type)'
+        test_role: 'r_pufky.srv.forgejo'
+        test_fail_message:
+          'forgejo_cfg_database_db_type="" did not trigger assertion.'
+        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
+        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_cfg_database_db_type: ''
+        forgejo_cfg_database_host: 'test'
+        forgejo_cfg_database_name: 'test'
+        forgejo_cfg_database_user: 'test'
+        forgejo_cfg_database_passwd: 'test'
+
+    - name:
         'Converge | required database settings (host)'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'assertions.yml'
       vars:
         test_name:
-          'Converge | required Camo settings (host)'
+          'Converge | required database settings (host)'
         test_role: 'r_pufky.srv.forgejo'
         test_fail_message:
           'forgejo_cfg_database_host="" did not trigger assertion.'

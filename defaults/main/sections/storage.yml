@@ -6,22 +6,22 @@
 # each subsystem stores all files (objects in S3) in a dedicated directory:
 #
 # Section             | location           | Configure
-# attachment          | attachments/       | attachment.yml
+# attachment          | attachments/       | forgejo_cfg_storage_sub_system
 # lfs                 | lfs/               | forgejo_cfg_storage_sub_system
 # avatar              | avatars/           | forgejo_cfg_storage_sub_system
 # repo-avatar         | repo-avatars/      | forgejo_cfg_storage_sub_system
 # repo-archive        | repo-archive/      | forgejo_cfg_storage_sub_system
-# packages            | packages/          | packages.yml
+# packages            | packages/          | forgejo_cfg_storage_sub_system
 # storage.actions_log | actions_log/       | forgejo_cfg_storage_sub_system
 # actions.artifacts   | actions_artifacts/ | forgejo_cfg_storage_sub_system
 # {ADDITIONAL}        | no default         | forgejo_cfg_storage_sub_system
 #
 # Examples:
-#   * STORAGE_TYPE=local, APP_DATA_PATH=/appdata; path is '/appdata/{DIR}'.
-#   * STORAGE_TYPE=minio; bucket is 'attachments/'.
-#
-# Configure sections without additional options in
-# forgejo_cfg_storage_sub_system.
+#   * STORAGE_TYPE=local, APP_DATA_PATH=/appdata; resolved path is
+#     '/appdata/{DIR}'.
+#   * STORAGE_TYPE=local, APP_DATA_PATH=/appdata, PATH=/storage; resolved path
+#     is '/storage/{DIR}'.
+#   * STORAGE_TYPE=minio; resolved bucket is 'attachments/'.
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/storage/
@@ -29,14 +29,14 @@
 # Storage type.
 #
 # Values:
-#    local: Use local disk.
+#   local: Use local disk.
 #   minio: Use S3 bucket.
 #
 # Default: 'local'.
 ### forgejo_cfg_storage_storage_type: 'local'
 forgejo_cfg_storage_storage_type: 'local'
 
-# Absolute path to local storage location.
+# Absolute path to default local storage location.
 #
 # Requires forgejo_cfg_storage_storage_type=local.
 #
@@ -113,6 +113,35 @@ forgejo_cfg_storage_minio_checksum_algorithm: 'default'
 #
 # See documentation for detailed storage configuration for complex setups.
 #
+# Special Case:
+#   * Relative paths are anchored to AppDataPath.
+#
+# Migration from Gitea:
+# * [server].LFS_CONTENT_PATH -> [lfs].PATH
+#
+#     [server]
+#     LFS_CONTENT_PATH = /data/git/lfs
+#
+#     [lfs]
+#     PATH = /data/git/lfs
+#
+# * [picture].AVATAR_UPLOAD_PATH -> [avatar].PATH:
+#
+#     AVATAR_UPLOAD_PATH = avatars
+#
+#     [avatar]
+#     PATH = avatars
+#
+# * [picture].REPOSITORY_AVATAR_UPLOAD_PATH -> [repo-avatar].PATH
+#
+#     REPOSITORY_AVATAR_UPLOAD_PATH = repo-avatars
+#
+#     [repo-avatar]
+#     PATH = repo-avatars
+#
+# Legacy settings have a lower priority and will be overridden by their
+# replacement if both are present.
+#
 # Reference:
 # * https://forgejo.org/docs/latest/admin/storage/
 # * https://forgejo.org/docs/latest/admin/storage/#using-minio-1
@@ -121,6 +150,9 @@ forgejo_cfg_storage_minio_checksum_algorithm: 'default'
 #
 # Storage-only sections - sections with config options have statically defined
 # storage variables.
+#
+# Special Case:
+#   * Relative paths are anchored to AppDataPath.
 #
 # forgejo_cfg_storage_sub_system:
 #     dict of dict - Additional storage sub-system configuration.

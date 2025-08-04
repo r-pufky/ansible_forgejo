@@ -30,7 +30,7 @@
 # yamllint enable rule:line-length
 
 # Last time Forgejo options were validated against a default configuration.
-forgejo_role_validate_date: '2025-07-21'
+forgejo_role_validate_date: '2025-07-31'
 forgejo_role_validate_release: 'bookworm'
 forgejo_role_validate_version: 'v11.0.3'
 
@@ -81,7 +81,7 @@ forgejo_role_user:
   group: 'git'
   uid: 305
   shell: '/bin/bash'
-  home: '/data/gitea'
+  home: '/srv/forgejo'
   comment: 'Forgejo Server,,,'
   create_home: true
   password: '!'

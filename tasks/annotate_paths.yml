@@ -1,0 +1,300 @@
+---
+###############################################################################
+# Annotate Paths
+###############################################################################
+# Fully resolve all paths. Paths are co-dependent and typically 3-variable:
+# * absolute or relative.
+# * anchored to another path variable.
+# * default unset values.
+#
+# Resolve these to absolute paths before parsing the configuration. Paths are
+# resolved to the 'raw' field for data annotations.
+#
+# forgejo_cfg_server_app_data_path is critical to resolve first as many default
+# values depend on this to anchor correctly.
+#
+# Generates:
+#   _forgejo_cfg_*: dict - Normalize paths for configuration options.
+#   _forgejo_storage: list of str - Normalized local sub system storage paths.
+
+- name: 'Annotate | paths | sanitize forgejo_cfg_server_app_data_path'
+  ansible.builtin.set_fact:
+    _forgejo_cfg_server_app_data_path: {
+      raw: "{{
+          forgejo_cfg_server_app_data_path | regex_replace('\\/$', '')
+          if forgejo_cfg_server_app_data_path | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/data'
+        }}",
+    }
+
+- name: 'Annotate | paths | normalize forgejo_cfg_server_app_data_path'
+  ansible.builtin.set_fact:
+    _forgejo_cfg_server_app_data_path: '{{
+        _forgejo_cfg_server_app_data_path |
+        combine({
+            "raw":
+            _forgejo_cfg_server_app_data_path.raw
+            if _forgejo_cfg_server_app_data_path.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_server_app_data_path.raw
+          })
+        }}'
+
+- name: 'Annotate | paths | sanitize co-dependent and 3-var paths'
+  ansible.builtin.set_fact:
+    _forgejo_storage: []
+    _forgejo_cfg_storage_path: {
+      raw: "{{
+          forgejo_cfg_storage_path | regex_replace('\\/$', '')
+          if forgejo_cfg_storage_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw
+        }}",  # Absolute path anchor point, no additional processing needed.
+    }
+    _forgejo_cfg_repository_root: {
+      raw: "{{
+          forgejo_cfg_repository_root | regex_replace('\\/$', '')
+          if forgejo_cfg_repository_root | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/gitea-repositories'
+        }}",
+    }
+    _forgejo_cfg_repository_upload_temp_path: {
+      raw: "{{
+          forgejo_cfg_repository_upload_temp_path | regex_replace('\\/$', '')
+          if forgejo_cfg_repository_upload_temp_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/tmp/uploads'
+        }}",
+    }
+    _forgejo_cfg_repository_local_local_copy_path: {
+      raw: "{{
+          forgejo_cfg_repository_local_local_copy_path |
+          regex_replace('\\/$', '')
+          if forgejo_cfg_repository_local_local_copy_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/tmp/local-repo'
+        }}",
+    }
+    _forgejo_cfg_server_pprof_data_path: {
+      raw: "{{
+          forgejo_cfg_server_pprof_data_path | regex_replace('\\/$', '')
+          if forgejo_cfg_server_pprof_data_path | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/data/tmp/pprof'
+        }}",
+    }
+    _forgejo_cfg_database_path: {
+      raw: "{{
+          forgejo_cfg_database_path | regex_replace('\\/$', '')
+          if forgejo_cfg_database_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/forgejo.db'
+        }}",
+    }
+    _forgejo_cfg_indexer_issue_indexer_path: {
+      raw: "{{
+          forgejo_cfg_indexer_issue_indexer_path | regex_replace('\\/$', '')
+          if forgejo_cfg_indexer_issue_indexer_path | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/indexers/issues.bleve'
+        }}",
+    }
+    _forgejo_cfg_indexer_repo_indexer_path: {
+      raw: "{{
+          forgejo_cfg_indexer_repo_indexer_path | regex_replace('\\/$', '')
+          if forgejo_cfg_indexer_repo_indexer_path | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/indexers/repos.bleve'
+        }}",
+    }
+    _forgejo_cfg_queue_datadir: {
+      raw: "{{
+          forgejo_cfg_queue_datadir | regex_replace('\\/$', '')
+          if forgejo_cfg_queue_datadir | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/queues/common'
+        }}",
+    }
+    _forgejo_cfg_server_acme_directory: {
+      raw: "{{
+          forgejo_cfg_server_acme_directory | regex_replace('\\/$', '')
+          if forgejo_cfg_server_acme_directory | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/https'
+        }}",
+    }
+    _forgejo_cfg_session_provider_config: {
+      raw: "{{
+          forgejo_cfg_session_provider_config | regex_replace('\\/$', '')
+          if forgejo_cfg_session_provider_config | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/data/sessions'
+        }}",
+    }
+    _forgejo_cfg_log_root_path: {
+      raw: "{{
+          forgejo_cfg_log_root_path | regex_replace('\\/$', '')
+          if forgejo_cfg_log_root_path | length > 0 else
+          _forgejo_cfg_app_work_path.raw ~ '/log'
+        }}",
+    }
+    _forgejo_cfg_git_home_path: {
+      raw: "{{
+          forgejo_cfg_git_home_path | regex_replace('\\/$', '')
+          if forgejo_cfg_git_home_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/home'
+        }}",
+    }
+    _forgejo_cfg_packages_chunked_upload_path: {
+      raw: "{{
+          forgejo_cfg_packages_chunked_upload_path | regex_replace('\\/$', '')
+          if forgejo_cfg_packages_chunked_upload_path | length > 0 else
+          _forgejo_cfg_server_app_data_path.raw ~ '/tmp/package-upload'
+        }}",
+    }
+
+- name: 'Annotate | paths | normalize co-dependent and 3-var paths'
+  ansible.builtin.set_fact:
+    _forgejo_cfg_repository_root: '{{
+        _forgejo_cfg_repository_root |
+        combine({
+          "raw":
+            _forgejo_cfg_repository_root.raw
+            if _forgejo_cfg_repository_root.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_repository_root.raw
+          })
+      }}'
+    _forgejo_cfg_repository_upload_temp_path: '{{
+      _forgejo_cfg_repository_upload_temp_path |
+        combine({
+          "raw":
+            _forgejo_cfg_repository_upload_temp_path.raw
+            if
+              _forgejo_cfg_repository_upload_temp_path.raw.startswith("/")
+            else
+            _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+            _forgejo_cfg_repository_upload_temp_path.raw
+          })
+      }}'
+    _forgejo_cfg_repository_local_local_copy_path: '{{
+      _forgejo_cfg_repository_local_local_copy_path |
+        combine({
+          "raw":
+            _forgejo_cfg_repository_local_local_copy_path.raw
+            if
+              _forgejo_cfg_repository_local_local_copy_path.raw.startswith("/")
+            else
+          _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+          _forgejo_cfg_repository_local_local_copy_path.raw
+          })
+      }}'
+    _forgejo_cfg_server_pprof_data_path: '{{
+      _forgejo_cfg_server_pprof_data_path |
+        combine({
+          "raw":
+            _forgejo_cfg_server_pprof_data_path.raw
+            if _forgejo_cfg_server_pprof_data_path.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_server_pprof_data_path.raw
+          })
+      }}'
+    _forgejo_cfg_database_path: '{{
+      _forgejo_cfg_database_path |
+        combine({
+          "raw":
+            _forgejo_cfg_database_path.raw
+            if _forgejo_cfg_database_path.raw.startswith("/") else
+            _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+            _forgejo_cfg_database_path.raw
+          })
+      }}'
+    _forgejo_cfg_indexer_issue_indexer_path: '{{
+      _forgejo_cfg_indexer_issue_indexer_path |
+        combine({
+          "raw":
+            _forgejo_cfg_indexer_issue_indexer_path.raw
+            if _forgejo_cfg_indexer_issue_indexer_path.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_indexer_issue_indexer_path.raw
+           })
+      }}'
+    _forgejo_cfg_indexer_repo_indexer_path: '{{
+        _forgejo_cfg_indexer_repo_indexer_path |
+        combine({
+          "raw":
+            _forgejo_cfg_indexer_repo_indexer_path.raw
+            if _forgejo_cfg_indexer_repo_indexer_path.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_indexer_repo_indexer_path.raw
+           })
+      }}'
+    _forgejo_cfg_queue_datadir: '{{
+      _forgejo_cfg_queue_datadir |
+        combine({
+          "raw":
+            _forgejo_cfg_queue_datadir.raw
+            if _forgejo_cfg_queue_datadir.raw.startswith("/") else
+            _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+            _forgejo_cfg_queue_datadir.raw
+          })
+      }}'
+    _forgejo_cfg_server_acme_directory: '{{
+      _forgejo_cfg_server_acme_directory |
+        combine({
+          "raw":
+            _forgejo_cfg_server_acme_directory.raw
+            if _forgejo_cfg_server_acme_directory.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_server_acme_directory.raw
+          })
+      }}'
+    _forgejo_cfg_session_provider_config: '{{
+        _forgejo_cfg_session_provider_config |
+        combine({
+          "raw":
+            _forgejo_cfg_session_provider_config.raw
+            if _forgejo_cfg_session_provider_config.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_session_provider_config.raw
+           })
+      }}'
+    _forgejo_cfg_log_root_path: '{{
+        _forgejo_cfg_log_root_path |
+        combine({
+          "raw":
+            _forgejo_cfg_log_root_path.raw
+            if _forgejo_cfg_log_root_path.raw.startswith("/") else
+            _forgejo_cfg_app_work_path.raw ~ "/" ~
+            _forgejo_cfg_log_root_path.raw
+           })
+      }}'
+    _forgejo_cfg_git_home_path: '{{
+      _forgejo_cfg_git_home_path |
+        combine({
+          "raw":
+            _forgejo_cfg_git_home_path.raw
+            if _forgejo_cfg_git_home_path.raw.startswith("/") else
+            _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+            _forgejo_cfg_git_home_path.raw
+          })
+      }}'
+    _forgejo_cfg_packages_chunked_upload_path: '{{
+      _forgejo_cfg_packages_chunked_upload_path |
+        combine({
+          "raw":
+            _forgejo_cfg_packages_chunked_upload_path.raw
+            if
+              _forgejo_cfg_packages_chunked_upload_path.raw.startswith("/")
+            else
+            _forgejo_cfg_server_app_data_path.raw ~ "/" ~
+            _forgejo_cfg_packages_chunked_upload_path.raw
+          })
+      }}'
+
+# Requires _forgejo_storage set; will NOT execute if sub_system={}
+- name: 'Annotate | paths | normalize local storage paths'
+  ansible.builtin.set_fact:
+    _forgejo_storage: "{{
+      _forgejo_storage +
+          [
+            item.value.PATH | regex_replace('\\/$', '')
+            if item.value.PATH.startswith('/') else
+            _forgejo_cfg_server_app_data_path.raw ~ '/' ~
+            item.value.PATH | regex_replace('\\/$', '')
+          ]
+      }}"
+  loop: '{{ forgejo_cfg_storage_sub_system | dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  when: item.value.STORAGE_TYPE | lower == 'local'

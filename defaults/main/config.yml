@@ -12,6 +12,8 @@
 #   references are kept for context only.
 # * App.ini uses CAP_UNDER; these translate to
 #   forgejo_cfg_{SECTION}_{HEADER}_{VAR}.
+# * Always specify ALL options; especially related to data storage. Defaults
+#   are inconsistent due to multiple project migrations.
 #
 # Config References:
 #          AppPath: APP_PATH - /opt/forgejo/forgejo - Absolute path of Forgejo
@@ -48,14 +50,19 @@
 # * https://pkg.go.dev/time#Duration
 # * https://github.com/dustin/go-humanize
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet/
+# * https://codeberg.org/forgejo/forgejo/issues/8748
+# * https://codeberg.org/forgejo/forgejo/issues/8760
 
 # Absolute path to Forgejo working directory.
 #
 # Sets AppWorkPath. Application working directory (running application data not
 # including repositories) and general process caching.
 #
-# Default: '/srv/git/forgejo'.
-forgejo_cfg_app_work_path: '/srv/git/forgejo'
+# See forgejo_cfg_server_app_data_path, forgejo_cfg_storage_path for user data
+# base locations.
+#
+# Default: '/srv/forgejo'.
+forgejo_cfg_app_work_path: '/srv/forgejo'
 
 # Absolute path to ETC base directory.
 #
@@ -68,11 +75,11 @@ forgejo_cfg_custom_path: '/etc/forgejo'
 # General Options [no section]
 ###############################################################################
 
-# Application name. Default: 'Forgejo: Beyond coding. We Forge.'.
-forgejo_cfg_app_name: 'Forgejo: Beyond coding. We Forge.'
+# Application name. Default: 'Forgejo'.
+forgejo_cfg_app_name: 'Forgejo'
 
-# Application slogan. Default: ''.
-forgejo_cfg_app_slogan: ''
+# Application slogan. Default: 'Beyond coding. We Forge.'.
+forgejo_cfg_app_slogan: 'Beyond coding. We Forge.'
 
 # Application name format.
 #
@@ -91,7 +98,7 @@ forgejo_cfg_app_display_name_format: '{APP_NAME}: {APP_SLOGAN}'
 #   '': Autodetect (default).
 #
 # Default: '' (autodetect).
-forgejo_cfg_run_user: '{{ forgejo_srv_user }}'
+forgejo_cfg_run_user: 'git'
 
 # Application run mode.
 #

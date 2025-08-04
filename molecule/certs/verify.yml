@@ -13,7 +13,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/oauth2.pkcs8.pem"
           }}'
-        test_file: '/srv/git/forgejo/data/jwt/private.pem'
+        test_file: '/srv/forgejo/data/jwt/private.pem'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -29,7 +29,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/cert.pem"
           }}'
-        test_file: '/etc/forgejo/mailer/cert.pem'
+        test_file: '/srv/forgejo/mailer/cert.pem'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -45,7 +45,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/key.pem"
           }}'
-        test_file: '/etc/forgejo/mailer/cert.key'
+        test_file: '/srv/forgejo/mailer/cert.key'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -53,7 +53,7 @@
 
     - name: 'Verify | enumerate server host keys'
       ansible.builtin.find:
-        paths: '/srv/git/forgejo/data/ssh'
+        paths: '/srv/forgejo/data/ssh'
         excludes: ['*.pub']
         follow: true
         recurse: true
@@ -90,7 +90,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/cert.pem"
           }}'
-        test_file: '/etc/forgejo/https/ca_trust_chain_root.pem'
+        test_file: '/srv/forgejo/https/ca_trust_chain_root.pem'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -106,7 +106,7 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/cert.pem"
           }}'
-        test_file: '/data/gitea/.ssh/ca_trust_chain_root.pem'
+        test_file: '/srv/forgejo/.ssh/ca_trust_chain_root.pem'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0400'
@@ -129,7 +129,7 @@
         test_mode: '0400'
         test_diff: true
       loop:
-        - {src: 'cert.pem', file: '/etc/forgejo/https/cert.pem'}
-        - {src: 'key.pem', file: '/etc/forgejo/https/cert.key'}
+        - {src: 'cert.pem', file: '/srv/forgejo/https/cert.pem'}
+        - {src: 'key.pem', file: '/srv/forgejo/https/cert.key'}
       loop_control:
         label: '{{ item.file }}'

@@ -500,13 +500,13 @@ forgejo_cfg_server_acme_email: ''
 # Requires forgejo_cfg_server_enable_acme=true.
 #
 # Special Case:
-#   * Paths are anchored to CustomConf.
+#   * Relative paths are anchored to AppWorkPath.
 #
 # Default: 'https'.
 #
 # Reference:
 # * https://github.com/caddyserver/certmagic
-forgejo_cfg_server_acme_directory: 'https'
+forgejo_cfg_server_acme_directory: '{{ forgejo_cfg_app_work_path }}/https'
 
 # Server certificate file.
 #
@@ -569,7 +569,7 @@ forgejo_cfg_server_static_root_path: '{{ forgejo_cfg_app_work_path }}'
 
 # Default path for App data.
 #
-# This is the default root path for storing data.
+# This is the default root path for storing application data.
 #
 # Special Case:
 #   * Relative paths are anchored to AppWorkPath.

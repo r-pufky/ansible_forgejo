@@ -19,6 +19,17 @@ All ports and protocols have been defined for the role.
 ## Example Playbook
 **STOP.**
 
+WARNING
+> Migrations from Gitea/Gogs in practice require manual intervention.
+>
+> ALWAYS backup databases and all repository data (or make a snapshot) before
+> attempting a migration.
+>
+> Suggest creating a new container with data/db snapshots with Forgejo, then
+> removing the old instance one confirmed working.
+>
+> [migration instructions](https://forgejo.org/docs/latest/admin/upgrade/from-gitea/).
+
 Read defaults documentation.
 
 Gitea migrations should be done **manually**: Gitea versions > `1.22` may not
@@ -27,7 +38,7 @@ up to `1.22`.
 
 This role explicitly manages each configuration parameter, and popular Gitea
 roles will need to be re-evaulated before migration. ALWAYS BACKUP. See manual
-[migration instructions](https://forgejo.org/docs/latest/admin/upgrade/from-gitea/).
+
 
 Install 11.0.3 release of Forgejo; ensuring media files have proper
 permissions. Version (and databases) will be migrated and updated on new
@@ -47,7 +58,7 @@ releases. Media permissions will be set to ensure Forgejo can read files.
         email: 'admin@example.com'
         admin: true
     forgejo_cfg_custom_path: '/etc/forgejo'
-    forgejo_cfg_app_work_path: '/srv/git/forgejo'
+    forgejo_cfg_app_work_path: '/srv/forgejo'
     forgejo_cfg_security_install_lock: true
 ```
 

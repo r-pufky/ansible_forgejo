@@ -55,16 +55,6 @@ provisioner:
         forgejo_srv_container_enable: true
         forgejo_srv_harden_enable: true
         forgejo_cfg_security_install_lock: true
-        forgejo_srv_local_users:
-          - username: 'admin_test'
-            password: 'admin'
-            email: 'admin@example.com'
-            admin: true
-          - username: 'user_test'
-            password: 'test'
-            email: 'user@example.com'
-          - username: 'user_test'
-            state: 'absent'
 platforms:
   - name: 'forgejo-debian-12-backup'
     image: 'ghcr.io/hifis-net/debian-systemd:12'

@@ -162,6 +162,14 @@
       Reference: https://forgejo.org/docs/latest/admin/command-line/#generate-secret
 
 # Database
+- name: 'Assert | required database type'
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - forgejo_cfg_database_db_type | length > 0
+    fail_msg: |
+      ✘ Forgejo 11.x+ requires forgejo_cfg_database_db_type set.
+
 - name: 'Assert | required database settings'
   when: forgejo_cfg_database_db_type != 'sqlite3'
   ansible.builtin.assert:

@@ -55,6 +55,8 @@ provisioner:
         forgejo_srv_container_enable: true
         forgejo_srv_harden_enable: true
         forgejo_cfg_security_install_lock: true
+        forgejo_srv_backup_repository_skip: true
+        forgejo_srv_backup_lfs_data_skip: true
 platforms:
   - name: 'forgejo-debian-12-backup'
     image: 'ghcr.io/hifis-net/debian-systemd:12'

@@ -112,12 +112,12 @@
     _forgejo_srv_backup_dump.raw and
     _forgejo_existing_service.changed
   ansible.builtin.command:
-    argv:
-      - '{{ forgejo_role_repo_extract_symlink }}'
-      - 'dump'
-      - '{{ _forgejo_cfg_custom_path.role_args }}'
-      - '{{ _forgejo_cfg_custom_path.role_config_file }}'
-      - '{{ _forgejo_srv_backup_path.role_args }}'
+    cmd: >
+        {{ forgejo_role_repo_extract_symlink }}
+        dump
+        {{ _forgejo_cfg_custom_path.role_args }}
+        {{ _forgejo_cfg_custom_path.role_config_file }}
+        {{ _forgejo_srv_backup_path.role_args }}
     chdir: '{{ _forgejo_srv_backup_path.raw }}'
   changed_when: true
   become: true

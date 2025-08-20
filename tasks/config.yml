@@ -382,7 +382,7 @@
         drop_in: true
 
 # Local user management requires service running or running 'install' state.
-- name: 'Validate | start services'
+- name: 'Config | start services'
   ansible.builtin.systemd:
     name: '{{ item }}'
     enabled: true

@@ -36,6 +36,10 @@ forgejo_role_validate_version: 'v11.0.3'
 
 forgejo_role_poll_interval: 3
 forgejo_role_poll_timeout: 30
+forgejo_role_poll_msg: '{{
+    "(max " ~ forgejo_role_poll_timeout ~ "s)" ~
+    (30 - (forgejo_role_poll_timeout | lower | length)) * " "
+  }}'
 
 ###############################################################################
 # APT Packages

@@ -1,11 +1,11 @@
 ---
 # yamllint disable rule:line-length
 ###############################################################################
-# Repo Assert Settings
+# Assert Settings
 ###############################################################################
 # Sanity check options to stop preventable errors and accidental data deletion.
 
-- name: 'Prep | assert data locations are not in install paths'
+- name: 'Assert | assert data locations are not in install paths'
   ansible.builtin.assert:
     quiet: true
     that:

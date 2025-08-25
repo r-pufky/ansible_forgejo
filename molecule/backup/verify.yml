@@ -15,4 +15,9 @@
       ansible.builtin.assert:
         quiet: true
         that: _forgejo_test_backups.files | length > 0
-        fail_msg: '✘ No backup was made in /src/git/forgejo/data/backup.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │          No backup was made in /srv/forgejo/data/backup.          │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯

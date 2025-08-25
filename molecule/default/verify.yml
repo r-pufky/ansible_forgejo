@@ -73,4 +73,9 @@
         that:
           - _test_forgejo_login.stdout is not
             search("Username or password is incorrect.")
-        fail_msg: '✘ admin_test@127.0.0.1 should successfully login.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │          admin_test@127.0.0.1 should successfully login.          │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯

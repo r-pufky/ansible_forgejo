@@ -59,30 +59,18 @@
 # * https://forgejo.org/docs/latest/admin/installation-binary
 # * https://forgejo.org/docs/latest/admin/config-cheat-sheet
 
-# TODO(12.x): Remove variable renaming check on next major Forgejo release.
-- name: 'Annotate | check deprecated variable usage'
-  when: >
-    hostvars[inventory_hostname] | dict2items |
-    selectattr("key", "match", "forgejo_config_*") | length > 0 or
-    hostvars[inventory_hostname] | dict2items |
-    selectattr("key", "match", "forgejo_service_*") | length > 0
-  ansible.builtin.fail:
-    msg: |
-      ✘ Role variables have migrated. Read defaults and update.
-
-      forgejo_config_* -> forgejo_cfg_*
-      forgejo_service_* -> forgejo_srv_*
-      forgejo_* -> forgejo_srv_*
-
 - name: 'Annotate | DEPRECATED VARIABLES IN USE ⚠'
   when: forgejo_cfg_federation_algorithms is defined
   ansible.builtin.fail:
     msg: |
-      ⚠ DEPRECATED VARIABLES IN USE.
-
-      Refer to defaults and update variables:
-
-      forgejo_cfg_federation_algorithms -> forgejo_cfg_federation_signature_algorithms
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                   DEPRECATED VARIABLES IN USE.                    │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Refer to defaults and update variables:
+      │
+      │ forgejo_cfg_federation_algorithms -> forgejo_cfg_federation_signature_algorithms
 
 - name: 'Annotate | sanitize & annotate general config'
   ansible.builtin.set_fact:

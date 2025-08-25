@@ -365,6 +365,34 @@
           restrict_suid_sgid: true
           memory_deny_write_execute: true
           remove_ipc: true
+          ambient_capabilities_include:
+            - 'CAP_NET_BIND_SERVICE'
+          capability_bounding_set_include:
+            - '~CAP_AUDIT_CONTROL'
+            - '~CAP_AUDIT_READ'
+            - '~CAP_DAC_READ_SEARCH'
+            - '~CAP_SYS_RAWIO'
+            - '~CAP_SYS_PTRACE'
+            - '~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER'
+            - '~CAP_BPF'
+            - '~CAP_NET_ADMIN'
+            - '~CAP_KILL'
+            - '~CAP_NET_BROADCAST'
+            - '~CAP_SYS_NICE CAP_SYS_RESOURCE'
+            - '~CAP_SYS_BOOT'
+            - '~CAP_LINUX_IMMUTABLE'
+            - '~CAP_SYS_CHROOT'
+            - '~CAP_BLOCK_SUSPEND'
+            - '~CAP_LEASE'
+            - '~CAP_SYS_PACCT'
+            - '~CAP_SYS_TTY_CONFIG'
+            - '~CAP_SYS_ADMIN'
+            - '~CAP_SETUID CAP_SETGID'
+            - '~CAP_SETPCAP'
+            - '~CAP_CHOWN'
+            - '~CAP_FSETID CAP_SETFCAP'
+            - '~CAP_NET_RAW'
+            - '~CAP_IPC_LOCK'
         resource_control:
           restrict_address_families_allow: ['AF_INET', 'AF_INET6']
           restrict_address_families_deny: ['AF_UNIX']

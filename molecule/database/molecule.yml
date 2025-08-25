@@ -44,14 +44,14 @@ provisioner:
         forgejo_cfg_server_lfs_jwt_secret: 'test'
         forgejo_cfg_security_secret_key: 'test'
     host_vars:
-      forgejo-debian-12-database_postgres:
+      forgejo-debian-13-database_postgres:
         forgejo_cfg_database_db_type: 'postgres'
         forgejo_cfg_database_host: '127.0.0.1'
         forgejo_cfg_database_name: 'forgejo'
         forgejo_cfg_database_user: 'root'
         forgejo_cfg_database_passwd: 'test'
         forgejo_cfg_database_ssl_mode: false
-      forgejo-debian-12-database_mysql:
+      forgejo-debian-13-database_mysql:
         forgejo_cfg_database_db_type: 'mysql'
         forgejo_cfg_database_host: '127.0.0.1'
         forgejo_cfg_database_name: 'forgejo'
@@ -59,15 +59,15 @@ provisioner:
         forgejo_cfg_database_passwd: 'test'
         forgejo_cfg_database_ssl_mode: false
 platforms:
-  - name: 'forgejo-debian-12-database_postgres'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-database_postgres'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
     pre_build_image: true
-  - name: 'forgejo-debian-12-database_mysql'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-database_mysql'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

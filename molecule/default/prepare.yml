@@ -144,11 +144,11 @@
     - name:
         'Prepare | packages to test logins'
       ansible.builtin.apt:
-        name: 'curl'  # required for testing login
+        name: 'curl'  # Required for testing login.
         state: 'present'
 
 - name: 'Prepare'
-  hosts: 'forgejo-debian-12-user_data'
+  hosts: 'forgejo-debian-13-user_data'
   gather_facts: false
   tasks:
     - name: 'Prepare | simulate user media restriction'

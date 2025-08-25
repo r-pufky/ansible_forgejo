@@ -1,6 +1,6 @@
 ---
 - name: 'Verify'
-  hosts: 'forgejo-debian-12-database_postgres'
+  hosts: 'forgejo-debian-13-database_postgres'
   gather_facts: false
   tasks:
     - name: 'Verify | assert Postgres app.ini'
@@ -20,7 +20,7 @@
         - 'PASSWD = `test`'
 
 - name: 'Verify'
-  hosts: 'forgejo-debian-12-database_mysql'
+  hosts: 'forgejo-debian-13-database_mysql'
   gather_facts: false
   tasks:
     - name: 'Verify | assert MySQL app.ini'

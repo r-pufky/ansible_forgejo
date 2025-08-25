@@ -53,13 +53,28 @@ provisioner:
                 "/molecule/cache/forgejo-11.0.4-linux-amd64.asc"
               }}'
         forgejo_srv_container_enable: true
-        forgejo_srv_harden_enable: true
         forgejo_cfg_security_install_lock: true
         forgejo_srv_backup_repository_skip: true
         forgejo_srv_backup_lfs_data_skip: true
+        forgejo_srv_harden_enable: false
+        # TODO(role): Need to evaluate container/vm/bare metal -- systemd
+        #     hardening works for all other tests except this one where the
+        #     service is installed, then upgraded. Let Trixie settled and see
+        #     if issues arise when it is in the wild longer than a week.
+        #     Currently, disabling these protects resolves the issue:
+        #     * PrivateDevices
+        #     * ProtectClock
+        #     * ProtectKernelTunables
+        #     * ProtectKernelModules
+        #     * ProtectKernelLogs
+        #     * RestrictNamespaces
+        #     * LockPersonality
+        #     * MemoryDenyWriteExecute
+        #     * RestrictRealtime
+        #     * RestrictSUIDGUID
 platforms:
-  - name: 'forgejo-debian-12-backup'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-backup'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

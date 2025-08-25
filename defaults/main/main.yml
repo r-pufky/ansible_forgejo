@@ -219,7 +219,7 @@ forgejo_srv_user_data_manage_enable: false
 # * ProtectKernelTunables=true
 # * ProtectKernelModules=true
 # * ProtectKernelLogs=true
-# * ProtectHostname=true
+# * ProtectHostname=true (Disabled if running in a container).
 # * ProtectClock=true
 # * ProtectControlGroups=true
 # * LockPersonality=true
@@ -231,6 +231,33 @@ forgejo_srv_user_data_manage_enable: false
 # * RestrictAddressFamilies=AF_INET,AF_INET6
 # * RestrictAddressFamilies=~AF_UNIX
 # * IpAccounting=true
+# * AmbientCapabilities=CAP_NET_BIND_SERVICE
+# * CapabilityBoundingSet=
+#     ~CAP_AUDIT_CONTROL
+#     ~CAP_AUDIT_READ
+#     ~CAP_DAC_READ_SEARCH
+#     ~CAP_SYS_RAWIO
+#     ~CAP_SYS_PTRACE
+#     ~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER
+#     ~CAP_BPF
+#     ~CAP_NET_ADMIN
+#     ~CAP_KILL
+#     ~CAP_NET_BROADCAST
+#     ~CAP_SYS_NICE CAP_SYS_RESOURCE
+#     ~CAP_SYS_BOOT
+#     ~CAP_LINUX_IMMUTABLE
+#     ~CAP_SYS_CHROOT
+#     ~CAP_BLOCK_SUSPEND
+#     ~CAP_LEASE
+#     ~CAP_SYS_PACCT
+#     ~CAP_SYS_TTY_CONFIG
+#     ~CAP_SYS_ADMIN
+#     ~CAP_SETUID CAP_SETGID
+#     ~CAP_SETPCAP
+#     ~CAP_CHOWN
+#     ~CAP_FSETID CAP_SETFCAP
+#     ~CAP_NET_RAW
+#     ~CAP_IPC_LOCK
 #
 # Default: True.
 forgejo_srv_harden_enable: true

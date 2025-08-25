@@ -12,12 +12,15 @@
       - not forgejo_cfg_server_app_data_path.startswith(forgejo_cfg_custom_path)
       - not forgejo_cfg_server_app_data_path.startswith(forgejo_role_repo_extract_symlink)
     fail_msg: |
-      ✘ Data storage should be separate from install and config directories.
-
-      Installs: '{{ forgejo_role_repo_extract_symlink }}'
-
-      forgejo_cfg_server_app_data_path: '{{ forgejo_cfg_server_app_data_path }}'
-      forgejo_cfg_custom_path: '{{ forgejo_cfg_custom_path }}'
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │   Data storage must be separate from install/config directories.  │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Install: {{ forgejo_role_repo_extract_symlink }}
+      │
+      │ forgejo_cfg_server_app_data_path: {{ forgejo_cfg_server_app_data_path }}
+      │ forgejo_cfg_custom_path: {{ forgejo_cfg_custom_path }}
 
 # Service
 - name: 'Assert | user manual confirmation'
@@ -27,10 +30,15 @@
     that:
       - forgejo_cfg_service_register_email_confirm == false
     fail_msg: |
-      ✘ forgejo_cfg_service_register_manual_confirm requires disabling
-      forgejo_cfg_service_register_email_confirm
-
-      forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │          User manual configuration requirements NOT met.          │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_register_manual_confirm requires disabling
+      │ forgejo_cfg_service_register_email_confirm.
+      │
+      │ forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
 
 - name: 'Assert | registration only using forgejo'
   when: forgejo_cfg_service_allow_only_internal_registration
@@ -39,10 +47,15 @@
     that:
       - forgejo_cfg_service_register_email_confirm == false
     fail_msg: |
-      ✘ forgejo_cfg_service_allow_only_internal_registration requires disabling
-      forgejo_cfg_service_register_email_confirm
-
-      forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │         Only internal registration requirements NOT met.          │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_allow_only_internal_registration requires disabling
+      │ forgejo_cfg_service_register_email_confirm.
+      │
+      │ forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
 
 - name: 'Assert | registration using third-party services'
   when: forgejo_cfg_service_allow_only_external_registration
@@ -51,10 +64,15 @@
     that:
       - forgejo_cfg_service_register_email_confirm == false
     fail_msg: |
-      ✘ forgejo_cfg_service_allow_only_external_registration requires disabling
-      forgejo_cfg_service_register_email_confirm
-
-      forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │           Third-party registration requirements NOT met.          │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_allow_only_external_registration requires disabling
+      │ forgejo_cfg_service_register_email_confirm.
+      │
+      │ forgejo_cfg_service_register_email_confirm: {{ forgejo_cfg_service_register_email_confirm }}
 
 - name: 'Assert | Google recaptcha'
   when: >
@@ -66,10 +84,13 @@
       - forgejo_cfg_service_recaptcha_secret | length > 0
       - forgejo_cfg_service_recaptcha_sitekey | length > 0
     fail_msg: |
-      ✘ Google Recpatcha requires all options set.
-
-      forgejo_cfg_service_recaptcha_secret: {{ forgejo_cfg_service_recaptcha_secret }}
-      forgejo_cfg_service_recaptcha_sitekey: {{ forgejo_cfg_service_recaptcha_sitekey }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │             Google Recpatcha requires all options set.            │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_recaptcha_secret: {{ forgejo_cfg_service_recaptcha_secret }}
+      │ forgejo_cfg_service_recaptcha_sitekey: {{ forgejo_cfg_service_recaptcha_sitekey }}
 
 - name: 'Assert | hCaptcha recaptcha'
   when: >
@@ -81,10 +102,13 @@
       - forgejo_cfg_service_hcaptcha_secret | length > 0
       - forgejo_cfg_service_hcaptcha_sitekey | length > 0
     fail_msg: |
-      ✘ hCaptcha requires all options set.
-
-      forgejo_cfg_service_hcaptcha_secret: {{ forgejo_cfg_service_hcaptcha_secret }}
-      forgejo_cfg_service_hcaptcha_sitekey: {{ forgejo_cfg_service_hcaptcha_sitekey }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                 hCaptcha requires all options set.                │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_hcaptcha_secret: {{ forgejo_cfg_service_hcaptcha_secret }}
+      │ forgejo_cfg_service_hcaptcha_sitekey: {{ forgejo_cfg_service_hcaptcha_sitekey }}
 
 - name: 'Assert | mCaptcha recaptcha'
   when: >
@@ -97,11 +121,14 @@
       - forgejo_cfg_service_mcaptcha_secret | length > 0
       - forgejo_cfg_service_mcaptcha_sitekey | length > 0
     fail_msg: |
-      ✘ mCaptcha requires all options set.
-
-      forgejo_cfg_service_mcaptcha_url: {{ forgejo_cfg_service_mcaptcha_url }}
-      forgejo_cfg_service_mcaptcha_secret: {{ forgejo_cfg_service_mcaptcha_secret }}
-      forgejo_cfg_service_mcaptcha_sitekey: {{ forgejo_cfg_service_mcaptcha_sitekey }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                 mCaptcha requires all options set.                │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_mcaptcha_url: {{ forgejo_cfg_service_mcaptcha_url }}
+      │ forgejo_cfg_service_mcaptcha_secret: {{ forgejo_cfg_service_mcaptcha_secret }}
+      │ forgejo_cfg_service_mcaptcha_sitekey: {{ forgejo_cfg_service_mcaptcha_sitekey }}
 
 - name: 'Assert | Cloudflare Turnstile recaptcha'
   when: >
@@ -113,10 +140,13 @@
       - forgejo_cfg_service_cf_turnstile_secret | length > 0
       - forgejo_cfg_service_cf_turnstile_sitekey | length > 0
     fail_msg: |
-      ✘ Cloudflare Turnstile requires all options set.
-
-      forgejo_cfg_service_cf_turnstile_secret: {{ forgejo_cfg_service_cf_turnstile_secret }}
-      forgejo_cfg_service_cf_turnstile_sitekey: {{ forgejo_cfg_service_cf_turnstile_sitekey }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │          Cloudflare Turnstile requires all options set.           │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_service_cf_turnstile_secret: {{ forgejo_cfg_service_cf_turnstile_secret }}
+      │ forgejo_cfg_service_cf_turnstile_sitekey: {{ forgejo_cfg_service_cf_turnstile_sitekey }}
 
 # Security
 - name: 'Assert | forgejo_cfg_security_secret_key'
@@ -124,13 +154,17 @@
     quiet: true
     that: forgejo_cfg_security_secret_key | length > 0
     fail_msg: |
-      ✘ forgejo_cfg_security_secret_key must be set.
-
-      Manually generate key:
-
-        forgejo generate secret SECRET_KEY
-
-      Reference: https://forgejo.org/docs/latest/admin/command-line/#generate-secret
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │            forgejo_cfg_security_secret_key must be set.           │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Manually generate key:
+      │
+      │   forgejo generate secret SECRET_KEY
+      │
+      │ Reference:
+      │ * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
 
 # Server
 - name: 'Assert | ACME server'
@@ -142,24 +176,31 @@
       - forgejo_cfg_server_acme_email | length > 0
       - forgejo_cfg_server_acme_directory | length > 0
     fail_msg: |
-      ✘ ACME server requires accepting TOS, email, and live directory.
-
-      forgejo_cfg_server_acme_accepttos: {{ forgejo_cfg_server_acme_accepttos }}
-      forgejo_cfg_server_acme_email: {{ forgejo_cfg_server_acme_email }}
-      forgejo_cfg_server_acme_directory: {{ forgejo_cfg_server_acme_directory }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │  ACME server requires accepting TOS, email, and live directory.   │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_server_acme_accepttos: {{ forgejo_cfg_server_acme_accepttos }}
+      │ forgejo_cfg_server_acme_email: {{ forgejo_cfg_server_acme_email }}
+      │ forgejo_cfg_server_acme_directory: {{ forgejo_cfg_server_acme_directory }}
 
 - name: 'Assert | LFS JWT secret'
   ansible.builtin.assert:
     quiet: true
     that: forgejo_cfg_server_lfs_jwt_secret | length > 0
     fail_msg: |
-      ✘ forgejo_cfg_server_lfs_jwt_secret must be set.
-
-      Manually generate key:
-
-        forgejo generate secret JWT_SECRET
-
-      Reference: https://forgejo.org/docs/latest/admin/command-line/#generate-secret
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │           forgejo_cfg_server_lfs_jwt_secret must be set.          │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Manually generate key:
+      │
+      │   forgejo generate secret JWT_SECRET
+      │
+      │ Reference:
+      │ * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
 
 # Database
 - name: 'Assert | required database type'
@@ -168,7 +209,11 @@
     that:
       - forgejo_cfg_database_db_type | length > 0
     fail_msg: |
-      ✘ Forgejo 11.x+ requires forgejo_cfg_database_db_type set.
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │      Forgejo 11.x+ requires forgejo_cfg_database_db_type set.     │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Assert | required database settings'
   when: forgejo_cfg_database_db_type != 'sqlite3'
@@ -180,15 +225,19 @@
       - forgejo_cfg_database_user | length > 0
       - forgejo_cfg_database_passwd | length > 0
     fail_msg: |
-      ✘ Postgres or MySQL databases require configuration.
-
-      forgejo_cfg_database_db_type: {{ forgejo_cfg_database_db_type }}
-      forgejo_cfg_database_host: {{ forgejo_cfg_database_host }}
-      forgejo_cfg_database_name: {{ forgejo_cfg_database_name }}
-      forgejo_cfg_database_user: {{ forgejo_cfg_database_user }}
-      forgejo_cfg_database_passwd: {{ forgejo_cfg_database_passwd }}
-
-      Reference: https://forgejo.org/docs/latest/admin/database-preparation/
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │         Postgres or MySQL databases require configuration.        │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_database_db_type: {{ forgejo_cfg_database_db_type }}
+      │ forgejo_cfg_database_host: {{ forgejo_cfg_database_host }}
+      │ forgejo_cfg_database_name: {{ forgejo_cfg_database_name }}
+      │ forgejo_cfg_database_user: {{ forgejo_cfg_database_user }}
+      │ forgejo_cfg_database_passwd: {{ forgejo_cfg_database_passwd }}
+      │
+      │ Reference:
+      │ * https://forgejo.org/docs/latest/admin/database-preparation/
 
 # Camo
 - name: 'Assert | required Camo settings'
@@ -199,10 +248,13 @@
       - forgejo_cfg_camo_server_url | length > 0
       - forgejo_cfg_camo_hmac_key | length > 0
     fail_msg: |
-      ✘ Camo requires ALL options to be set.
-
-      forgejo_cfg_camo_server_url: {{ forgejo_cfg_camo_server_url }}
-      forgejo_cfg_camo_hmac_key: {{ forgejo_cfg_camo_hmac_key }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                Camo requires ALL options to be set.               │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_camo_server_url: {{ forgejo_cfg_camo_server_url }}
+      │ forgejo_cfg_camo_hmac_key: {{ forgejo_cfg_camo_hmac_key }}
 
 # Oauth2
 - name: 'Assert | Oauth2 JWT secret'
@@ -211,13 +263,17 @@
     quiet: true
     that: forgejo_cfg_oauth2_jwt_secret | length > 0
     fail_msg: |
-      ✘ forgejo_cfg_oauth2_jwt_secret must be set
-
-      Manually generate key:
-
-        forgejo generate secret JWT_SECRET
-
-      Reference: https://forgejo.org/docs/latest/admin/command-line/#generate-secret
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │             forgejo_cfg_oauth2_jwt_secret must be set.            │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Manually generate key:
+      │
+      │   forgejo generate secret JWT_SECRET
+      │
+      │ Reference:
+      │ * https://forgejo.org/docs/latest/admin/command-line/#generate-secret
 
 # Log
 - name: 'Assert | log request headers'
@@ -226,11 +282,16 @@
     quiet: true
     that: forgejo_cfg_log_logger_access_mode | length > 0
     fail_msg: |
-      ✘ forgejo_cfg_log_request_id_headers requires
-      forgejo_cfg_log_logger_access_mode must be set.
-
-      forgejo_cfg_log_request_id_headers: {{ forgejo_cfg_log_request_id_headers }}
-      forgejo_cfg_log_logger_access_mode: {{ forgejo_cfg_log_logger_access_mode }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │              Log request header requirements NOT met.             │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_log_request_id_headers requires
+      │ forgejo_cfg_log_logger_access_mode must be set.
+      │
+      │ forgejo_cfg_log_request_id_headers: {{ forgejo_cfg_log_request_id_headers }}
+      │ forgejo_cfg_log_logger_access_mode: {{ forgejo_cfg_log_logger_access_mode }}
 
 # Mailer
 - name: 'Assert | mailer client certificates'
@@ -241,37 +302,49 @@
       - forgejo_cfg_mailer_client_cert_file | length > 0
       - forgejo_cfg_mailer_client_key_file | length > 0
     fail_msg: |
-      ✘ forgejo_cfg_mailer_use_client_cert requires all certificate paths set:
-
-      forgejo_cfg_mailer_client_cert_file: {{ forgejo_cfg_mailer_client_cert_file }}
-      forgejo_cfg_mailer_client_key_file: {{ forgejo_cfg_mailer_client_key_file }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │           Mail client certificate requirements NOT met.           │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ forgejo_cfg_mailer_use_client_cert requires all certificate paths set:
+      │
+      │ forgejo_cfg_mailer_client_cert_file: {{ forgejo_cfg_mailer_client_cert_file }}
+      │ forgejo_cfg_mailer_client_key_file: {{ forgejo_cfg_mailer_client_key_file }}
 
 - name: 'Assert | WARNING ⚠'
   when: forgejo_cfg_security_secret_key == '!#@FDEWREWR&*('
   ansible.builtin.debug:
     msg: |
-      ⚠ WARNING: HARD-CODED SECRET KEY IS BEING USED.
-
-      The default secret key is well known and should NOT be used. Old
-      installations that use this key require manual migrations.
-
-      Reference: https://github.com/go-gitea/gitea/issues/16832
-
-      forgejo_cfg_security_secret_key: {{ forgejo_cfg_security_secret_key }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │           WARNING: HARD-CODED SECRET KEY IS BEING USED.           │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ The default secret key is well known and should NOT be used. Old
+      │ installations that use this key require manual migrations.
+      │
+      │ forgejo_cfg_security_secret_key: {{ forgejo_cfg_security_secret_key }}
+      │
+      │ Reference:
+      │ * https://github.com/go-gitea/gitea/issues/16832
 
 - name: 'Assert | WARNING ⚠'
   when: not forgejo_cfg_security_disable_git_hooks
   ansible.builtin.debug:
     msg: |
-      ⚠ WARNING: CUSTOM GIT HOOKS ARE DANGEROUS.
-
-      Users can gain administrator privileges by modifying the database. This
-      maybe harmful to you website or your operating system. Setting this to
-      true does not change existing hooks in git repos; adjust it before if
-      necessary.
-
-      Custom git hooks can be used to perform arbitrary code execution on host
-      operating system. This enables users to access and modify this config
-      file, database, and interrupt the service.
-
-      forgejo_cfg_security_disable_git_hooks: {{ forgejo_cfg_security_disable_git_hooks }}
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │              WARNING: CUSTOM GIT HOOKS ARE DANGEROUS.             │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Users can gain administrator privileges by modifying the database. This
+      │ maybe harmful to you website or your operating system. Setting this to
+      │ true does not change existing hooks in git repos; adjust it before if
+      │ necessary.
+      │
+      │ Custom git hooks can be used to perform arbitrary code execution on host
+      │ operating system. This enables users to access and modify this config
+      │ file, database, and interrupt the service.
+      │
+      │ forgejo_cfg_security_disable_git_hooks: {{ forgejo_cfg_security_disable_git_hooks }}

@@ -30,16 +30,12 @@
 # yamllint enable rule:line-length
 
 # Last time Forgejo options were validated against a default configuration.
-forgejo_role_validate_date: '2025-07-31'
-forgejo_role_validate_release: 'bookworm'
+forgejo_role_validate_date: '2025-08-24'
+forgejo_role_validate_release: 'trixie'
 forgejo_role_validate_version: 'v11.0.3'
 
 forgejo_role_poll_interval: 3
 forgejo_role_poll_timeout: 30
-forgejo_role_poll_msg: '{{
-    "(max " ~ forgejo_role_poll_timeout ~ "s)" ~
-    (30 - (forgejo_role_poll_timeout | lower | length)) * " "
-  }}'
 
 ###############################################################################
 # APT Packages

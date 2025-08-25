@@ -42,11 +42,6 @@ provisioner:
         forgejo_srv_container_enable: true
         forgejo_srv_harden_enable: true
         forgejo_cfg_security_install_lock: true
-        # forgejo_srv_local_users:
-        #   - username: 'admin_test'
-        #     password: 'admin'
-        #     email: 'admin@example.com'
-        #     admin: true
         forgejo_srv_user_data_manage_enable: true
         forgejo_cfg_repository_mimetype_mapping:
           '.apk': 'application/vnd.android.package-archive'
@@ -131,8 +126,8 @@ provisioner:
             MINIO_USE_SSL: false
             MINIO_INSECURE_SKIP_VERIFY: false
 platforms:
-  - name: 'forgejo-debian-12-dict_of_dict'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-dict_of_dict'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

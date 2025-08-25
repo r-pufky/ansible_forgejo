@@ -31,10 +31,10 @@
     msg: |
       ╭───────────────────────────────────────────────────────────────────╮
       │                                                                   │
-      │               Waiting until port becomes available                │
-      │                              {{ forgejo_role_poll_msg }} │
+      │               Waiting until port becomes available.               │
       │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
+      ├───────────────────────────────────────────────────────────────────╯
+      │ Max {{ forgejo_role_poll_timeout }} seconds.
 
 - name: 'Local users | poll service'
   when: _forgejo_srv_poll_enable.raw
@@ -46,10 +46,10 @@
     msg: |
       ╭───────────────────────────────────────────────────────────────────╮
       │                                                                   │
-      │                             Timed out.                            │
-      │             May receive "database is locked" errors.              │
+      │                            Timed out.                             │
       │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
+      ├───────────────────────────────────────────────────────────────────╯
+      │ May receive "database is locked" errors.
 
 - name: 'Local users | query'
   ansible.builtin.command:

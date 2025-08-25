@@ -57,11 +57,9 @@ provisioner:
           - username: 'user_test'
             state: 'absent'
     host_vars:
-      forgejo-debian-12-user_data:
+      forgejo-debian-13-user_data:
         forgejo_srv_user_data_manage_enable: true
-      forgejo-debian-12-paths:
-        forgejo_srv_container_enable: true
-        forgejo_srv_harden_enable: true
+      forgejo-debian-13-paths:
         forgejo_cfg_security_internal_token: 'test'
         forgejo_cfg_server_lfs_jwt_secret: 'test'
         forgejo_cfg_security_secret_key: 'test'
@@ -81,8 +79,8 @@ provisioner:
         forgejo_cfg_packages_chunked_upload_path: 'tmp/package-upload'
         forgejo_cfg_packages_path: 'packages'
 platforms:
-  - name: 'forgejo-debian-12-default'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
@@ -90,15 +88,15 @@ platforms:
     pre_build_image: true
     published_ports:
       - '3000/tcp'
-  - name: 'forgejo-debian-12-user_data'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-user_data'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
     pre_build_image: true
-  - name: 'forgejo-debian-12-paths'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'forgejo-debian-13-paths'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

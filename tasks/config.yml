@@ -422,5 +422,5 @@
        "forgejo.service"] | select()
     }}'
 
-- name: 'Config | start services'
+- name: 'Config | flush handlers'
   ansible.builtin.meta: 'flush_handlers'

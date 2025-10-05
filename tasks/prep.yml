@@ -30,21 +30,21 @@
   ansible.builtin.set_fact:
     _forgejo_srv_user: '{{
         _forgejo_srv_user |
-        combine({"role_uid": _forgejo_srv_user_query.uid,
-                 "role_home": _forgejo_srv_user_query.home,
-                 "role_ssh": _forgejo_srv_user_query.home ~ "/.ssh"})
+        combine({"_uid": _forgejo_srv_user_query.uid,
+                 "_home": _forgejo_srv_user_query.home,
+                 "_ssh": _forgejo_srv_user_query.home ~ "/.ssh"})
       }}'
     _forgejo_srv_group: '{{
         _forgejo_srv_group |
-        combine({"role_gid": _forgejo_srv_user_query.group})
+        combine({"_gid": _forgejo_srv_user_query.group})
       }}'
 
 - name: 'Prep | update trusted user home directory'
   ansible.builtin.set_fact:
     _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename: '{{
         _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename |
-        combine({"role_dest":
-            _forgejo_srv_user.role_home ~ "/.ssh/ca_trust_chain_root.pem"
+        combine({"_dest":
+            _forgejo_srv_user._home ~ "/.ssh/ca_trust_chain_root.pem"
             if
             _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw |
               length > 0
@@ -59,7 +59,7 @@
     - name: 'Prep | enumerate server host keys | query'
       delegate_to: 'localhost'
       ansible.builtin.find:
-        paths: '{{ _forgejo_cfg_server_ssh_server_host_keys.role_src }}'
+        paths: '{{ _forgejo_cfg_server_ssh_server_host_keys._src }}'
         excludes: ['*.pub']
         follow: true
         recurse: true
@@ -71,7 +71,7 @@
         _forgejo_parsed_ssh_keys: '{{
             _forgejo_parsed_ssh_keys | default([]) +
             [item.path |
-             replace(_forgejo_cfg_server_ssh_server_host_keys.role_src, "")]
+             replace(_forgejo_cfg_server_ssh_server_host_keys._src, "")]
           }}'
       loop: '{{ _forgejo_source_ssh_keys.files }}'
       loop_control:
@@ -83,7 +83,7 @@
             _forgejo_cfg_server_ssh_server_host_keys |
             combine({"data":
               _forgejo_cfg_server_ssh_server_host_keys.data +
-              [_forgejo_cfg_server_ssh_server_host_keys.role_dest_dir ~ "/" ~
+              [_forgejo_cfg_server_ssh_server_host_keys._dest_dir ~ "/" ~
                item]
             })
           }}'
@@ -115,9 +115,9 @@
     cmd: >
         {{ forgejo_role_repo_extract_symlink }}
         dump
-        {{ _forgejo_cfg_custom_path.role_args }}
-        {{ _forgejo_cfg_custom_path.role_config_file }}
-        {{ _forgejo_srv_backup_path.role_args }}
+        {{ _forgejo_cfg_custom_path._args }}
+        {{ _forgejo_cfg_custom_path._config_file }}
+        {{ _forgejo_srv_backup_path._args }}
     chdir: '{{ _forgejo_srv_backup_path.raw }}'
   changed_when: true
   become: true

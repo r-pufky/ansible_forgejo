@@ -69,6 +69,22 @@ forgejo_role_repo_release_specifier: 'v'
 forgejo_role_repo_release_asset: 'forgejo-{BARE_VERSION}-linux-amd64'
 
 ###############################################################################
+# Unsafe Templates
+###############################################################################
+# Forgejo uses jinja syntax for template formatting. Unsafe cannot be used in a
+# filter assignment and must be done transitively via variable assignment.
+
+forgejo_role_badges_generator_url_template:
+  !unsafe 'https://img.shields.io/badge/{{.label}}-{{.text}}-{{.color}}'
+
+forgejo_role_ssh_authorized_keys_command_template:
+  !unsafe '{{.AppPath}} --config={{.CustomConf}} serv key-{{.Key.ID}}'
+
+forgejo_role_unsafe_empty: !unsafe ''
+
+forgejo_role_from_display_name_format: !unsafe '{{ .DisplayName }}'
+
+###############################################################################
 # Default Forgejo User/Group
 ###############################################################################
 

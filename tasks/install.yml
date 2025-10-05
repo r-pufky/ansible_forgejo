@@ -37,4 +37,4 @@
     repo_force_overwrite: '{{ _forgejo_srv_force_overwrite.raw }}'
     repo_extract_mode: 'a-st,o-rwx'
     repo_extract_binary_mode: '0755'
-    repo_extract_extra_opts: '--strip-components=1'
+    repo_extract_extra_opts: ['--strip-components=1']

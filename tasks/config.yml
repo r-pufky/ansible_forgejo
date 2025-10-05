@@ -21,15 +21,15 @@
 - name: 'Config | manage required role directories'
   ansible.builtin.file:
     path: '{{ item.raw }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ item.role_perms }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ item._perms }}'
     state: 'directory'
   become: true
   become_user: '{{
       _forgejo_srv_user.raw
       if
-        _forgejo_srv_user_data_manage_enable.raw and item.role_dir_is_mount
+        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
       else
       "root"
     }}'
@@ -55,16 +55,16 @@
 
 - name: 'Config | manage required JWT/DB directories'
   ansible.builtin.file:
-    path: '{{ item.role_dir }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ item.role_perms }}'
+    path: '{{ item._dir }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ item._perms }}'
     state: 'directory'
   become: true
   become_user: '{{
       _forgejo_srv_user.raw
       if
-        _forgejo_srv_user_data_manage_enable.raw and item.role_dir_is_mount
+        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
       else
       "root"
     }}'
@@ -72,45 +72,45 @@
     - '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file }}'
     - '{{ _forgejo_cfg_database_path }}'
   loop_control:
-    label: '{{ item.role_dir }}'
+    label: '{{ item._dir }}'
 
 - name: 'Config | manage required mailer directories'
   ansible.builtin.file:
-    path: '{{ item.role_dest_dir }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ item.role_perms }}'
+    path: '{{ item._dest_dir }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ item._perms }}'
     state: 'directory'
   become: true
   become_user: '{{
       _forgejo_srv_user.raw
       if
-        _forgejo_srv_user_data_manage_enable.raw and item.role_dir_is_mount
+        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
       else
       "root"
     }}'
   loop:
     - '{{ _forgejo_cfg_mailer_client_cert_file }}'
   loop_control:
-    label: '{{ item.role_dest_dir }}'
+    label: '{{ item._dest_dir }}'
 
 - name: 'Config | manage required sub-system directories'
   ansible.builtin.file:
     path: '{{ item }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ _forgejo_cfg_storage_sub_system.role_perms }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ _forgejo_cfg_storage_sub_system._perms }}'
     state: 'directory'
   become: true
   become_user: '{{
       _forgejo_srv_user.raw
       if
         _forgejo_srv_user_data_manage_enable.raw and
-        _forgejo_cfg_storage_sub_system.role_dir_is_mount
+        _forgejo_cfg_storage_sub_system._dir_is_mount
       else
       "root"
     }}'
-  loop: '{{ _forgejo_cfg_storage_sub_system.role_storage_local_paths }}'
+  loop: '{{ _forgejo_cfg_storage_sub_system._storage_local_paths }}'
 
 - name: 'Config | set SSH test key path'
   when: >
@@ -118,9 +118,9 @@
     _forgejo_cfg_server_ssh_key_test_path.raw != '/tmp'
   ansible.builtin.file:
     path: '{{ _forgejo_cfg_server_ssh_key_test_path.raw }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ _forgejo_cfg_server_ssh_key_test_path.role_perms }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ _forgejo_cfg_server_ssh_key_test_path._perms }}'
     state: 'directory'
   become: true
   become_user: '{{
@@ -131,10 +131,10 @@
 
 - name: 'Config | set restricted user SSH directory'
   ansible.builtin.file:
-    path: '{{ _forgejo_srv_user.role_ssh }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
-    mode: '{{ _forgejo_srv_user.role_perms }}'
+    path: '{{ _forgejo_srv_user._ssh }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
+    mode: '{{ _forgejo_srv_user._perms }}'
     recurse: false
     state: 'directory'
   become: true
@@ -148,12 +148,12 @@
   when: _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw | length > 0
   ansible.builtin.copy:
     src: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw }}'
-    dest: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
     directory_mode:
-      '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file.role_perms }}'
+      '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._perms }}'
     force: true
   become: true
   become_user: '{{
@@ -166,18 +166,18 @@
 - name: 'Config | reset Oauth2 private key file'
   when: _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw | length == 0
   ansible.builtin.file:
-    path: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file.role_dest }}'
+    path: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._dest }}'
     state: 'absent'
 
 - name: 'Config | set mail client certificates'
   when: _forgejo_cfg_mailer_use_client_cert.raw
   ansible.builtin.copy:
     src: '{{ item.raw }}'
-    dest: '{{ item.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ item._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
-    directory_mode: '{{ item.role_perms }}'
+    directory_mode: '{{ item._perms }}'
     force: true
   loop:
     - '{{ _forgejo_cfg_mailer_client_cert_file }}'
@@ -188,7 +188,7 @@
 - name: 'Config | remove mail client certificates'
   when: not _forgejo_cfg_mailer_use_client_cert.raw
   ansible.builtin.file:
-    path: '{{ item.role_dest }}'
+    path: '{{ item._dest }}'
     state: 'absent'
   loop:
     - '{{ _forgejo_cfg_mailer_client_cert_file }}'
@@ -199,12 +199,12 @@
 - name: 'Config | set server host keys'
   when: _forgejo_cfg_server_ssh_server_host_keys.raw | length > 0
   ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_ssh_server_host_keys.role_src }}'
-    dest: '{{ _forgejo_cfg_server_ssh_server_host_keys.role_dest_dir }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    src: '{{ _forgejo_cfg_server_ssh_server_host_keys._src }}'
+    dest: '{{ _forgejo_cfg_server_ssh_server_host_keys._dest_dir }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_ssh_server_host_keys.role_perms }}'
+    directory_mode: '{{ _forgejo_cfg_server_ssh_server_host_keys._perms }}'
     force: true
 
 - name: 'Config | set user trust keys'
@@ -212,30 +212,30 @@
   ansible.builtin.copy:
     src: '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw }}'
     dest:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
     directory_mode:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.role_perms }}'
+      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._perms }}'
     force: true
 
 - name: 'Config | remove user trust keys'
   when: _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw | length == 0
   ansible.builtin.file:
     path:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.role_dest }}'
+      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._dest }}'
     state: 'absent'
 
 - name: 'Config | set custom CA trust chain root certificate'
   when: _forgejo_cfg_server_acme_ca_root.raw | length > 0
   ansible.builtin.copy:
     src: '{{ _forgejo_cfg_server_acme_ca_root.raw }}'
-    dest: '{{ _forgejo_cfg_server_acme_ca_root.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ _forgejo_cfg_server_acme_ca_root._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_acme_ca_root.role_perms }}'
+    directory_mode: '{{ _forgejo_cfg_server_acme_ca_root._perms }}'
     force: true
 
 - name: 'Config | remove custom CA trust chain root certificate'
@@ -248,43 +248,43 @@
   when: _forgejo_cfg_server_cert_file.raw | length > 0
   ansible.builtin.copy:
     src: '{{ _forgejo_cfg_server_cert_file.raw }}'
-    dest: '{{ _forgejo_cfg_server_cert_file.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ _forgejo_cfg_server_cert_file._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_cert_file.role_perms }}'
+    directory_mode: '{{ _forgejo_cfg_server_cert_file._perms }}'
     force: true
 
 - name: 'Config | remove server certificate'
   when: _forgejo_cfg_server_cert_file.raw | length == 0
   ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_cert_file.role_dest }}'
+    path: '{{ _forgejo_cfg_server_cert_file._dest }}'
     state: 'absent'
 
 - name: 'Config | set server certificate key'
   when: _forgejo_cfg_server_key_file.raw | length > 0
   ansible.builtin.copy:
     src: '{{ _forgejo_cfg_server_key_file.raw }}'
-    dest: '{{ _forgejo_cfg_server_key_file.role_dest }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ _forgejo_cfg_server_key_file._dest }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_key_file.role_perms }}'
+    directory_mode: '{{ _forgejo_cfg_server_key_file._perms }}'
     force: true
 
 - name: 'Config | remove server certificate key'
   when: _forgejo_cfg_server_key_file.raw | length == 0
   ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_key_file.role_dest }}'
+    path: '{{ _forgejo_cfg_server_key_file._dest }}'
     state: 'absent'
 
 # Render to variable, remove empty sections, then write to disk atomically.
 - name: 'Config | set config'
   ansible.builtin.template:
     src: 'template.j2'
-    dest: '{{ _forgejo_cfg_custom_path.role_config_file }}'
-    owner: '{{ _forgejo_srv_user.role_uid }}'
-    group: '{{ _forgejo_srv_group.role_gid }}'
+    dest: '{{ _forgejo_cfg_custom_path._config_file }}'
+    owner: '{{ _forgejo_srv_user._uid }}'
+    group: '{{ _forgejo_srv_group._gid }}'
     mode: '0640'
   vars:
     template: '{{
@@ -313,7 +313,7 @@
           exec_start:
             - >-
               {{ forgejo_role_repo_extract_symlink }} web
-              --config "{{ _forgejo_cfg_custom_path.role_config_file }}"
+              --config "{{ _forgejo_cfg_custom_path._config_file }}"
               --custom-path "{{ _forgejo_cfg_custom_path.raw }}"
               --work-path "{{ _forgejo_cfg_app_work_path.raw }}"
           runtime_max_sec: '{{
@@ -330,7 +330,7 @@
             - var: 'USER'
               value: '{{ _forgejo_srv_user.raw }}'
             - var: 'HOME'
-              value: '{{ _forgejo_srv_user.role_home }}'
+              value: '{{ _forgejo_srv_user._home }}'
         install:
           wanted_by:
             - 'multi-user.target'

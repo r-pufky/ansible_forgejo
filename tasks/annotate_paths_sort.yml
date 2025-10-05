@@ -23,7 +23,7 @@
         _forgejo_mounted_dirs | default([]) +
             [dir if dir.startswith(item) else ""]
       }}'
-  loop: '{{ _forgejo_srv_user_data_manage_enable.role_mounted_dirs }}'
+  loop: '{{ _forgejo_srv_user_data_manage_enable._mounted_dirs }}'
 
 - name: 'Annotate | sort directories | detect excluded {{ dir }}'
   when: dir not in _forgejo_mounted_dirs | default([])

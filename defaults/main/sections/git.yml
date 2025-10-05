@@ -123,6 +123,6 @@ forgejo_cfg_git_timeout_grep: 2
 #   core.logAllRefUpdates: true
 #   gc.reflogExpire: 90
 forgejo_cfg_git_config:
-  diff.algorithm: 'histogram'
-  core.logAllRefUpdates: true
-  gc.reflogExpire: 90
+  'diff.algorithm': 'histogram'
+  'core.logAllRefUpdates': true
+  'gc.reflogExpire': 90

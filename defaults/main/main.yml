@@ -140,7 +140,7 @@ forgejo_srv_restart_daily_enable: false
 #
 #   ansible-playbook site.yml
 #       --tags Forgejo
-#       -e 'forgejo_srv_force_config_only_enable=true'
+#       -e '{"forgejo_srv_force_config_only_enable": true}'
 #
 # Default: False.
 forgejo_srv_force_config_only_enable: false

@@ -31,6 +31,7 @@ WARNING
 > [migration instructions](https://forgejo.org/docs/latest/admin/upgrade/from-gitea/).
 
 Read defaults documentation.
+[Additional documentation](http://r-pufky.github.io/r-pufky/docs/service/forgejo).
 
 Gitea migrations should be done **manually**: Gitea versions > `1.22` may not
 be migratable. Only Forgejo `10.0.3` is guaranteed to safely migrate from Gitea

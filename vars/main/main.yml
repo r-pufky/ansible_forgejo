@@ -25,7 +25,7 @@
 #     down and checking app.ini for differences.
 #   * Diff release documentation for new variable exposure
 # * Update tests for any changes.
-# * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
+# * Standard role validation testing (yamllint, ansible-lint, to-do, no-qa).
 # * Tag with MAJOR.MINOR version, with PATCH representing role change.
 # yamllint enable rule:line-length
 

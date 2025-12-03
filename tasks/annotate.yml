@@ -263,7 +263,7 @@
         default=_forgejo_cfg_storage_path.raw ~ '/backup',
         _args='',
         _dir_is_mount=true,
-        _perms='0750',
+        _perms='0755',
         hint='str',
         comment='Consider directory always mounted?',
         order=22

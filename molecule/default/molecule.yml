@@ -7,10 +7,11 @@
 # Tests:
 # * service is active and running (default).
 # * Default configuration is syntactically correct.
-# * Configuration (user_data) dict and dict of dicts are syntactically correct.
+# * Deployed configuration directory is set correctly.
 # * Hardened drop-in works.
-# * permissions propagated to all user data directories.
-# * Relative default paths specified resolve to default locations correctly.
+# * Backup pre-operation works for forgejo_flg_config
+# * admin_test user is created and can login.
+# * user_test user is removed.
 
 dependency:
   name: 'galaxy'
@@ -27,26 +28,10 @@ provisioner:
   inventory:
     group_vars:
       all:
-        repo_testing_enable: true
-        repo_testing_versions:
-          - comment: 'forgejo'
-            version: 'v11.0.3'
-            asset: '{{
-                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-11.0.3-linux-amd64"
-              }}'
-            checksum: '{{
-                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-11.0.3-linux-amd64.sha256"
-              }}'
-            signature: '{{
-                lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-                "/molecule/cache/forgejo-11.0.3-linux-amd64.asc"
-              }}'
-        forgejo_srv_container_enable: true
-        forgejo_srv_harden_enable: true
-        forgejo_cfg_security_install_lock: true
-        forgejo_srv_local_users:
+        molecule_flg_inject: true
+        forgejo_flg_backup: true
+        forgejo_srv_harden: true
+        forgejo_cfg_users:
           - username: 'admin_test'
             password: 'adminadmin'
             email: 'admin@example.com'
@@ -56,69 +41,37 @@ provisioner:
             email: 'user@example.com'
           - username: 'user_test'
             state: 'absent'
-    host_vars:
-      forgejo-debian-13-user_data:
-        forgejo_srv_user_data_manage_enable: true
-      forgejo-debian-13-paths:
-        forgejo_cfg_security_internal_token: 'test'
-        forgejo_cfg_server_lfs_jwt_secret: 'test'
-        forgejo_cfg_security_secret_key: 'test'
-        forgejo_cfg_repository_root: 'gitea-repositories'
-        forgejo_cfg_repository_upload_temp_path: 'tmp/uploads'
-        forgejo_cfg_repository_local_local_copy_path: 'tmp/local-repo'
-        forgejo_cfg_server_pprof_data_path: 'data/tmp/pprof'
-        forgejo_cfg_database_path: 'forgejo.db'
-        forgejo_cfg_indexer_issue_indexer_path: 'indexers/issues.bleve'
-        forgejo_cfg_indexer_repo_indexer_path: 'indexers/repos.bleve'
-        forgejo_cfg_queue_datadir: 'queues/common'
-        forgejo_cfg_server_acme_directory: 'https'
-        forgejo_cfg_session_provider_config: 'data/sessions'
-        forgejo_cfg_attachment_path: 'attachments'
-        forgejo_cfg_log_root_path: 'log'
-        forgejo_cfg_git_home_path: 'home'
-        forgejo_cfg_packages_chunked_upload_path: 'tmp/package-upload'
-        forgejo_cfg_packages_path: 'packages'
+        forgejo_cfg_backup_opts:
+          - '--database sqlite3'
+          - '--skip-repository'
+          - '--skip-log'
+          - '--skip-custom-dir'
+          - '--skip-lfs-data'
+          - '--skip-attachment-data'
+          - '--skip-package-data'
+          - '--skip-index'
+          - '--skip-repo-archives'
+          - '--type tar.xz'
 platforms:
-  - name: 'forgejo-debian-13-default'
+  - name: 'forgejo-default'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    capabilities:
+      - 'SYS_ADMIN'  # Required for testing systemd hardening.
     command: '/lib/systemd/systemd'
     pre_build_image: true
     published_ports:
       - '3000:3000/tcp'
-  - name: 'forgejo-debian-13-user_data'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-  - name: 'forgejo-debian-13-paths'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
     - 'prepare'
     - 'converge'
-    # - 'idempotence'  # Files created, extracted, created, deleted.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

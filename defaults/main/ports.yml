@@ -7,7 +7,7 @@
 # Reference:
 # * https://github.com/r-pufky/ansible_ufw
 
-forgejo_srv_ports:
+forgejo_ports:
   - proto: 'tcp'
     from_ip: 'any'
     to_port: 3000

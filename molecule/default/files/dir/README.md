@@ -1,0 +1,1 @@
+Example forgejo_cfg_d file to place in /var/opt/forgejo/cfg.

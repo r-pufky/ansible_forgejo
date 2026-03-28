@@ -1,25 +1,46 @@
 ---
 ###############################################################################
-# Forgejo Service Configuration
+# Feature Flags
 ###############################################################################
-# Skeleton database must be setup before role is applied (except SQLite).
-# Database backend migrations (SQLite/Postgres/MySQL) must be done manually.
+
+# 1. Create backup of existing config and database before install?
 #
-# WARNING
-# > Migrations from Gitea/Gogs in practice require manual intervention.
-# >
-# > ALWAYS backup databases and all repository data (or make a snapshot) before
-# > attempting a migration.
-# >
-# > Suggest creating a new container with data/db snapshots with Forgejo, then
-# > removing the old instance once confirmed working.
-# >
-# > Reference:
-# > * https://forgejo.org/docs/latest/admin/upgrade/from-gitea/
+# Create a backup of existing configuration and database before performing any
+# operations if /etc/opt/foregejo/app.ini is detected. This is executed before
+# any data-modifying operations allowing for a manual recovery if needed. See
+# forgejo_cfg_backup_opts.
 #
-# Install size: ~162MB
-#    Forgejo: ~102MB.
-#   Packages: ~60MB.
+# Default: True.
+forgejo_flg_backup: true
+
+# 2. Run maintenance tasks?
+#
+# Preform role maintenance tasks including removal of old role versions.
+#
+# Default: True.
+forgejo_flg_maintenance: true
+
+# 3. Install application?
+#
+# Creates required default directories, users, install packages, download
+# software, autogenerates config.xml if not specified, update and start
+# services.
+#
+# Default: True.
+forgejo_flg_install: true
+
+# 4. Set configuration data?
+#
+# Overwrite config data directory sourced from forgejo_cfg_d and app.ini from
+# forgejo_cfg_file. Stops service, deploys user config data, updates and starts
+# services.
+#
+# Default: False.
+forgejo_flg_config: false
+
+###############################################################################
+# Service
+###############################################################################
 
 # Forgejo Release.
 #
@@ -28,45 +49,128 @@
 # notes before updating versions. Role is only developed for LTS releases.
 #
 # Versions (Schematic):
-#       MAJOR: Unsafe - requires major role changes; only default MAJOR LTS
-#              version is supported. See other branches if they exist.
-#       MINOR: Unsafe - New functionality may not be properly supported in
+#       MAJOR: Unsafe - potentially new dependencies; only default MAJOR LTS
+#              version is supported.
+#       MINOR: Safe - New functionality may not be properly supported in
 #              configuration.
 #       PATCH: Safe - Usually requires no role updates.
-#   RECOMMEND: Only increment PATCH. Never use 'latest'.
+#   RECOMMEND: Only increment MINOR.PATCH. Pre-releases unsupported.
 #
-# Values:
-#   {VERSION}: Tagged release to use ('v11.0.3').
-#      latest: Use latest stable release.
-#
-# Default: 'v.11.0.3'.
+# Default: 'v11.0.11'.
 #
 # Reference:
 # * https://forgejo.org/releases
-forgejo_srv_version: 'v11.0.3'
+forgejo_srv_version: 'v11.0.11'
 
-# Forgejo GPG key ID.
+# Codeberg access token (forgejo).
 #
-# Binary installations are automatically validated against the published key
-# with the specified ID.
+# Unauthenticated (anonymous) API requests are heavily restricted to the sum
+# total of requests to Codeberg from a given IP. Use an access token if
+# receiving 403's.
+#
+# Codeberg:
+#   * settings ➔ applications ➔ access tokens
+#     * name: {LABEL APPROPRIATELY}
+#     * Repository and Organization Access: Public only
+#     * Select Permissions: repository (read-only)
+#
+# Default: '' (unauthenticated).
 #
 # Reference:
-# * https://keys.openpgp.org/search
-# * https://forgejo.org/download
-forgejo_srv_gpg_key_id: 'EB114F5E6C0DC2BCDD183550A4B61A2DC5923710'
+# * https://docs.codeberg.org/advanced/access-token
+forgejo_srv_token: ''
 
-# Enable installation of Redis memcache server?
+# User that Forgejo will run under.
 #
-# A local Redis server will be configured automatically with default options as
-# default configuration assumes it exists. Disable if managing Redis
-# externally.
+# 'git' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
+#
+# Default: 'git'.
+forgejo_srv_user: 'git'
+
+# Group that Forgejo will run under.
+#
+# 'git' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
+#
+# Default: 'git'.
+forgejo_srv_group: 'git'
+
+# Harden Forgejo service (exposure 2.3/10)?
+#
+# Restrict service to only required operations on system. Generally disabling
+# this indicates a problem with underlying stack and not the role. See all
+# hardening options in templates/systemd/override.conf.j2.
 #
 # Default: True.
-forgejo_srv_redis_enable: true
+forgejo_srv_harden: true
+
+# yamllint disable rule:line-length
+###############################################################################
+# Config
+###############################################################################
+# Forgejo configuration is complex and nuanced. See Config Cheet Sheet and
+# Example app.ini keeping in mind where the role places files.
+#
+# Forgejo uses jinja2 templating to parse app.ini and other files. Templates
+# are automatically used when **forgejo_cfg_file** or **forgejo_cfg_d** are
+# used.
+#
+# Use raw feature to allow jinja templating to pass through to rendered
+# template:
+#
+# ``` ini
+# [badges]
+# GENERATOR_URL_TEMPLATE = {% raw %}'{{.label}}-{{.text}}'{% endraw %}
+# ```
+#
+# Renders app.ini as:
+# ``` ini
+# [badges]
+# GENERATOR_URL_TEMPLATE = '{{.label}}-{{.text}}'
+# ```
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/config-cheat-sheet/
+# * https://codeberg.org/forgejo/forgejo/src/branch/forgejo/custom/conf/app.example.ini
+# yamllint enable rule:line-length
+
+# Forgejo app.ini to set.
+#
+# Ansible controller path to source app.ini (treated as a jinja2 template
+# allowing for ansible variable interpretation). Overwrites existing
+# app.ini in /etc/opt/forgejo/app.ini.
+#
+# A default configuration is autogenerated if not provided (see
+# templates/default).
+#
+# forgejo_cfg_file: 'host_vars/forgejo.example.com/app.ini'
+#
+# Default: '' (use minimally configured default).
+forgejo_cfg_file: ''
+
+# Forgejo configuration to set.
+#
+# Ansible controller path to source configuration files (treated as a jinja2
+# templates allowing for ansible variable interpretation). Overwrites existing
+# config data in /var/opt/forgejo/cfg/*. SQlite databases, certificates, etc.
+# should be included. Files not sourced will be removed. /var/opt/forgejo
+# typically contains service user home directory, where other non-configuration
+# files may be stored (like logs, etc).
+#
+# Required default files (using a SQLite DB backend) are auto-generated if they
+# do not exist.
+#
+# forgejo_cfg_d: 'host_vars/forgejo.example.com/config'
+#
+# Default: '' (use minimally configured default).
+forgejo_cfg_d: ''
 
 # Manage local Forgejo users.
 #
-# forgejo_srv_local_users:
+# Local users are managed via localhost HTTP API after Forgejo is configured.
+#
+# forgejo_cfg_users:
 #     list of dict - User accounts to manage.
 #   - username: str - Username.
 #     password: str - Password.
@@ -83,7 +187,7 @@ forgejo_srv_redis_enable: true
 #            absent: Delete user.
 #         Default: 'present'.
 #
-# forgejo_srv_local_users:
+# forgejo_cfg_users:
 #   - username: 'admin_user'
 #     password: 'admin'
 #     email: 'admin@example.com'
@@ -96,168 +200,39 @@ forgejo_srv_redis_enable: true
 #     state: 'absent'
 #
 # Default: [] (No local users).
-forgejo_srv_local_users: []
+forgejo_cfg_users: []
 
-# Enable polling for forgejo_cfg_server_http_port?
+# Options to apply during backup operations.
 #
-# Forgejo will report service is active and running but may not be ready to
-# accept API requests for user modifications. Wait until the webserver is
-# responding before attempting API calls. Automatically proceeds after
-# forgejo_role_poll_timeout seconds.
+# Backups are stored in {APP_DATA_PATH}/backup. Enabling all options will
+# result in large backups.
 #
-# Disabling may lead to errors during role application:
+# Valid Options:
+#   * --database {sqlite3,mysql,postgres}
+#   * --skip-repository
+#   * --skip-log
+#   * --skip-custom-dir
+#   * --skip-lfs-data
+#   * --skip-attachment-data
+#   * --skip-package-data
+#   * --skip-index
+#   * --skip-repo-archives
+#   * --type {zip,tar,tar.sz,tar.gz,tar.xz,tar.bz2,tar.br,tar.lz4,tar.zst}
 #
-#   Command error: database is locked
+# All other options are automatically determined via existing app.ini.
 #
-# Default: True (poll).
-forgejo_srv_poll_enable: true
-
-# Remove old installs on upgrade success? Default: True.
-forgejo_srv_delete_old_versions_enable: true
-
-# Force overwrite existing install?
+# forgejo_cfg_backup_opts:
+#  - '--database sqlite3'
+#  - '--skip-repository'
+#  - '--skip-log'
+#  - '--skip-custom-dir'
+#  - '--skip-lfs-data'
+#  - '--skip-attachment-data'
+#  - '--skip-package-data'
+#  - '--skip-index'
+#  - '--skip-repo-archives'
+#  - '--type tar.xz'
 #
-# DATA DESTRUCTIVE.
-#
-# Removes existing cached downloaded archives and existing same-version install
-# directories (if any). Any user data in these directories are DESTROYED.
-#
-# Default: False.
-forgejo_srv_force_overwrite: false
-
-# Automatically restart Forgejo daily? Default: False.
-forgejo_srv_restart_daily_enable: false
-
-# Only apply configuration?
-#
-# Reduces role application time by ONLY applying configuration changes. Does
-# NOT affect forgejo_srv_media_set_perms_file_enable.
-#
-# This should ONLY be used after the role has been fully run once.
-#
-# Useful when adding a change without reconfiguring the whole system or
-# checking and installing a new version. Suggest applying with extra options:
-#
-#   ansible-playbook site.yml
-#       --tags Forgejo
-#       -e '{"forgejo_srv_force_config_only_enable": true}'
-#
-# Default: False.
-forgejo_srv_force_config_only_enable: false
-
-# Is this role applied to a container?
-#
-# Decision: manual user setting - There is currently no good way to
-#     deterministically and consistently detect if a remote host is a
-#     container outside of common cases.
-#
-# Hosts marked as containers will automatically disable changes:
-#   * ProtectHostname if forgejo_srv_harden_enable=true.
-#
-# Special Case:
-#   * deb_container_enable=true forces forgejo_srv_container_enable=true.
-#
-# Default: False.
-forgejo_srv_container_enable: false
-
-###############################################################################
-# Forgejo User
-###############################################################################
-
-# User that Forgejo will run under.
-#
-# Enable forgejo_srv_create_user if this account is not externally managed.
-#
-# Default: 'git'.
-forgejo_srv_user: 'git'
-
-# Group that Forgejo will run under.
-#
-# Enable forgejo_srv_create_user if this group is not externally managed.
-#
-# Default: 'git'.
-forgejo_srv_group: 'git'
-
-# Create forgejo_srv_user, forgejo_srv_group if not detected?
-#
-# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
-#
-# Default: True.
-forgejo_srv_create_user: true
-
-# Enable user management of data/media files?
-#
-# Use forgejo_srv_user to execute data/media management commands. Role
-# applies media permissions using 'root' by default. For mounted data locations
-# (NFS with squashed mounts, mapped container mounts, etc) the local root user
-# will not have sufficient privileges to modify these files.
-#
-# Applies to:
-# * forgejo_cfg_repository_root
-# * forgejo_cfg_storage_path (forgejo_cfg_storage_storage_type=local)
-# * forgejo_cfg_storage_sub_system{}.PATH
-#   (forgejo_cfg_storage_sub_system{}.STORAGE_TYPE=local)
-# * forgejo_srv_backup_path (location)
-# * ANY config paths which are nested under these directories.
-#
-# Default: False.
-forgejo_srv_user_data_manage_enable: false
-
-###############################################################################
-# Forgejo Service Hardening
-###############################################################################
-
-# Harden Forgejo service?
-#
-# Applies systemd drop-in restricting Forgejo to:
-# * NoNewPrivileges=true
-# * PrivateTmp=true
-# * ProtectHome=true
-# * ProtectSystem=true
-# * PrivateDevices=true
-# * UMask='0077'
-# * ProtectKernelTunables=true
-# * ProtectKernelModules=true
-# * ProtectKernelLogs=true
-# * ProtectHostname=true (Disabled if running in a container).
-# * ProtectClock=true
-# * ProtectControlGroups=true
-# * LockPersonality=true
-# * RestrictRealtime=true
-# * RestrictNamespacesAllow=true
-# * RestrictSuidSgid=true
-# * MemoryDenyWriteExecute=true
-# * RemoveIpc=true
-# * RestrictAddressFamilies=AF_INET,AF_INET6
-# * RestrictAddressFamilies=~AF_UNIX
-# * IpAccounting=true
-# * AmbientCapabilities=CAP_NET_BIND_SERVICE
-# * CapabilityBoundingSet=
-#     ~CAP_AUDIT_CONTROL
-#     ~CAP_AUDIT_READ
-#     ~CAP_DAC_READ_SEARCH
-#     ~CAP_SYS_RAWIO
-#     ~CAP_SYS_PTRACE
-#     ~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER
-#     ~CAP_BPF
-#     ~CAP_NET_ADMIN
-#     ~CAP_KILL
-#     ~CAP_NET_BROADCAST
-#     ~CAP_SYS_NICE CAP_SYS_RESOURCE
-#     ~CAP_SYS_BOOT
-#     ~CAP_LINUX_IMMUTABLE
-#     ~CAP_SYS_CHROOT
-#     ~CAP_BLOCK_SUSPEND
-#     ~CAP_LEASE
-#     ~CAP_SYS_PACCT
-#     ~CAP_SYS_TTY_CONFIG
-#     ~CAP_SYS_ADMIN
-#     ~CAP_SETUID CAP_SETGID
-#     ~CAP_SETPCAP
-#     ~CAP_CHOWN
-#     ~CAP_FSETID CAP_SETFCAP
-#     ~CAP_NET_RAW
-#     ~CAP_IPC_LOCK
-#
-# Default: True.
-forgejo_srv_harden_enable: true
+# Reference:
+# * https://forgejo.org/docs/next/admin/command-line/#dump
+forgejo_cfg_backup_opts: []

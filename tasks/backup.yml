@@ -1,0 +1,44 @@
+---
+###############################################################################
+# Backup
+###############################################################################
+# Create a dump of pre-existing Forgejo install using provided dump options.
+#
+# Data is save to {APP_DATA_PATH}/backup.
+
+# Directory created and service setup from previous role runs.
+- name: 'Backup | 🗘 backup existing installation 🗘'
+  ansible.builtin.debug:
+    msg: |
+
+      Existing install detected. Creating backup before operations.
+
+- name: '{{ "Backup | filesystem | query " ~ forgejo__cfg._app_ini }}'
+  ansible.builtin.command: "{{
+      'grep -Po \"^APP_DATA_PATH\\s*=\\s*\\K.*\" ' ~ forgejo__cfg._app_ini
+    }}"
+  changed_when: false
+  failed_when: forgejo__app_data.stdout == ""
+  register: forgejo__app_data
+
+- name: '{{
+      "Backup | filesystem | create " ~ forgejo__app_data.stdout ~ "/backup"
+    }}'
+  ansible.builtin.file:
+    path: '{{ forgejo__app_data.stdout ~ "/backup" }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
+    mode: '0750'
+    state: 'directory'
+
+- name: 'Backup | cmd | create backup'
+  ansible.builtin.command: '{{
+      forgejo__cfg._bin ~ " dump " ~
+      "--config " ~ forgejo__cfg._app_ini ~ " " ~
+      forgejo__cfg._backup_opts
+    }}'
+  args:
+    chdir: '{{ forgejo__app_data.stdout ~ "/backup" }}'
+  changed_when: true
+  become: true
+  become_user: '{{ forgejo__srv._user }}'

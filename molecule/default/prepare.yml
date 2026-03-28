@@ -4,157 +4,119 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: 'Prepare | generate cache location'
-      ansible.builtin.set_fact:
-        _test_cache:
-          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
 
     - name: 'Prepare | cache'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'create_cache.yml'
       vars:
-        test_name: 'Prepare | cache'
-        test_cache: '{{ _test_cache }}/ssh'
+        test_name: 'Prepare cache'
 
-    - name: 'Prepare | check forgejo v11.0.3'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'cache_url.yml'
-      vars:
-        test_name: 'Prepare | check forgejo v11.0.3'
-        test_dest: 'forgejo-11.0.3-linux-amd64'
-        test_url: '{{
-            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v11.0.3/" ~
-            "forgejo-11.0.3-linux-amd64"
+    - name: 'Prepare | fact | set cache location'
+      ansible.builtin.set_fact:
+        forgejo__test_cache: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/molecule/cache"
           }}'
-        test_mode: '0750'
+        forgejo__test_bin: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/molecule/cache/" ~
+            forgejo___app._package_bin
+          }}'
 
-    - name: 'Prepare | check forgejo v11.0.3 checksum'
+    - name: '{{  "Prepare | cache | Forgejo " ~ forgejo___app._version }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'cache_url.yml'
       vars:
         test_name:
-          'Prepare | check forgejo v11.0.3 checksum'
-        test_dest: 'forgejo-11.0.3-linux-amd64.sha256'
-        test_url: '{{
-            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v11.0.3/" ~
-            "forgejo-11.0.3-linux-amd64.sha256"
-          }}'
+          '{{  "Prepare | cache | Forgejo " ~ item }}'
+        test_dest: '{{ item }}'
+        test_url: '{{ forgejo___app._url_base ~ item }}'
         test_mode: '0640'
+      loop:
+        - '{{ forgejo___app._package }}'
+        - '{{ forgejo___app._package_sig }}'
+        - '{{ forgejo___app._package_sum }}'
 
-    - name: 'Prepare | check forgejo v11.0.3 signature'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'cache_url.yml'
-      vars:
-        test_name:
-          'Prepare | check forgejo v11.0.3 signature'
-        test_dest: 'forgejo-11.0.3-linux-amd64.asc'
-        test_url: '{{
-            "https://codeberg.org/forgejo/forgejo/releases/download/" ~
-            "v11.0.3/" ~
-            "forgejo-11.0.3-linux-amd64.asc"
+    - name: 'Prepare | cache | extract binary for local token generation'
+      ansible.builtin.shell: '{{
+          "xz -d " ~ forgejo___app._package ~ " && " ~
+          "chmod 0755 " ~ forgejo___app._package_bin
+        }}'
+      args:
+        executable: '/bin/bash'
+        chdir: '{{ forgejo__test_cache }}'
+        creates: '{{ forgejo__test_bin }}'
+      changed_when: true
+
+    - name: 'Prepare | cache | INTERNAL_TOKEN'
+      ansible.builtin.shell: '{{
+          forgejo__test_bin ~
+          " generate secret INTERNAL_TOKEN > internal_token"
+        }}'
+      args:
+        executable: '/bin/bash'
+        chdir: '{{ forgejo__test_cache }}'
+        creates: '{{ forgejo__test_cache ~ "/internal_token" }}'
+      changed_when: true
+
+    - name: 'Prepare | cache | JWT_SECRET'
+      ansible.builtin.shell: '{{
+          forgejo__test_bin ~ " generate secret JWT_SECRET > jwt_secret"
+        }}'
+      args:
+        executable: '/bin/bash'
+        chdir: '{{ forgejo__test_cache }}'
+        creates: '{{ forgejo__test_cache ~ "/jwt_secret" }}'
+      changed_when: true
+
+    - name: 'Prepare | cache | LFS_JWT_SECRET'
+      ansible.builtin.shell: '{{
+          forgejo__test_bin ~
+          " generate secret LFS_JWT_SECRET > lfs_jwt_secret"
+        }}'
+      args:
+        executable: '/bin/bash'
+        chdir: '{{ forgejo__test_cache }}'
+        creates: '{{ forgejo__test_cache ~ "/lfs_jwt_secret" }}'
+      changed_when: true
+
+- name: 'Prepare'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
           }}'
-        test_mode: '0640'
 
-    - name: 'Prepare | cache PKCS8 RSA private key'
-      ansible.builtin.command:
-        argv:
-          - 'openssl'
-          - 'genrsa'
-          - '-out'
-          - '{{ _test_cache }}/oauth2.rsa.pem'
-          - '4096'
-        creates: '{{ _test_cache }}/oauth2.rsa.pem'
-
-    - name: 'Prepare | cache PKCS8 RSA private key'
-      ansible.builtin.command:
-        argv:
-          - 'openssl'
-          - 'pkcs8'
-          - '-topk8'
-          - '-inform'
-          - 'PEM'
-          - '-nocrypt'
-          - '-in'
-          - '{{ _test_cache }}/oauth2.rsa.pem'
-          - '-out'
-          - '{{ _test_cache }}/oauth2.pkcs8.pem'
-        creates: '{{ _test_cache }}/oauth2.pkcs8.pem'
-
-    - name: 'Prepare | cache forgejo_cfg_security_internal_token'
-      ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
-        generate secret INTERNAL_TOKEN
-        > {{ _test_cache }}/security_internal_token
-      args:
-        creates: '{{ _test_cache }}/security_internal_token'
-
-    - name: 'Prepare | cache forgejo_cfg_server_lfs_jwt_secret'
-      ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
-        generate secret JWT_SECRET
-        > {{ _test_cache }}/lfs_jwt_secret
-      args:
-        creates: '{{ _test_cache }}/lfs_jwt_secret'
-
-    - name: 'Prepare | cache forgejo_cfg_security_secret_key'
-      ansible.builtin.shell: >-
-        {{ _test_cache }}/forgejo-11.0.3-linux-amd64
-        generate secret SECRET_KEY
-        > {{ _test_cache }}/secret_key
-      args:
-        creates: '{{ _test_cache }}/secret_key'
-
-    - name: 'Prepare | cache forgejo_cfg_server_cert_file'
-      ansible.builtin.command:
-        argv:
-          - '{{ _test_cache }}/forgejo-11.0.3-linux-amd64'
-          - 'cert'
-          - '-ca=true'
-          - '-duration=8760h0m0s'
-          - '-host=test.example.com'
-        chdir: '{{ _test_cache }}'
-        creates: '{{ _test_cache }}/cert.pem'
-
-    - name: 'Prepare | generate testing host key'
-      ansible.builtin.command:
-        argv:
-          - 'ssh-keygen'
-          - '-t'
-          - 'rsa'
-          - '-b'
-          - '4096'
-          - '-f'
-          - '{{ _test_cache }}/ssh/host_key'
-          - '-C'
-          - ''
-          - '-N'
-          - ''
-        creates: '{{ _test_cache }}/ssh/host_key'  # and host_key.pub.
+    - name: 'Prepare | inject | cached packages'
+      when: (molecule_flg_inject | default(false))
+      ansible.builtin.copy:
+        src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/molecule/cache/" ~
+            item
+          }}'
+        dest: '{{ "/tmp/" ~ item }}'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      loop:
+        - '{{ forgejo___app._package }}'
+        - '{{ forgejo___app._package_sig }}'
+        - '{{ forgejo___app._package_sum }}'
 
 - name: 'Prepare'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name:
-        'Prepare | packages to test logins'
+        'Prepare | inject | required testing packages'
       ansible.builtin.apt:
         name: 'curl'  # Required for testing login.
         state: 'present'
-
-- name: 'Prepare'
-  hosts: 'forgejo-debian-13-user_data'
-  gather_facts: false
-  tasks:
-    - name: 'Prepare | simulate user media restriction'
-      ansible.builtin.file:
-        path: '/srv'
-        owner: 305
-        group: 305
-        mode: '0755'
-        state: 'directory'

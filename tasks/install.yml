@@ -1,40 +1,262 @@
 ---
 ###############################################################################
-# Forgejo Install
+# Install
 ###############################################################################
-# Install required base packages; download, verify and install specified
-# Forgejo version from codeberg release.
+# Install specified version from codeberg release. Use custom service according
+# to Linux FHS standards:
+#
+# Type    | Perms               | Path
+# --------|---------------------|-------
+# Runtime | 0750/0640 SRV:SRV   | /var/opt/forgejo
+# Source  | 0755/0644 root:root | /opt/forgejo
+# etc     | 0640/0755 SRV:SRV   | /etc/opt/forgejo
+# bin     | 0755/0755 root:root | /usr/local/bin/forgejo
+#
+# Installation notes:
+# * Foregjo will fail to start if user defined data directory does not exist.
+#     Resolution: Create user data directory (/srv/forgejo) if forgejo_cfg_file
+#         is not specified.
+#
+# Reference:
+# * https://forgejo.org/docs/latest/admin/installation-binary/
+# * https://codeberg.org/forgejo/forge-/jo/src/branch/forgejo/contrib/systemd
+
+- name: 'Install | filesystem | set system directories'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+  loop:
+    - '{{ forgejo___app._src_d }}'  # src_d includes opt_d.
+    - '{{ forgejo___app._drop_in | dirname }}'
+
+- name: 'Install | filesystem | set service directories'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
+    mode: '0755'
+    state: 'directory'
+  loop:
+    - '{{ forgejo___app._app_ini | dirname }}'  # _app_ini includes etc_d.
+    - '{{ forgejo___app._work_d }}'  # work_d includes var_d.
+    - '{{
+        forgejo___app._data_d
+        if forgejo__cfg._file | length == 0 else
+        omit
+      }}'
 
 - name: 'Install | packages'
   ansible.builtin.include_role:
     name: 'r_pufky.deb.apt'
   vars:
     apt_packages:
-      - '{{ forgejo_role_packages }}'
-      - '{{ forgejo_role_redis if _forgejo_srv_redis_enable.raw else [] }}'
-    apt_package_update_cache: true
+      - '{{ forgejo___packages }}'
+    apt_srv_package_update_cache: true
 
-- name: 'Install | binary {{ _forgejo_srv_version.raw }}'
-  when: not _forgejo_srv_force_config_only_enable.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.repo'
-  vars:
-    repo_host: 'codeberg'
-    repo_release_owner: '{{ forgejo_role_repo_release_owner }}'
-    repo_release_repo: '{{ forgejo_role_repo_release_repo }}'
-    repo_release_tag: '{{ _forgejo_srv_version.raw }}'
-    repo_release_asset: '{{ forgejo_role_repo_release_asset }}'
-    repo_release_checksum: '{{ forgejo_role_repo_release_asset }}.sha256'
-    repo_release_signature: '{{ forgejo_role_repo_release_asset }}.asc'
-    repo_release_specifier: '{{ forgejo_role_repo_release_specifier }}'
-    repo_release_gpg_key_id: '{{ _forgejo_srv_gpg_key_id.raw }}'
-    repo_file_owner: '{{ _forgejo_srv_user.raw }}'
-    repo_file_group: '{{ _forgejo_srv_group.raw }}'
-    repo_extract_dir: '{{ forgejo_role_repo_extract_dir }}'
-    repo_extract_symlink: '{{ forgejo_role_repo_extract_symlink }}'
-    repo_extract_delete_old_versions:
-      '{{ _forgejo_srv_delete_old_versions_enable.raw }}'
-    repo_force_overwrite: '{{ _forgejo_srv_force_overwrite.raw }}'
-    repo_extract_mode: 'a-st,o-rwx'
-    repo_extract_binary_mode: '0755'
-    repo_extract_extra_opts: ['--strip-components=1']
+###############################################################################
+# GPG Trusted Keys
+###############################################################################
+# Import signing keys for Forgejo releases.
+
+- name: 'Install | GPG | query existing keys'
+  ansible.builtin.command:
+    argv:
+      - 'gpg'
+      - '--list-keys'
+      - '{{ "0x" ~ forgejo__cfg._gpg_key }}'
+  changed_when: false
+  failed_when: forgejo__gpg.rc not in (0, 2)
+  register: forgejo__gpg
+
+# Importing existing results in 'unchanged: 1' and returns 0.
+- name: '{{ "Install | GPG | import 0x" ~ forgejo__cfg._gpg_key }}'
+  when: forgejo__gpg.rc != 0 or 'expired' in forgejo__gpg.stdout
+  ansible.builtin.command:
+    argv:
+      - 'gpg'
+      - '--keyserver'
+      - '{{ forgejo__cfg._gpg_server }}'
+      - '--receive-keys'
+      - '{{ forgejo__cfg._gpg_key }}'
+  changed_when: '"imported: 1" in forgejo__gpg_import.stderr'
+  register: forgejo__gpg_import
+
+###############################################################################
+# Forgejo
+###############################################################################
+# Reduce space 3x by downloading XZ archive. Always validate checksum and
+# signature before proceeding.
+
+- name: 'Install | filesystem | find previous installations'
+  ansible.builtin.find:
+    paths: '{{ forgejo___app._src_d }}'
+    file_type: 'directory'
+    recurse: false
+    excludes:
+      - '{{ forgejo__cfg._version }}'
+  register: forgejo__cmd
+
+- name: 'Install | filesystem | remove previous installations'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: 'absent'
+  loop: '{{ forgejo__cmd.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: 'Install | url | 🗘 Forgejo (~2 minutes) 🗘'
+  when: not (molecule_flg_inject | default(false))
+  ansible.builtin.get_url:
+    url: '{{ forgejo__cfg._url_base ~ item }}'
+    dest: '{{ "/tmp/" ~ item }}'
+    force: false
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    headers:
+      AuthorizationHeaderToken: '{{ forgejo__srv._token | default(omit) }}'
+  register: forgejo__cmd
+  until: forgejo__cmd is succeeded
+  loop:
+    - '{{ forgejo__cfg._package }}'
+    - '{{ forgejo__cfg._package_sig }}'
+    - '{{ forgejo__cfg._package_sum }}'
+
+- name: '{{ "Install | security | verify checksum " ~ forgejo__cfg._package }}'
+  ansible.builtin.command:
+    chdir: '/tmp'
+    argv:
+      - 'shasum'
+      - '--status'
+      - '--strict'
+      - '--check'
+      - '{{ forgejo__cfg._package_sum }}'
+  changed_when: false
+
+- name:
+    '{{ "Install | security | verify signature " ~ forgejo__cfg._package }}'
+  ansible.builtin.command:
+    chdir: '/tmp'
+    argv:
+      - 'gpg'
+      - '--verify'
+      - '{{ forgejo__cfg._package_sig }}'
+      - '{{ forgejo__cfg._package }}'
+  changed_when: false
+
+- name: '{{ "Install | filesystem | set " ~ forgejo__cfg._app_d }}'
+  ansible.builtin.file:
+    path: '{{ forgejo__cfg._app_d }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+  register: forgejo__cmd
+
+# Pure .xz archives are not supported by unarchive (only tar.xz).
+- name: 'Install | filesystem | unpack Forgejo'
+  when: forgejo__cmd.changed  # noqa no-handler immediate.
+  ansible.builtin.shell: '{{
+      "cp /tmp/" ~ forgejo__cfg._package ~ " " ~ forgejo__cfg._app_d ~ " && " ~
+      "xz -d " ~ forgejo__cfg._package ~ " && " ~
+      "chmod 0755 " ~ forgejo__cfg._package_bin
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ forgejo__cfg._app_d }}'
+  changed_when: true
+
+- name: 'Install | filesystem | add system paths'
+  ansible.builtin.file:
+    src: '{{ forgejo__cfg._src_bin }}'
+    path: '{{ forgejo__cfg._bin }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'link'
+
+- name: '{{ "Install | filesystem | set " ~ forgejo__cfg._service }}'
+  ansible.builtin.template:
+    src: 'systemd/forgejo.service.j2'
+    dest: '{{ forgejo__cfg._service }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: '{{ "Install | filesystem | set " ~ forgejo__cfg._drop_in }}'
+  when: forgejo__srv._harden
+  ansible.builtin.template:
+    src: 'systemd/override.conf.j2'
+    dest: '{{ forgejo__cfg._drop_in }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: '{{ "Install | filesystem | remove " ~ forgejo__cfg._drop_in }}'
+  when: not forgejo__srv._harden
+  ansible.builtin.file:
+    path: '{{ forgejo__cfg._drop_in }}'
+    state: 'absent'
+
+###############################################################################
+# Minimal Configuration
+###############################################################################
+# A minimal configuration requires generation of secret keys at runtime to
+# start the service. Only generate this if using an auto-generated minimal
+# config.
+
+- name: 'Install | forgejo | generate INTERNAL_TOKEN'
+  when: forgejo__cfg._file | length == 0
+  ansible.builtin.shell: '{{
+      forgejo__cfg._bin ~ " generate secret INTERNAL_TOKEN"
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ forgejo__cfg._app_d }}'
+  changed_when: true
+  register: forgejo__internal_token
+
+- name: 'Install | forgejo | generate JWT_SECRET'
+  when: forgejo__cfg._file | length == 0
+  ansible.builtin.shell: '{{
+      forgejo__cfg._bin ~ " generate secret JWT_SECRET"
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ forgejo__cfg._app_d }}'
+  changed_when: true
+  register: forgejo__jwt_secret
+
+- name: 'Install | forgejo | generate LFS_JWT_SECRET'
+  when: forgejo__cfg._file | length == 0
+  ansible.builtin.shell: '{{
+      forgejo__cfg._bin ~ " generate secret LFS_JWT_SECRET"
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ forgejo__cfg._app_d }}'
+  changed_when: true
+  register: forgejo__lfs_jwt_secret
+
+- name: 'Install | fact | parse tokens'
+  when: forgejo__cfg._file | length == 0
+  ansible.builtin.set_fact:
+    forgejo__cfg: '{{ forgejo__cfg | r_pufky.data.v3(
+
+        _internal_token=forgejo__internal_token.stdout,
+        _jwt_secret=forgejo__jwt_secret.stdout,
+        _lfs_jwt_secret=forgejo__lfs_jwt_secret.stdout,
+      ) }}'
+
+- name:
+    '{{ "Install | filesystem | set minimal " ~ forgejo__cfg._app_ini }}'
+  when: forgejo__cfg._file | length == 0
+  ansible.builtin.template:
+    src: 'templates/app.ini.j2'
+    dest: '{{ forgejo__cfg._app_ini }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
+    mode: '0640'

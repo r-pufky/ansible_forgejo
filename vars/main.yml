@@ -1,0 +1,113 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Forgejo Role Options
+###############################################################################
+# Install Forgejo binary and setup standard LFS install.
+#
+# Updates:
+# * KEEP a separate change log as changes are made.
+# * Use bare-metal docs to validate package/process changes.
+# * Update defaults.
+# * Update tests for any changes.
+# * Standard validation testing (yamllint, ansible-lint, to-do, no-qa).
+#
+# Reference:
+# * https://forgejo.org/releases
+# * https://forgejo.org/docs/latest/admin/installation/binary
+
+forgejo___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2026-03-27',
+    _debian='trixie',
+    _app='v11.0.11',
+  ) }}"
+
+###############################################################################
+# APT Packages
+###############################################################################
+# Forgejo updates GPG keys frequently. They allow hammering the GPG key to
+# check for changes.
+#
+# Reference:
+# * https://forgejo.org/download/
+
+forgejo___packages:
+  - 'git'
+  - 'git-lfs'
+  - 'gnupg2'  # Full GPG stack for Forgejo.
+
+  # Ansible.
+  - 'xz-utils'  # xz archives.
+  - 'rsync'  # ansible.posix.synchronize.
+
+###############################################################################
+# Forgejo Codeberg Options
+###############################################################################
+# Always download the XZ archive to reduce space by 3x. Package signature and
+# checksum extensions are always the same.
+#
+# Reference:
+# * https://forgejo.org/download
+# * https://keys.openpgp.org/search
+# * https://openpgpkey.forgejo.org/.well-known/openpgpkey/forgejo.org/hu/dj3498u4hyyarh35rkjfnghbjxug6b19
+# * https://codeberg.org/Forgejo/Forgejo/releases/latest
+
+forgejo___repo_url: 'https://codeberg.org/forgejo/forgejo/releases/download/'
+forgejo___package:
+  '{{ "forgejo-" ~ forgejo___release._app[1:] ~ "-linux-amd64.xz" }}'
+forgejo___package_bin:
+  '{{ "forgejo-" ~ forgejo___release._app[1:] ~ "-linux-amd64" }}'
+
+forgejo___app: "{{ {} | r_pufky.data.v3(
+
+    _version=forgejo___release._app,
+    _package=forgejo___package,
+    _package_bin=forgejo___package_bin,
+    _package_sig=forgejo___package ~ '.asc',
+    _package_sum=forgejo___package ~ '.sha256',
+    _url_base=forgejo___repo_url ~ forgejo___release._app ~ '/',
+
+    _gpg_key='EB114F5E6C0DC2BCDD183550A4B61A2DC5923710',
+    _gpg_server='hkps://keys.openpgp.org',
+
+    _bin='/usr/local/bin/forgejo',
+
+    _app_ini='/etc/opt/forgejo/app.ini',
+
+    _src_d='/opt/forgejo/src',
+    _app='/opt/forgejo/src/' ~ forgejo___release._app,
+    _src_bin=(
+      '/opt/forgejo/src/' ~ forgejo___release._app ~ '/' ~
+      forgejo___package_bin
+    ),
+
+    _var_d='/var/opt/forgejo',
+    _work_d='/var/opt/forgejo/cfg',
+    _data_d='/srv/forgejo',
+
+    _service='/etc/systemd/system/forgejo.service',
+    _drop_in='/etc/systemd/system/forgejo.service.d/override.conf',
+  ) }}"
+
+###############################################################################
+# Default Forgejo User/Group
+###############################################################################
+
+forgejo___group:
+  name: 'git'
+  gid: 305
+
+forgejo___user:
+  name: 'git'
+  group: 'git'
+  uid: 305
+  shell: '/bin/bash'
+  home: '/var/opt/forgejo'
+  comment: 'Forgejo Server,,,'
+  create_home: true
+  password: '!'
+  password_lock: true
+  update_password: 'always'
+  expires: -1
+  system: true

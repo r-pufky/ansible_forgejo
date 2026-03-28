@@ -1,124 +1,123 @@
 ---
 ###############################################################################
-# Forgejo Prep
+#  Pre Execution Tasks
 ###############################################################################
-# Prepare system for install by creating user/group for service, and
-# enumerating existing SSH keys if used. Stop services if they exist.
+# Only use data annotations in role after merging role, defaults, runtime data.
+# Service may not exist if first install.
 #
 # Backup running configuration if enabled before applying changes.
-#
-# Generates:
-#   _forgejo_existing_service: dict - Systemd result object from service stop.
 
-- name: 'Prep | manage users'
-  when: _forgejo_srv_create_user.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.users'
-    tasks_from: 'role_account_add.yml'
-  vars:
-    users_role_user: '{{ forgejo_role_user }}'
-    users_role_group: '{{ forgejo_role_group }}'
-
-- name: 'Prep | enumerate system user {{ _forgejo_srv_user.raw }}'
-  ansible.builtin.user:
-    name: '{{ _forgejo_srv_user.raw }}'
-  check_mode: true
-  changed_when: false
-  register: _forgejo_srv_user_query
-
-- name: 'Prep | parse system user UID/GID'
+- name: 'Prep | fact | record start time'
   ansible.builtin.set_fact:
-    _forgejo_srv_user: '{{
-        _forgejo_srv_user |
-        combine({"_uid": _forgejo_srv_user_query.uid,
-                 "_home": _forgejo_srv_user_query.home,
-                 "_ssh": _forgejo_srv_user_query.home ~ "/.ssh"})
-      }}'
-    _forgejo_srv_group: '{{
-        _forgejo_srv_group |
-        combine({"_gid": _forgejo_srv_user_query.group})
-      }}'
+    forgejo__srv: "{{ forgejo___release | r_pufky.data.v3(
 
-- name: 'Prep | update trusted user home directory'
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
+        _token=forgejo_srv_token,
+        _user=forgejo_srv_user,
+        _group=forgejo_srv_group,
+        _harden=forgejo_srv_harden,
+      ) }}"
+    forgejo__cfg: "{{ forgejo___app | r_pufky.data.v3(
+
+        _version=forgejo_srv_version,
+        _users=forgejo_cfg_users,
+        _file=forgejo_cfg_file,
+        _d=forgejo_cfg_d | regex_replace('\\/$', ''),
+        _backup_opts=forgejo_cfg_backup_opts | join(' '),
+
+        _app_d=forgejo___app._src_d ~ '/' ~ forgejo___release._app,
+        _package='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64.xz',
+        _package_bin='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64',
+        _url_base=forgejo___repo_url ~ forgejo_srv_version ~ '/',
+      ) }}"
+
+- name: 'Prep | fact | parse metadata'
   ansible.builtin.set_fact:
-    _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename: '{{
-        _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename |
-        combine({"_dest":
-            _forgejo_srv_user._home ~ "/.ssh/ca_trust_chain_root.pem"
-            if
-            _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw |
-              length > 0
-            else
-            ""
-          })
-      }}'
+    forgejo__cfg: "{{ forgejo__cfg | r_pufky.data.v3(
 
-- name: 'Prep | enumerate server host keys'
-  when: _forgejo_cfg_server_ssh_server_host_keys.raw | length > 0
-  block:
-    - name: 'Prep | enumerate server host keys | query'
-      delegate_to: 'localhost'
-      ansible.builtin.find:
-        paths: '{{ _forgejo_cfg_server_ssh_server_host_keys._src }}'
-        excludes: ['*.pub']
-        follow: true
-        recurse: true
-        file_type: 'file'
-      register: _forgejo_source_ssh_keys
+        _package_sig=forgejo__cfg._package ~ '.asc',
+        _package_sum=forgejo__cfg._package ~ '.sha256',
+        _src_bin=forgejo__cfg._app_d ~ '/' ~ forgejo___package_bin,
+      ) }}"
 
-    - name: 'Prep | enumerated server host keys | parse relative key paths'
-      ansible.builtin.set_fact:
-        _forgejo_parsed_ssh_keys: '{{
-            _forgejo_parsed_ssh_keys | default([]) +
-            [item.path |
-             replace(_forgejo_cfg_server_ssh_server_host_keys._src, "")]
-          }}'
-      loop: '{{ _forgejo_source_ssh_keys.files }}'
-      loop_control:
-        label: '{{ item.path }}'
+- name: 'Prep | assert | config enabled and source defined'
+  when: forgejo_flg_config
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - forgejo__cfg._file | length > 0
+    fail_msg: |
 
-    - name: 'Prep | enumerated server host keys | normalize key paths'
-      ansible.builtin.set_fact:
-        _forgejo_cfg_server_ssh_server_host_keys: '{{
-            _forgejo_cfg_server_ssh_server_host_keys |
-            combine({"data":
-              _forgejo_cfg_server_ssh_server_host_keys.data +
-              [_forgejo_cfg_server_ssh_server_host_keys._dest_dir ~ "/" ~
-               item]
-            })
-          }}'
-      loop: '{{ _forgejo_parsed_ssh_keys | default([]) | sort }}'
+      ✘ Config source not set.
+      Config source enabled but no config source defined.
 
-    - name: 'Prep | enumerated server host keys | sanitize key list'
-      ansible.builtin.set_fact:
-        _forgejo_cfg_server_ssh_server_host_keys: '{{
-            _forgejo_cfg_server_ssh_server_host_keys |
-            combine({"data":
-              _forgejo_cfg_server_ssh_server_host_keys.data | join(",")})
-          }}'
+      forgejo_flg_config: {{ forgejo_flg_config }}
+      forgejo_cfg_file: {{ forgejo__cfg._file }}
 
-- name: 'Prep | stop services'
+# Stop service early to pre-check existing install for backup dump.
+- name: 'Prep | systemd | stop forgejo.service'
   ansible.builtin.systemd:
-    name: '{{ item }}'
+    name: 'forgejo.service'
     state: 'stopped'
   failed_when: false
-  register: _forgejo_existing_service
-  loop:
-    - 'forgejo.service'
 
-# Directory created and service running from previous role run.
-- name: 'Prep | backup existing installation'
-  when: >
-    _forgejo_srv_backup_dump.raw and
-    _forgejo_existing_service.changed
-  ansible.builtin.command:
-    cmd: >
-        {{ forgejo_role_repo_extract_symlink }}
-        dump
-        {{ _forgejo_cfg_custom_path._args }}
-        {{ _forgejo_cfg_custom_path._config_file }}
-        {{ _forgejo_srv_backup_path._args }}
-    chdir: '{{ _forgejo_srv_backup_path.raw }}'
-  changed_when: true
-  become: true
-  become_user: '{{ _forgejo_srv_user.raw }}'
+- name: '{{ "Prep | filesystem | check " ~ forgejo__cfg._app_ini }}'
+  ansible.builtin.stat:
+    path: '{{ forgejo__cfg._app_ini }}'
+  register: forgejo__check
+
+- name: 'Prep | backup'
+  when: forgejo__check.stat.exists and forgejo_flg_backup
+  ansible.builtin.include_tasks: 'backup.yml'
+
+- name: '{{ "Prep | account | query user " ~ forgejo__srv._user }}'
+  ansible.builtin.command: '{{ "id " ~ forgejo__srv._user }}'
+  failed_when: false
+  register: forgejo__cfg_check
+  changed_when: forgejo__cfg_check.rc > 0
+
+- name: '{{ "Prep | account | query group " ~ forgejo__srv._group }}'
+  ansible.builtin.command: '{{ "groups " ~ forgejo__srv._group }}'
+  failed_when: false
+  register: forgejo__group_check
+  changed_when: forgejo__group_check.rc > 0
+
+- name: '{{ "Prep | account | create group " ~ forgejo__srv._group }}'
+  when: forgejo__group_check.rc != 0
+  ansible.builtin.group:
+    gid: '{{ forgejo___group.gid }}'
+    name: '{{ forgejo___group.name }}'
+    state: 'present'
+
+- name: '{{ "Prep | account | create user " ~ forgejo__srv._user }}'
+  when: forgejo__cfg_check.rc != 0
+  ansible.builtin.user:
+    name: '{{ forgejo___user.name }}'
+    group: '{{ forgejo___user.group }}'
+    uid: '{{ forgejo___user.uid }}'
+    shell: '{{ forgejo___user.shell }}'
+    home: '{{ forgejo___user.home }}'
+    create_home: '{{ forgejo___user.create_home }}'
+    password: '{{ forgejo___user.password }}'
+    password_lock: '{{ forgejo___user.password_lock }}'
+    update_password: '{{ forgejo___user.update_password }}'
+    expires: '{{ forgejo___user.expires }}'
+    system: '{{ forgejo___user.system }}'
+
+# Pre-existing users may have a different UID/GID/Home.
+- name: '{{ "Prep | account | enumerate " ~ forgejo__srv._user }}'
+  ansible.builtin.user:
+    name: '{{ forgejo__srv._user }}'
+  check_mode: true
+  changed_when: false
+  register: forgejo__cfg_query
+
+- name: 'Prep | fact | parse service UID/GID'
+  ansible.builtin.set_fact:
+    forgejo__cfg: "{{ forgejo__cfg | r_pufky.data.v3(
+
+        _uid=forgejo__cfg_query.uid,
+        _gid=forgejo__cfg_query.group,
+        _home=forgejo__cfg_query.home,
+        _ssh=forgejo__cfg_query.home ~ '/.ssh',
+      ) }}"

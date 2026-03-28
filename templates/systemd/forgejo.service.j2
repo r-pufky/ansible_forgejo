@@ -1,0 +1,19 @@
+[Unit]
+Description=Forgejo (Beyond coding. We forge.)
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ forgejo__cfg._bin }} web --config "{{ forgejo___app._app_ini }}" --custom-path "{{ forgejo__cfg._app_ini | dirname }}" --work-path "{{ forgejo___app._var_d }}"
+RestartSec=2s
+RuntimeMaxSec=infinity
+Restart=always
+WorkingDirectory={{ forgejo___app._var_d }}
+User=git
+Group=git
+Environment="USER=git"
+Environment="HOME={{ forgejo__cfg._home }}"
+
+[Install]
+WantedBy=multi-user.target

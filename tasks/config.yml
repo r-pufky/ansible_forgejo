@@ -1,426 +1,47 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
-# Configure Forgejo Install
+# Configure Services
 ###############################################################################
-# Create directories, systemd services, and copy user provided certs. Set
-# configuration and make it read-only to forgejo_srv_user. Run Forgejo under
-# specific role user, add ability to restart the service daily.
-#
-# New Forgejo user options must be manually added to the template and role
-# default templates.
-#
-# Forgejo will refuse to execute commands when run as root user; always execute
-# as service user.
-#
-# Reference:
-# * https://forgejo.org/docs/latest/admin/installation-binary/
-# * https://codeberg.org/forgejo/forgejo/src/branch/forgejo/contrib/systemd/forgejo.service
-# yamllint enable rule:line-length
+# Filetree returns a dict (instead of a list of dict) for one element. Use
+# query to guarantee a list result.
 
-- name: 'Config | manage required role directories'
-  ansible.builtin.file:
-    path: '{{ item.raw }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ item._perms }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if
-        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
-      else
-      "root"
-    }}'
-  loop:
-    - '{{ _forgejo_cfg_app_work_path }}'
-    - '{{ _forgejo_cfg_custom_path }}'
-    - '{{ _forgejo_cfg_repository_root }}'
-    - '{{ _forgejo_cfg_storage_path }}'
-    - '{{ _forgejo_srv_backup_path }}'
-    - '{{ _forgejo_cfg_repository_upload_temp_path }}'
-    - '{{ _forgejo_cfg_repository_local_local_copy_path }}'
-    - '{{ _forgejo_cfg_server_pprof_data_path }}'
-    - '{{ _forgejo_cfg_indexer_issue_indexer_path }}'
-    - '{{ _forgejo_cfg_indexer_repo_indexer_path }}'
-    - '{{ _forgejo_cfg_queue_datadir }}'
-    - '{{ _forgejo_cfg_server_acme_directory }}'
-    - '{{ _forgejo_cfg_session_provider_config }}'
-    - '{{ _forgejo_cfg_log_root_path }}'
-    - '{{ _forgejo_cfg_git_home_path }}'
-    - '{{ _forgejo_cfg_packages_chunked_upload_path }}'
-  loop_control:
-    label: '{{ item.raw }}'
-
-- name: 'Config | manage required JWT/DB directories'
-  ansible.builtin.file:
-    path: '{{ item._dir }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ item._perms }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if
-        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
-      else
-      "root"
-    }}'
-  loop:
-    - '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file }}'
-    - '{{ _forgejo_cfg_database_path }}'
-  loop_control:
-    label: '{{ item._dir }}'
-
-- name: 'Config | manage required mailer directories'
-  ansible.builtin.file:
-    path: '{{ item._dest_dir }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ item._perms }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if
-        _forgejo_srv_user_data_manage_enable.raw and item._dir_is_mount
-      else
-      "root"
-    }}'
-  loop:
-    - '{{ _forgejo_cfg_mailer_client_cert_file }}'
-  loop_control:
-    label: '{{ item._dest_dir }}'
-
-- name: 'Config | manage required sub-system directories'
-  ansible.builtin.file:
-    path: '{{ item }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ _forgejo_cfg_storage_sub_system._perms }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if
-        _forgejo_srv_user_data_manage_enable.raw and
-        _forgejo_cfg_storage_sub_system._dir_is_mount
-      else
-      "root"
-    }}'
-  loop: '{{ _forgejo_cfg_storage_sub_system._storage_local_paths }}'
-
-- name: 'Config | set SSH test key path'
-  when: >
-    _forgejo_cfg_server_ssh_key_test_path.raw | length > 0 and
-    _forgejo_cfg_server_ssh_key_test_path.raw != '/tmp'
-  ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_ssh_key_test_path.raw }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ _forgejo_cfg_server_ssh_key_test_path._perms }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if _forgejo_srv_user_data_manage_enable.raw else
-      "root"
-    }}'
-
-- name: 'Config | set restricted user SSH directory'
-  ansible.builtin.file:
-    path: '{{ _forgejo_srv_user._ssh }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '{{ _forgejo_srv_user._perms }}'
-    recurse: false
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if _forgejo_srv_user_data_manage_enable.raw else
-      "root"
-    }}'
-
-- name: 'Config | set Oauth2 private key file'
-  when: _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw }}'
-    dest: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode:
-      '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._perms }}'
-    force: true
-  become: true
-  become_user: '{{
-      _forgejo_srv_user.raw
-      if _forgejo_srv_user_data_manage_enable.raw else
-      "root"
-    }}'
-
-# Auto-regenerated on startup if missing.
-- name: 'Config | reset Oauth2 private key file'
-  when: _forgejo_cfg_oauth2_jwt_signing_private_key_file.raw | length == 0
-  ansible.builtin.file:
-    path: '{{ _forgejo_cfg_oauth2_jwt_signing_private_key_file._dest }}'
-    state: 'absent'
-
-- name: 'Config | set mail client certificates'
-  when: _forgejo_cfg_mailer_use_client_cert.raw
-  ansible.builtin.copy:
-    src: '{{ item.raw }}'
-    dest: '{{ item._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode: '{{ item._perms }}'
-    force: true
-  loop:
-    - '{{ _forgejo_cfg_mailer_client_cert_file }}'
-    - '{{ _forgejo_cfg_mailer_client_key_file }}'
-  loop_control:
-    label: '{{ item.raw }}'
-
-- name: 'Config | remove mail client certificates'
-  when: not _forgejo_cfg_mailer_use_client_cert.raw
-  ansible.builtin.file:
-    path: '{{ item._dest }}'
-    state: 'absent'
-  loop:
-    - '{{ _forgejo_cfg_mailer_client_cert_file }}'
-    - '{{ _forgejo_cfg_mailer_client_key_file }}'
-  loop_control:
-    label: '{{ item.raw }}'
-
-- name: 'Config | set server host keys'
-  when: _forgejo_cfg_server_ssh_server_host_keys.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_ssh_server_host_keys._src }}'
-    dest: '{{ _forgejo_cfg_server_ssh_server_host_keys._dest_dir }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_ssh_server_host_keys._perms }}'
-    force: true
-
-- name: 'Config | set user trust keys'
-  when: _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw }}'
-    dest:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._perms }}'
-    force: true
-
-- name: 'Config | remove user trust keys'
-  when: _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename.raw | length == 0
-  ansible.builtin.file:
-    path:
-      '{{ _forgejo_cfg_server_ssh_trusted_user_ca_keys_filename._dest }}'
-    state: 'absent'
-
-- name: 'Config | set custom CA trust chain root certificate'
-  when: _forgejo_cfg_server_acme_ca_root.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_acme_ca_root.raw }}'
-    dest: '{{ _forgejo_cfg_server_acme_ca_root._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_acme_ca_root._perms }}'
-    force: true
-
-- name: 'Config | remove custom CA trust chain root certificate'
-  when: _forgejo_cfg_server_acme_ca_root.raw | length == 0
-  ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_acme_ca_root.raw }}'
-    state: 'absent'
-
-- name: 'Config | set server certificate'
-  when: _forgejo_cfg_server_cert_file.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_cert_file.raw }}'
-    dest: '{{ _forgejo_cfg_server_cert_file._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_cert_file._perms }}'
-    force: true
-
-- name: 'Config | remove server certificate'
-  when: _forgejo_cfg_server_cert_file.raw | length == 0
-  ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_cert_file._dest }}'
-    state: 'absent'
-
-- name: 'Config | set server certificate key'
-  when: _forgejo_cfg_server_key_file.raw | length > 0
-  ansible.builtin.copy:
-    src: '{{ _forgejo_cfg_server_key_file.raw }}'
-    dest: '{{ _forgejo_cfg_server_key_file._dest }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
-    mode: '0400'
-    directory_mode: '{{ _forgejo_cfg_server_key_file._perms }}'
-    force: true
-
-- name: 'Config | remove server certificate key'
-  when: _forgejo_cfg_server_key_file.raw | length == 0
-  ansible.builtin.file:
-    path: '{{ _forgejo_cfg_server_key_file._dest }}'
-    state: 'absent'
-
-# Render to variable, remove empty sections, then write to disk atomically.
-- name: 'Config | set config'
+- name:
+    '{{ "Install | filesystem | set " ~ forgejo__cfg._app_ini }}'
+  when: forgejo__cfg._file | length > 0
   ansible.builtin.template:
-    src: 'template.j2'
-    dest: '{{ _forgejo_cfg_custom_path._config_file }}'
-    owner: '{{ _forgejo_srv_user._uid }}'
-    group: '{{ _forgejo_srv_group._gid }}'
+    src: '{{ forgejo__cfg._file }}'
+    dest: '{{ forgejo__cfg._app_ini }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
     mode: '0640'
-  vars:
-    template: '{{
-        lookup("template", "app.ini.j2") |
-        regex_replace("^\[.*\s*(?![^\[])", multiline=true) |
-        trim
-      }}'
 
-- name: 'Config | Forgejo service'
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.systemd'
-  vars:
-    systemd_daemon_reload_enable: true
-    systemd_services:
-      - name: 'forgejo'
-        state: 'present'
-        drop_in: false
-        unit:
-          description: 'Forgejo (Beyond coding. We forge.)'
-          after:
-            - 'syslog.target'
-            - 'network.target'
-        service:
-          type: 'simple'
-          restart_sec: '2s'
-          exec_start:
-            - >-
-              {{ forgejo_role_repo_extract_symlink }} web
-              --config "{{ _forgejo_cfg_custom_path._config_file }}"
-              --custom-path "{{ _forgejo_cfg_custom_path.raw }}"
-              --work-path "{{ _forgejo_cfg_app_work_path.raw }}"
-          runtime_max_sec: '{{
-              "1d"
-              if _forgejo_srv_restart_daily_enable.raw else
-              "infinity"
-            }}'
-          restart: 'always'
-        exec:
-          user: '{{ _forgejo_srv_user.raw }}'
-          group: '{{ _forgejo_srv_group.raw }}'
-          working_directory: '{{ _forgejo_cfg_app_work_path.raw }}'
-          environment:
-            - var: 'USER'
-              value: '{{ _forgejo_srv_user.raw }}'
-            - var: 'HOME'
-              value: '{{ _forgejo_srv_user._home }}'
-        install:
-          wanted_by:
-            - 'multi-user.target'
+- name: 'Config | filetree | deploy managed files'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
+    mode: '0640'
+  loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
+  loop_control:
+    label: '{{ item.path }}'
+  when: item.state == 'file'
+  register: forgejo__local
 
-- name: 'Config | set service hardening drop-in'
-  when: _forgejo_srv_harden_enable.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.systemd'
-  vars:
-    systemd_daemon_reload_enable: true
-    systemd_services:
-      - name: 'forgejo'
-        state: 'present'
-        drop_in: true
-        service: {}
-        exec:
-          no_new_privileges: true
-          private_tmp: true
-          protect_home: true
-          protect_system: true
-          private_devices: true
-          u_mask: '0077'
-          protect_kernel_tunables: true
-          protect_kernel_modules: true
-          protect_kernel_logs: true
-          protect_hostname: '{{ not _forgejo_srv_container_enable.raw }}'
-          protect_clock: true
-          protect_control_groups: true
-          lock_personality: true
-          restrict_realtime: true
-          restrict_namespaces_allow: true
-          restrict_suid_sgid: true
-          memory_deny_write_execute: true
-          remove_ipc: true
-          ambient_capabilities_include:
-            - 'CAP_NET_BIND_SERVICE'
-          capability_bounding_set_include:
-            - '~CAP_AUDIT_CONTROL'
-            - '~CAP_AUDIT_READ'
-            - '~CAP_DAC_READ_SEARCH'
-            - '~CAP_SYS_RAWIO'
-            - '~CAP_SYS_PTRACE'
-            - '~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER'
-            - '~CAP_BPF'
-            - '~CAP_NET_ADMIN'
-            - '~CAP_KILL'
-            - '~CAP_NET_BROADCAST'
-            - '~CAP_SYS_NICE CAP_SYS_RESOURCE'
-            - '~CAP_SYS_BOOT'
-            - '~CAP_LINUX_IMMUTABLE'
-            - '~CAP_SYS_CHROOT'
-            - '~CAP_BLOCK_SUSPEND'
-            - '~CAP_LEASE'
-            - '~CAP_SYS_PACCT'
-            - '~CAP_SYS_TTY_CONFIG'
-            - '~CAP_SYS_ADMIN'
-            - '~CAP_SETUID CAP_SETGID'
-            - '~CAP_SETPCAP'
-            - '~CAP_CHOWN'
-            - '~CAP_FSETID CAP_SETFCAP'
-            - '~CAP_NET_RAW'
-            - '~CAP_IPC_LOCK'
-        resource_control:
-          restrict_address_families_allow: ['AF_INET', 'AF_INET6']
-          restrict_address_families_deny: ['AF_UNIX']
-          ip_accounting: true
+- name: 'Config | filesystem | query remote files'
+  ansible.builtin.find:
+    paths: '{{ forgejo___app._work_d }}'
+    file_type: 'file'
+    recurse: true
+  register: forgejo__remote
 
-- name: 'Config | remove service hardening drop-in'
-  when: not _forgejo_srv_harden_enable.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.systemd'
-  vars:
-    systemd_daemon_reload_enable: true
-    systemd_services:
-      - name: 'forgejo'
-        state: 'absent'
-        drop_in: true
-
-# Local user management requires service running or running 'install' state.
-- name: 'Config | start services'
-  ansible.builtin.systemd:
-    name: '{{ item }}'
-    enabled: true
-    daemon_reload: true
-    state: 'started'
-  failed_when: false
-  loop: '{{
-      ["redis-server.service" if _forgejo_srv_redis_enable.raw else "",
-       "forgejo.service"] | select()
-    }}'
-
-- name: 'Config | flush handlers'
-  ansible.builtin.meta: 'flush_handlers'
+- name: 'Config | filesystem | remove unmanaged files'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: 'absent'
+  loop: '{{ forgejo__remote.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+  when: >
+    item.path not in forgejo__local.results |
+    selectattr('dest', 'defined') | map(attribute='dest') | list

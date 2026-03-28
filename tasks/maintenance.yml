@@ -1,0 +1,19 @@
+---
+###############################################################################
+# Maintenance
+###############################################################################
+# Prune any old files from previous role versions. This is executed before any
+# operations with the new role version.
+#
+# Use shell command to increase execution speed for multiple directories.
+
+# * lidarr moved to /opt/lidarr/src.
+# * /opt/forgejo/forgejo* ➔ /opt/forgejo/src
+# * /etc/forgejo/app.ini ➔ /etc/opt/forgejo/app.ini
+- name: 'Maintenance | 4.0.0 | remove old versions'
+  ansible.builtin.shell: >-
+    rm -rf /opt/forgejo/forgejo* &&
+    rm -rf /etc/forgejo
+  args:
+    executable: '/bin/bash'
+    removes: '/etc/forgejo/app.ini'

@@ -2,58 +2,82 @@
 ###############################################################################
 # Verify
 ###############################################################################
-# Forgejo will overwrite invalid tokens/keys with auto-generated valid ones,
-# which requires rendering a config file with only those options templated;
-# Instead of copy/diff pattern, use template/remote copy/diff pattern.
 
 - name: 'Verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | app.ini'
+    - name: 'Verify | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
+
+    # Test forgejo_cfg_d. Service will not start if forgejo_cfg_file is bad.
+    - name: '{{ "Verify | test | " ~ forgejo___app._work_d ~ "/README.md" }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'remote_file_diff.yml'
+        name: 'r_pufky.data.test'
+        tasks_from: 'copy.yml'
       vars:
-        test_name: 'Verify | app.ini'
-        test_remote_src: '/tmp/app.ini'
-        test_file: '/etc/forgejo/app.ini'
+        test_name:
+          '{{ "Verify | test | " ~ forgejo___app._work_d ~ "/README.md" }}'
+        test_src: '{{
+            lookup("env", "MOLECULE_SCENARIO_DIRECTORY") ~
+            "/files/dir/README.md"
+          }}'
+        test_file: '{{ forgejo___app._work_d ~ "/README.md" }}'
         test_owner: 'git'
         test_group: 'git'
         test_mode: '0640'
         test_diff: true
 
-    - name: 'Verify | assert admin user created'
+    - name: '{{
+          "Verify | filesystem | query " ~ forgejo___app._data_d ~ "/backup"
+        }}'
+      ansible.builtin.find:
+        path: '{{ forgejo___app._data_d ~ "/backup" }}'
+        patterns: '*.xz'
+        file_type: 'file'
+        recurse: false
+      register: forgejo__backup
+
+    - name: 'Verify | assert | pre-operation backup triggered'
+      ansible.builtin.assert:
+        quiet: true
+        that: 'forgejo__backup.matched >= 1'
+        fail_msg: '✘ Backup should be triggered on forgejo_flg_config run.'
+
+    - name: 'Verify | assert | admin user created'
       ansible.builtin.command:
         argv:
-          - '/opt/forgejo/forgejo'
+          - '{{ forgejo___app._bin }}'
           - '--config'
-          - '/etc/forgejo/app.ini'
+          - '{{ forgejo___app._app_ini }}'
           - 'admin'
           - 'user'
           - 'list'
       changed_when: false
-      failed_when: '"admin@example.com" not in _forgejo_srv_user_list.stdout'
+      failed_when: '"admin@example.com" not in forgejo__test_user_list.stdout'
       become: true
       become_user: 'git'
-      register: _forgejo_srv_user_list
+      register: forgejo__test_user_list
 
-    - name: 'Verify | assert standard user deleted'
+    - name: 'Verify | assert | standard user deleted'
       ansible.builtin.command:
         argv:
-          - '/opt/forgejo/forgejo'
+          - '{{ forgejo___app._bin }}'
           - '--config'
-          - '/etc/forgejo/app.ini'
+          - '{{ forgejo___app._app_ini }}'
           - 'admin'
           - 'user'
           - 'list'
       changed_when: false
-      failed_when: '"user@example.com" in _forgejo_srv_user_list.stdout'
+      failed_when: '"user@example.com" in forgejo__test_user_list.stdout'
       become: true
       become_user: 'git'
-      register: _forgejo_srv_user_list
+      register: forgejo__test_user_list
 
-    - name: 'Verify | query admin_test login success'
+    - name: 'Verify | query | admin_test login success'
       ansible.builtin.command:
         argv:
           - 'curl'
@@ -65,17 +89,12 @@
           - 'password=adminadmin'
           - 'http://127.0.0.1:3000/user/login'
       changed_when: false
-      register: _test_forgejo_login
+      register: forgejo__test_login
 
     - name: 'Verify | assert local user login success'
       ansible.builtin.assert:
         quiet: true
         that:
-          - _test_forgejo_login.stdout is not
+          - forgejo__test_login.stdout is not
             search("Username or password is incorrect.")
-        fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │          admin_test@127.0.0.1 should successfully login.          │
-          │                                                                   │
-          ╰───────────────────────────────────────────────────────────────────╯
+        fail_msg: '✘ admin_test@127.0.0.1 should successfully login.'

@@ -3,39 +3,50 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Converge | generate cache location'
+    - name: 'Converge | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
+
+    - name: 'Converge | fact | set cache location'
       ansible.builtin.set_fact:
-        _test_cache:
-          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+        forgejo__test_cache: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/molecule/cache"
+          }}'
 
-    - name: 'Converge | load cached secrets'
+    - name: 'Converge | cache | load cached tokens'
       ansible.builtin.set_fact:
-        _test_oauth2_rsa_pem:
-          '{{ lookup("file", _test_cache ~ "/oauth2.rsa.pem") }}'
-        _test_oauth2_pkcs8_pem:
-          '{{ lookup("file", _test_cache ~ "/oauth2.pkcs8.pem") }}'
-        _test_security_internal_token:
-          '{{ lookup("file", _test_cache ~ "/security_internal_token") }}'
-        _test_lfs_jwt_secret:
-          '{{ lookup("file", _test_cache ~ "/lfs_jwt_secret") }}'
-        _test_secret_key: '{{ lookup("file", _test_cache ~ "/secret_key") }}'
-        _test_cert_pem: '{{ lookup("file", _test_cache ~ "/cert.pem") }}'
-        _test_cert_key: '{{ lookup("file", _test_cache ~ "/key.pem") }}'
+        internal_token: "{{
+            lookup('ansible.builtin.file',
+                   forgejo__test_cache ~ '/internal_token')
+          }}"
+        jwt_secret: "{{
+            lookup('ansible.builtin.file', forgejo__test_cache ~ '/jwt_secret')
+          }}"
+        lfs_jwt_secret: "{{
+            lookup('ansible.builtin.file',
+                   forgejo__test_cache ~ '/lfs_jwt_secret')
+          }}"
 
-    - name: 'Converge | render expected app.ini'
-      ansible.builtin.template:
-        src: 'templates/app.ini.j2'
-        dest: '/tmp/app.ini'
-        owner: '305'
-        group: '305'
-        mode: '0640'
+    # Always reset app.ini to remove pre-install detection on new test runs.
+    - name: '{{ "Converge | cache | reset " ~ forgejo___app._app_ini }}'
+      ansible.builtin.file:
+        path: '{{ forgejo___app._app_ini }}'
+        state: 'absent'
 
-    - name: 'Converge | apply r_pufky.srv.forgejo'
+    - name: 'Converge | role | r_pufky.srv.forgejo (new install)'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.forgejo'
+
+    - name: 'Converge | role | r_pufky.srv.forgejo (forgejo_flg_config)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.forgejo'
       vars:
-        forgejo_cfg_security_internal_token:
-          '{{ _test_security_internal_token }}'
-        forgejo_cfg_server_lfs_jwt_secret: '{{ _test_lfs_jwt_secret }}'
-        forgejo_cfg_security_secret_key: '{{ _test_secret_key }}'
-        forgejo_cfg_oauth2_jwt_secret: '{{ _test_lfs_jwt_secret }}'
+        forgejo_flg_config: true
+        forgejo_cfg_file: '{{
+            lookup("env", "MOLECULE_SCENARIO_DIRECTORY") ~ "/files/app.ini"
+          }}'
+        forgejo_cfg_d: '{{
+            lookup("env", "MOLECULE_SCENARIO_DIRECTORY") ~ "/files/dir"
+          }}'

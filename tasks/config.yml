@@ -6,16 +6,28 @@
 # query to guarantee a list result.
 
 - name:
-    '{{ "Install | filesystem | set " ~ forgejo__cfg._app_ini }}'
+    '{{ "Config | filesystem | set " ~ forgejo___app._app_ini }}'
   when: forgejo__cfg._file | length > 0
   ansible.builtin.template:
     src: '{{ forgejo__cfg._file }}'
-    dest: '{{ forgejo__cfg._app_ini }}'
+    dest: '{{ forgejo___app._app_ini }}'
     owner: '{{ forgejo__srv._user }}'
     group: '{{ forgejo__srv._group }}'
     mode: '0640'
 
-- name: 'Config | filetree | deploy managed files'
+- name: 'Config | filetree | set managed directories'
+  ansible.builtin.file:
+    path: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
+    owner: '{{ forgejo__srv._user }}'
+    group: '{{ forgejo__srv._group }}'
+    mode: '0750'
+    state: 'directory'
+  loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
+  loop_control:
+    label: '{{ item.path }}'
+  when: item.state == 'directory'
+
+- name: 'Config | filetree | set managed files'
   ansible.builtin.template:
     src: '{{ item.src }}'
     dest: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
@@ -26,22 +38,26 @@
   loop_control:
     label: '{{ item.path }}'
   when: item.state == 'file'
-  register: forgejo__local
 
 - name: 'Config | filesystem | query remote files'
   ansible.builtin.find:
     paths: '{{ forgejo___app._work_d }}'
-    file_type: 'file'
+    file_type: 'any'
+    hidden: true
     recurse: true
   register: forgejo__remote
 
-- name: 'Config | filesystem | remove unmanaged files'
+- name: 'Config | filetree | remove unmanaged files and directories'
   ansible.builtin.file:
     path: '{{ item.path }}'
     state: 'absent'
-  loop: '{{ forgejo__remote.files }}'
+  loop: '{{ forgejo__remote.files | sort(attribute="path", reverse=true) }}'
   loop_control:
     label: '{{ item.path }}'
   when: >
-    item.path not in forgejo__local.results |
-    selectattr('dest', 'defined') | map(attribute='dest') | list
+    item.path not in
+    (
+      query("community.general.filetree", forgejo__cfg._d) |
+      map(attribute='path') |
+      map('regex_replace', '^', forgejo___app._work_d ~ "/") | list
+    )

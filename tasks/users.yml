@@ -25,9 +25,9 @@
 # Query updated user list before each operation to prevent tool failures due to
 # non-existent or pre-existing users.
 
-- name: '{{ "Users | filesystem | query " ~ forgejo__cfg._app_ini }}'
+- name: '{{ "Users | filesystem | query " ~ forgejo___app._app_ini }}'
   ansible.builtin.command: "{{
-      'grep -Po \"^HTTP_PORT\\s*=\\s*\\K.*\" ' ~ forgejo__cfg._app_ini
+      'grep -Po \"^HTTP_PORT\\s*=\\s*\\K.*\" ' ~ forgejo___app._app_ini
     }}"
   changed_when: false
   failed_when: forgejo__port.stdout == ""
@@ -59,9 +59,9 @@
 - name: 'Users | query existing users'
   ansible.builtin.command:
     argv:
-      - '{{ forgejo__cfg._bin }}'
+      - '{{ forgejo___app._bin }}'
       - '--config'
-      - '{{ forgejo__cfg._app_ini }}'
+      - '{{ forgejo___app._app_ini }}'
       - 'admin'
       - 'user'
       - 'list'
@@ -78,9 +78,9 @@
     item.email not in forgejo__user_list.stdout
   ansible.builtin.command:
     argv:
-      - '{{ forgejo__cfg._bin }}'
+      - '{{ forgejo___app._bin }}'
       - '--config'
-      - '{{ forgejo__cfg._app_ini }}'
+      - '{{ forgejo___app._app_ini }}'
       - 'admin'
       - 'user'
       - 'create'
@@ -105,9 +105,9 @@
 - name: 'Users | query existing users'
   ansible.builtin.command:
     argv:
-      - '{{ forgejo__cfg._bin }}'
+      - '{{ forgejo___app._bin }}'
       - '--config'
-      - '{{ forgejo__cfg._app_ini }}'
+      - '{{ forgejo___app._app_ini }}'
       - 'admin'
       - 'user'
       - 'list'
@@ -122,9 +122,9 @@
     item.username in forgejo__user_list.stdout
   ansible.builtin.command:
     argv:
-      - '{{ forgejo__cfg._bin }}'
+      - '{{ forgejo___app._bin }}'
       - '--config'
-      - '{{ forgejo__cfg._app_ini }}'
+      - '{{ forgejo___app._app_ini }}'
       - 'admin'
       - 'user'
       - 'delete'

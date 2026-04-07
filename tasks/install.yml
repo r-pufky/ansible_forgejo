@@ -172,33 +172,33 @@
 - name: 'Install | filesystem | add system paths'
   ansible.builtin.file:
     src: '{{ forgejo__cfg._src_bin }}'
-    path: '{{ forgejo__cfg._bin }}'
+    path: '{{ forgejo___app._bin }}'
     owner: 'root'
     group: 'root'
     mode: '0755'
     state: 'link'
 
-- name: '{{ "Install | filesystem | set " ~ forgejo__cfg._service }}'
+- name: '{{ "Install | filesystem | set " ~ forgejo___app._service }}'
   ansible.builtin.template:
     src: 'systemd/forgejo.service.j2'
-    dest: '{{ forgejo__cfg._service }}'
+    dest: '{{ forgejo___app._service }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
 
-- name: '{{ "Install | filesystem | set " ~ forgejo__cfg._drop_in }}'
+- name: '{{ "Install | filesystem | set " ~ forgejo___app._drop_in }}'
   when: forgejo__srv._harden
   ansible.builtin.template:
     src: 'systemd/override.conf.j2'
-    dest: '{{ forgejo__cfg._drop_in }}'
+    dest: '{{ forgejo___app._drop_in }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
 
-- name: '{{ "Install | filesystem | remove " ~ forgejo__cfg._drop_in }}'
+- name: '{{ "Install | filesystem | remove " ~ forgejo___app._drop_in }}'
   when: not forgejo__srv._harden
   ansible.builtin.file:
-    path: '{{ forgejo__cfg._drop_in }}'
+    path: '{{ forgejo___app._drop_in }}'
     state: 'absent'
 
 ###############################################################################
@@ -211,7 +211,7 @@
 - name: 'Install | forgejo | generate INTERNAL_TOKEN'
   when: forgejo__cfg._file | length == 0
   ansible.builtin.shell: '{{
-      forgejo__cfg._bin ~ " generate secret INTERNAL_TOKEN"
+      forgejo___app._bin ~ " generate secret INTERNAL_TOKEN"
     }}'
   args:
     executable: '/bin/bash'
@@ -222,7 +222,7 @@
 - name: 'Install | forgejo | generate JWT_SECRET'
   when: forgejo__cfg._file | length == 0
   ansible.builtin.shell: '{{
-      forgejo__cfg._bin ~ " generate secret JWT_SECRET"
+      forgejo___app._bin ~ " generate secret JWT_SECRET"
     }}'
   args:
     executable: '/bin/bash'
@@ -233,7 +233,7 @@
 - name: 'Install | forgejo | generate LFS_JWT_SECRET'
   when: forgejo__cfg._file | length == 0
   ansible.builtin.shell: '{{
-      forgejo__cfg._bin ~ " generate secret LFS_JWT_SECRET"
+      forgejo___app._bin ~ " generate secret LFS_JWT_SECRET"
     }}'
   args:
     executable: '/bin/bash'
@@ -252,11 +252,11 @@
       ) }}'
 
 - name:
-    '{{ "Install | filesystem | set minimal " ~ forgejo__cfg._app_ini }}'
+    '{{ "Install | filesystem | set minimal " ~ forgejo___app._app_ini }}'
   when: forgejo__cfg._file | length == 0
   ansible.builtin.template:
     src: 'templates/app.ini.j2'
-    dest: '{{ forgejo__cfg._app_ini }}'
+    dest: '{{ forgejo___app._app_ini }}'
     owner: '{{ forgejo__srv._user }}'
     group: '{{ forgejo__srv._group }}'
     mode: '0640'

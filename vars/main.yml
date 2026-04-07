@@ -76,7 +76,7 @@ forgejo___app: "{{ {} | r_pufky.data.v3(
     _app_ini='/etc/opt/forgejo/app.ini',
 
     _src_d='/opt/forgejo/src',
-    _app='/opt/forgejo/src/' ~ forgejo___release._app,
+    _app_d='/opt/forgejo/src/' ~ forgejo___release._app,
     _src_bin=(
       '/opt/forgejo/src/' ~ forgejo___release._app ~ '/' ~
       forgejo___package_bin

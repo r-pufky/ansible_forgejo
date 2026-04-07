@@ -15,7 +15,7 @@
         name: 'r_pufky.data.test'
         tasks_from: 'create_cache.yml'
       vars:
-        test_name: 'Prepare cache'
+        test_name: 'Prepare | cache'
 
     - name: 'Prepare | fact | set cache location'
       ansible.builtin.set_fact:
@@ -111,10 +111,6 @@
         - '{{ forgejo___app._package_sig }}'
         - '{{ forgejo___app._package_sum }}'
 
-- name: 'Prepare'
-  hosts: 'all'
-  gather_facts: false
-  tasks:
     - name:
         'Prepare | inject | required testing packages'
       ansible.builtin.apt:

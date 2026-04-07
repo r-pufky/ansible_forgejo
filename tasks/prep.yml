@@ -25,7 +25,7 @@
         _d=forgejo_cfg_d | regex_replace('\\/$', ''),
         _backup_opts=forgejo_cfg_backup_opts | join(' '),
 
-        _app_d=forgejo___app._src_d ~ '/' ~ forgejo___release._app,
+        _app_d=forgejo___app._src_d ~ '/' ~ forgejo_srv_version,
         _package='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64.xz',
         _package_bin='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64',
         _url_base=forgejo___repo_url ~ forgejo_srv_version ~ '/',
@@ -61,9 +61,9 @@
     state: 'stopped'
   failed_when: false
 
-- name: '{{ "Prep | filesystem | check " ~ forgejo__cfg._app_ini }}'
+- name: '{{ "Prep | filesystem | check " ~ forgejo___app._app_ini }}'
   ansible.builtin.stat:
-    path: '{{ forgejo__cfg._app_ini }}'
+    path: '{{ forgejo___app._app_ini }}'
   register: forgejo__check
 
 - name: 'Prep | backup'

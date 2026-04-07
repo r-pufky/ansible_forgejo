@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart={{ forgejo__cfg._bin }} web --config "{{ forgejo___app._app_ini }}" --custom-path "{{ forgejo__cfg._app_ini | dirname }}" --work-path "{{ forgejo___app._var_d }}"
+ExecStart={{ forgejo___app._bin }} web --config "{{ forgejo___app._app_ini }}" --custom-path "{{ forgejo___app._app_ini | dirname }}" --work-path "{{ forgejo___app._var_d }}"
 RestartSec=2s
 RuntimeMaxSec=infinity
 Restart=always

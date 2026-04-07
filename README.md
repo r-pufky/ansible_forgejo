@@ -28,13 +28,13 @@ highly recommended over SQLite for production use. Database backend migrations
 > Manage forgejo_srv_user, forgejo_srv_group externally if additional SSH
 > configuration needs to be done. See [role user defaults][n].
 
-Path                     | Usage
--------------------------|-------
-/etc/opt/forgejo/app.ini | forgejo_cfg_file always deployed here.
-/var/opt/forgejo         | Forgejo working directory, role user home directory.
-/var/opt/forgejo/cfg     | forgejo_cfg_d always deployed here.
-/srv/forgejo             | Auto-created location if forgejo_cfg_file is not set.
-{AppWorkPath}/backup     | forgejo_flg_backup backups are stored here.
+  Path                    | Usage
+ -------------------------|-------
+ /etc/opt/forgejo/app.ini | forgejo_cfg_file always deployed here.
+ /var/opt/forgejo         | Forgejo working directory, role user home directory.
+ /var/opt/forgejo/cfg     | forgejo_cfg_d always deployed here.
+ /srv/forgejo             | Auto-created location if forgejo_cfg_file is not set.
+ {AppWorkPath}/backup     | forgejo_flg_backup backups are stored here.
 
 ### NOTE
 > Forgejo uses jinja2 templating to parse app.ini and other files. Templates
@@ -61,9 +61,9 @@ Tasks are gated by feature flags and executed in the following order.
   Step | Flag                    | Notes
  ------|-------------------------|-------
   1    | forgejo_flg_backup      | Create backup before making changes?
-  1    | forgejo_flg_maintenance | Preform role maintenance tasks.
-  2    | forgejo_flg_install     | Install required packages, users, etc.
-  3    | forgejo_flg_config      | Install user-defined config.
+  2    | forgejo_flg_maintenance | Preform role maintenance tasks.
+  3    | forgejo_flg_install     | Install required packages, users, etc.
+  4    | forgejo_flg_config      | Install user-defined config.
 
 ### Example Playbooks
 
@@ -199,7 +199,7 @@ Testing variables:
 
 ### [Releases][b]
 
-  Release | Debian | Ansible | Forgejo | Notes
+  Release | Debian | Ansible | Forgejo  | Notes
  ---------|--------|---------|----------|-------
   4.x.x   | 13     | 2.20    | v11.0.11 | Ansible 2.20, feature flags, and semantic versioning.
   3.x.x   | 13     | 2.18    | v11.0.3  | Migrate to Debian Trixie.

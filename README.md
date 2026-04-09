@@ -43,17 +43,17 @@ highly recommended over SQLite for production use. Database backend migrations
 >
 > Use **raw** feature to allow jinja templating to pass through to rendered
 > template:
->
-> ``` ini
-> [badges]
-> GENERATOR_URL_TEMPLATE = {% raw %}'{{.label}}-{{.text}}'{% endraw %}
-> ```
->
-> Renders app.ini as:
-> ``` ini
-> [badges]
-> GENERATOR_URL_TEMPLATE = '{{.label}}-{{.text}}'
-> ```
+
+``` ini
+[badges]
+GENERATOR_URL_TEMPLATE = {% raw %}'{{.label}}-{{.text}}'{% endraw %}
+```
+
+Renders app.ini as:
+``` ini
+[badges]
+GENERATOR_URL_TEMPLATE = '{{.label}}-{{.text}}'
+```
 
 ### Feature Flags
 Tasks are gated by feature flags and executed in the following order.

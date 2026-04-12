@@ -21,15 +21,31 @@
   failed_when: forgejo__app_data.stdout == ""
   register: forgejo__app_data
 
-- name: '{{
-      "Backup | filesystem | create " ~ forgejo__app_data.stdout ~ "/backup"
-    }}'
-  ansible.builtin.file:
-    path: '{{ forgejo__app_data.stdout ~ "/backup" }}'
-    owner: '{{ forgejo__srv._user }}'
-    group: '{{ forgejo__srv._group }}'
-    mode: '0750'
-    state: 'directory'
+- name: 'Backup | filesystem | set backup directory'
+  block:
+    - name: '{{
+          "Backup | filesystem | create " ~ forgejo__app_data.stdout ~
+          "/backup"
+        }}'
+      ansible.builtin.file:
+        path: '{{ forgejo__app_data.stdout ~ "/backup" }}'
+        owner: '{{ forgejo__srv._user }}'
+        group: '{{ forgejo__srv._group }}'
+        mode: '0750'
+        state: 'directory'
+  rescue:
+    - name: '{{
+          "Backup ⛑ | filesystem | create " ~ forgejo__app_data.stdout ~
+          "/backup"
+        }}'
+      ansible.builtin.file:
+        path: '{{ forgejo__app_data.stdout ~ "/backup" }}'
+        owner: '{{ forgejo__srv._user }}'
+        group: '{{ forgejo__srv._group }}'
+        mode: '0750'
+        state: 'directory'
+      become: true
+      become_user: '{{ forgejo__srv._user }}'
 
 - name: 'Backup | cmd | create backup'
   ansible.builtin.command: '{{

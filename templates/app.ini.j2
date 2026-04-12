@@ -2,7 +2,7 @@
 APP_NAME = Forgejo
 APP_SLOGAN = Beyond coding. We Forge.
 RUN_USER = git
-WORK_PATH = {{ forgejo___app._var_d }}
+WORK_PATH = {{ forgejo__cfg._work_path }}
 RUN_MODE = prod
 
 [database]
@@ -62,7 +62,7 @@ PROVIDER = file
 [log]
 MODE = console
 LEVEL = info
-ROOT_PATH = {{ forgejo___app._var_d ~ "/log" }}
+ROOT_PATH = {{ forgejo__cfg._work_path ~ "/log" }}
 
 [repository.pull-request]
 DEFAULT_MERGE_STYLE = merge

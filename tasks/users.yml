@@ -30,7 +30,7 @@
       'grep -Po \"^HTTP_PORT\\s*=\\s*\\K.*\" ' ~ forgejo___app._app_ini
     }}"
   changed_when: false
-  failed_when: forgejo__port.stdout == ""
+  failed_when: false
   register: forgejo__port
 
 - name: 'Users | start'
@@ -46,7 +46,7 @@
 
 - name: 'Users | poll service'
   ansible.builtin.wait_for:
-    port: '{{ forgejo__port.stdout }}'
+    port: '{{ forgejo__port.stdout | default(3000, true) }}'
     delay: 5
     sleep: 3
     timeout: 30

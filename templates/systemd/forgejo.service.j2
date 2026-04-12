@@ -5,11 +5,11 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart={{ forgejo___app._bin }} web --config "{{ forgejo___app._app_ini }}" --custom-path "{{ forgejo___app._app_ini | dirname }}" --work-path "{{ forgejo___app._var_d }}"
+ExecStart={{ forgejo___app._bin }} web --config "{{ forgejo___app._app_ini }}" --custom-path "{{ forgejo___app._app_ini | dirname }}" --work-path "{{ forgejo__cfg._work_path }}"
 RestartSec=2s
 RuntimeMaxSec=infinity
 Restart=always
-WorkingDirectory={{ forgejo___app._var_d }}
+WorkingDirectory={{ forgejo__cfg._work_path }}
 User=git
 Group=git
 Environment="USER=git"

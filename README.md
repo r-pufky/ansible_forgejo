@@ -25,6 +25,10 @@ highly recommended over SQLite for production use. Database backend migrations
 ### WARNING
 > Place user data **locations** outside of role location and manage externally.
 >
+> A custom WORK_PATH is automatically detected with forgejo_cfg_file and
+> service is updated accordingly. WORK_PATH outside of /var/opt/forgejo must be
+> managed manually.
+>
 > Manage forgejo_srv_user, forgejo_srv_group externally if additional SSH
 > configuration needs to be done. See [role user defaults][n].
 

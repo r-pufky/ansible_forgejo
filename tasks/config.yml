@@ -15,49 +15,67 @@
     group: '{{ forgejo__srv._group }}'
     mode: '0640'
 
-- name: 'Config | filetree | set managed directories'
-  ansible.builtin.file:
-    path: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
-    owner: '{{ forgejo__srv._user }}'
-    group: '{{ forgejo__srv._group }}'
-    mode: '0750'
-    state: 'directory'
-  loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: item.state == 'directory'
+- name: '{{ "Config | filesystem | set " ~ forgejo___app._work_d }}'
+  when: forgejo__cfg._d | length > 0
+  block:
+    - name: 'Config | filetree | set managed directories'
+      ansible.builtin.file:
+        path: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
+        owner: '{{ forgejo__srv._user }}'
+        group: '{{ forgejo__srv._group }}'
+        mode: '0750'
+        state: 'directory'
+      loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: item.state == 'directory'
 
-- name: 'Config | filetree | set managed files'
-  ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
-    owner: '{{ forgejo__srv._user }}'
-    group: '{{ forgejo__srv._group }}'
-    mode: '0640'
-  loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: item.state == 'file'
+    - name: 'Config | filetree | set managed files'
+      ansible.builtin.template:
+        src: '{{ item.src }}'
+        dest: '{{ forgejo___app._work_d ~ "/" ~ item.path }}'
+        owner: '{{ forgejo__srv._user }}'
+        group: '{{ forgejo__srv._group }}'
+        mode: '0640'
+      loop: '{{ query("community.general.filetree", forgejo__cfg._d) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: item.state == 'file'
 
-- name: 'Config | filesystem | query remote files'
+    - name: 'Config | filesystem | query remote files'
+      ansible.builtin.find:
+        paths: '{{ forgejo___app._work_d }}'
+        file_type: 'any'
+        hidden: true
+        recurse: true
+      register: forgejo__remote
+
+    - name: 'Config | filetree | remove unmanaged files and directories'
+      ansible.builtin.file:
+        path: '{{ item.path }}'
+        state: 'absent'
+      loop: '{{ forgejo__remote.files | sort(attribute="path", reverse=true) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: >
+        item.path not in
+        (
+          query("community.general.filetree", forgejo__cfg._d) |
+          map(attribute='path') |
+          map('regex_replace', '^', forgejo___app._work_d ~ "/") | list
+        )
+
+- name: '{{ "Config | filesystem | query " ~ forgejo___app._work_d }}'
+  when: forgejo__cfg._d | length == 0
   ansible.builtin.find:
-    paths: '{{ forgejo___app._work_d }}'
-    file_type: 'any'
+    paths: "{{ forgejo___app._work_d }}"
+    recurse: false  # Don't need to enumerate sub-directories to remove.
     hidden: true
-    recurse: true
-  register: forgejo__remote
+  register: forgejo__cmd
 
-- name: 'Config | filetree | remove unmanaged files and directories'
+- name: '{{ "Config | filesystem | clear " ~ forgejo___app._work_d }}'
+  when: forgejo__cfg._d | length == 0
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    state: 'absent'
-  loop: '{{ forgejo__remote.files | sort(attribute="path", reverse=true) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: >
-    item.path not in
-    (
-      query("community.general.filetree", forgejo__cfg._d) |
-      map(attribute='path') |
-      map('regex_replace', '^', forgejo___app._work_d ~ "/") | list
-    )
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ forgejo__cmd.files }}"

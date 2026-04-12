@@ -16,6 +16,9 @@
 # * Foregjo will fail to start if user defined data directory does not exist.
 #     Resolution: Create user data directory (/srv/forgejo) if forgejo_cfg_file
 #         is not specified.
+# * Custom WORK_PATH's are supported but are NOT managed within the role. User
+#   using WORK_PATH in app.ini outside of /var/opt/forgejo must manage
+#   themselves.
 #
 # Reference:
 # * https://forgejo.org/docs/latest/admin/installation-binary/

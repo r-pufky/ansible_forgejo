@@ -29,6 +29,7 @@
         _package='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64.xz',
         _package_bin='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64',
         _url_base=forgejo___repo_url ~ forgejo_srv_version ~ '/',
+        _work_path=forgejo___app._var_d,
       ) }}"
 
 - name: 'Prep | fact | parse metadata'
@@ -37,7 +38,7 @@
 
         _package_sig=forgejo__cfg._package ~ '.asc',
         _package_sum=forgejo__cfg._package ~ '.sha256',
-        _src_bin=forgejo__cfg._app_d ~ '/' ~ forgejo___package_bin,
+        _src_bin=forgejo__cfg._app_d ~ '/' ~ forgejo__cfg._package_bin,
       ) }}"
 
 - name: 'Prep | assert | config enabled and source defined'
@@ -120,4 +121,24 @@
         _gid=forgejo__cfg_query.group,
         _home=forgejo__cfg_query.home,
         _ssh=forgejo__cfg_query.home ~ '/.ssh',
+      ) }}"
+
+# Update working directory location if custom user setting.
+- name: 'Prep | fact | resolve app.ini'
+  when: forgejo__cfg._file | length > 0
+  ansible.builtin.set_fact:
+    forgejo__srv: "{{ forgejo__srv | r_pufky.data.v3(
+
+        _tmpl_cfg=lookup('ansible.builtin.template', forgejo__cfg._file),
+      ) }}"
+
+- name: 'Prep | fact | parse WORK_PATH'
+  ansible.builtin.set_fact:
+    forgejo__cfg: "{{ forgejo__cfg | r_pufky.data.v3(
+
+        _work_path=(
+          forgejo__srv._tmpl_cfg |
+          regex_search(\"^WORK_PATH\\s*=\\s*(.+)$\", '\\1', multiline=True) |
+          default(forgejo___app._var_d) | first | trim
+        ),
       ) }}"

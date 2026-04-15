@@ -42,9 +42,10 @@
         - '{{ forgejo___app._package_sig }}'
         - '{{ forgejo___app._package_sum }}'
 
+    # Keep the source archive for later injection.
     - name: 'Prepare | cache | extract binary for local token generation'
       ansible.builtin.shell: '{{
-          "xz -d " ~ forgejo___app._package ~ " && " ~
+          "xz -dk " ~ forgejo___app._package ~ " && " ~
           "chmod 0755 " ~ forgejo___app._package_bin
         }}'
       args:

@@ -5,11 +5,13 @@
 # Filetree returns a dict (instead of a list of dict) for one element. Use
 # query to guarantee a list result.
 
-- name:
-    '{{ "Config | filesystem | set " ~ forgejo___app._app_ini }}'
-  when: forgejo__cfg._file | length > 0
+- name: '{{ "Config | filesystem | set " ~ forgejo___app._app_ini }}'
   ansible.builtin.template:
-    src: '{{ forgejo__cfg._file }}'
+    src: '{{
+        "templates/app.ini.j2"
+        if forgejo__cfg._file | length == 0 else
+        forgejo__cfg._file
+      }}'
     dest: '{{ forgejo___app._app_ini }}'
     owner: '{{ forgejo__srv._user }}'
     group: '{{ forgejo__srv._group }}'

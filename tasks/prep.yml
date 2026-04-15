@@ -17,18 +17,19 @@
         _group=forgejo_srv_group,
         _harden=forgejo_srv_harden,
       ) }}"
-    forgejo__cfg: "{{ forgejo___app | r_pufky.data.v3(
+    forgejo__cfg: "{{ {} | r_pufky.data.v3(
 
         _version=forgejo_srv_version,
+        _package='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64.xz',
+        _package_bin='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64',
+        _url_base=forgejo___repo_url ~ forgejo_srv_version ~ '/',
+        _app_d=forgejo___app._src_d ~ '/' ~ forgejo_srv_version,
+
         _users=forgejo_cfg_users,
         _file=forgejo_cfg_file,
         _d=forgejo_cfg_d | regex_replace('\\/$', ''),
         _backup_opts=forgejo_cfg_backup_opts | join(' '),
 
-        _app_d=forgejo___app._src_d ~ '/' ~ forgejo_srv_version,
-        _package='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64.xz',
-        _package_bin='forgejo-' ~ forgejo_srv_version[1:] ~ '-linux-amd64',
-        _url_base=forgejo___repo_url ~ forgejo_srv_version ~ '/',
         _work_path=forgejo___app._var_d,
       ) }}"
 

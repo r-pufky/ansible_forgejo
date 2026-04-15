@@ -44,7 +44,8 @@
     state: 'directory'
   loop:
     - '{{ forgejo___app._app_ini | dirname }}'  # _app_ini includes etc_d.
-    - '{{ forgejo___app._work_d }}'  # work_d includes var_d.
+    - '{{ forgejo___app._work_d }}'  # work_d may be custom user location.
+    - '{{ forgejo___app._var_d }}'
     - '{{
         forgejo___app._data_d
         if forgejo__cfg._file | length == 0 else
@@ -69,21 +70,21 @@
     argv:
       - 'gpg'
       - '--list-keys'
-      - '{{ "0x" ~ forgejo__cfg._gpg_key }}'
+      - '{{ "0x" ~ forgejo___app._gpg_key }}'
   changed_when: false
   failed_when: forgejo__gpg.rc not in (0, 2)
   register: forgejo__gpg
 
 # Importing existing results in 'unchanged: 1' and returns 0.
-- name: '{{ "Install | GPG | import 0x" ~ forgejo__cfg._gpg_key }}'
+- name: '{{ "Install | GPG | import 0x" ~ forgejo___app._gpg_key }}'
   when: forgejo__gpg.rc != 0 or 'expired' in forgejo__gpg.stdout
   ansible.builtin.command:
     argv:
       - 'gpg'
       - '--keyserver'
-      - '{{ forgejo__cfg._gpg_server }}'
+      - '{{ forgejo___app._gpg_server }}'
       - '--receive-keys'
-      - '{{ forgejo__cfg._gpg_key }}'
+      - '{{ forgejo___app._gpg_key }}'
   changed_when: '"imported: 1" in forgejo__gpg_import.stderr'
   register: forgejo__gpg_import
 
@@ -254,11 +255,13 @@
         _lfs_jwt_secret=forgejo__lfs_jwt_secret.stdout,
       ) }}'
 
-- name:
-    '{{ "Install | filesystem | set minimal " ~ forgejo___app._app_ini }}'
-  when: forgejo__cfg._file | length == 0
+- name: '{{ "Install | filesystem | set " ~ forgejo___app._app_ini }}'
   ansible.builtin.template:
-    src: 'templates/app.ini.j2'
+    src: '{{
+        "templates/app.ini.j2"
+        if forgejo__cfg._file | length == 0 else
+        forgejo__cfg._file
+      }}'
     dest: '{{ forgejo___app._app_ini }}'
     owner: '{{ forgejo__srv._user }}'
     group: '{{ forgejo__srv._group }}'

@@ -10,6 +10,10 @@ Install size: ~162MB
 
 > Only Forgejo **10.0.3** is guaranteed to migrate from Gitea up to **1.22**.
 
+> Tasks [potentially touching Network Mounted Filesystems][q] will be run as
+> the task user and fallback to the service user. Manage these locations
+> externally if these fail.
+
 ## Role Variables
 Detailed variable use documented in defaults. See usage for role operation.
 
@@ -51,6 +55,7 @@ highly recommended over SQLite for production use. Database backend migrations
 ``` ini
 [badges]
 GENERATOR_URL_TEMPLATE = {% raw %}'{{.label}}-{{.text}}'{% endraw %}
+
 ```
 
 Renders app.ini as:
@@ -222,7 +227,6 @@ Associate pull requests with a submitted bug.
 ## Author Information
 PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 
-
 [a]: https://r-pufky.github.io/ansible_docs
 [b]: https://semver.org/spec/v2.0.0
 [c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
@@ -236,7 +240,8 @@ PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 [j]: https://github.com/r-pufky/ansible_forgejo/tree/main/defaults/main/main.yml
 [k]: https://github.com/r-pufky/ansible_forgejo/blob/main/defaults/main/ports.yml
 [l]: https://forgejo.org/docs/next/admin/installation/database-preparation
-[m]: http://r-pufky.github.io/docs/service/forgejo
+[m]: https://r-pufky.github.io/docs/vcs/forgejo
 [n]: https://github.com/r-pufky/ansible_forgejo/tree/main/vars/main.yml
 [o]: https://forgejo.org/docs/latest/admin/config-cheat-sheet/
 [p]: https://codeberg.org/forgejo/forgejo/src/branch/forgejo/custom/conf/app.example.ini
+[q]: https://r-pufky.github.io/ansible_docs/best_practice/patterns/#network-mounts

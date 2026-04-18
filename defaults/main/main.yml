@@ -56,11 +56,11 @@ forgejo_flg_config: false
 #       PATCH: Safe - Usually requires no role updates.
 #   RECOMMEND: Only increment MINOR.PATCH. Pre-releases unsupported.
 #
-# Default: 'v11.0.12'.
+# Default: 'v15.0.0'.
 #
 # Reference:
 # * https://forgejo.org/releases
-forgejo_srv_version: 'v11.0.12'
+forgejo_srv_version: 'v15.0.0'
 
 # Codeberg access token (forgejo).
 #
